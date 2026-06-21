@@ -360,3 +360,25 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Aguarda o DOM carregar completamente antes de chamar o mapa
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Verifica se a div do mapa existe na página para não dar erro
+    const mapContainer = document.getElementById('mapa-container');
+    
+    if (mapContainer) {
+        // Inicializa o mapa com as coordenadas da Urca, RJ (-22.9519, -43.1658) e zoom 14
+        const mapa = L.map('mapa-container').setView([-22.9519, -43.1658], 14);
+
+        // Adiciona a camada visual do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(mapa);
+
+        // Adiciona um pino marcando o local com um popup bonitinho
+        L.marker([-22.9519, -43.1658]).addTo(mapa)
+            .bindPopup('<b>Urca</b><br>Eventos e Saúde.')
+            .openPopup();
+    }
+});
