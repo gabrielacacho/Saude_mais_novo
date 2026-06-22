@@ -18,7 +18,7 @@
   padding: 1rem;
   border-radius: 1rem;
   border: 2px solid var(--cor-borda);
-  background: rgba(253, 226, 243, 0.6);
+  background: var(--cor-fundo-claro);
   cursor: pointer;
   text-align: left;
   font-family: inherit;

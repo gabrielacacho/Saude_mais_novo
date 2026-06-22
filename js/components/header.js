@@ -15,71 +15,16 @@ export function renderHeader(container, options = {}) {
     <header class="hub-site-header">
       <div class="hub-container hub-header-inner">
         <div class="hub-brand-left">
-            <img src="./imagem/logo-prefeitura.png"
+            <img src="./imagem/Logo-PrefeituraSUS.png"
                 alt="Prefeitura do Rio"
                 class="logo-prefeitura">
         </div>
 
         <div class="hub-brand-center">
-            <div class="logo-saude-texto">Saúde<span>+</span></div>
+            <div class="logo-saude-texto"><a href="./index.html">Saúde<span>+</span></a></div>
         </div>
 
-        ${
-          showSearch
-            ? `
-        <div class="hub-search-wrap">
-          <div class="hub-search">
-            <label class="hub-search-field hub-search-field--divider">
-              <span class="sr-only">Local</span>
-              ${iconPin()}
-              <input type="text" id="search-local" class="hub-search-input" placeholder="Digite o local" autocomplete="off" value="${getLocal()}" />
-              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-local" aria-expanded="false" title="Filtros opcionais">${iconFilter()}</button>
-            </label>
-            <label class="hub-search-field">
-              <span class="sr-only">Evento</span>
-              ${iconCalendar()}
-              <input type="text" id="search-evento" class="hub-search-input" placeholder="Digite o Evento" autocomplete="off" />
-              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-evento" aria-expanded="false" title="Filtros opcionais">${iconFilter()}</button>
-            </label>
-          </div>
-          <div id="painel-filtros-local" class="hub-search-filtros is-hidden">
-            <p class="hub-search-filtros__titulo">Filtros de local (opcional)</p>
-            <div class="hub-search-filtros__grid">
-              <div>
-                <label class="hub-label" for="filtro-regiao-header">Região sugerida</label>
-                <select id="filtro-regiao-header" class="hub-select hub-select--modal">${opcoesRegiao}</select>
-              </div>
-              <div>
-                <label class="hub-label" for="filtro-categoria-local">Categoria</label>
-                <select id="filtro-categoria-local" class="hub-select hub-select--modal">${opcoesCategoria}</select>
-              </div>
-              <div>
-                <label class="hub-label" for="filtro-raio">Raio (mock)</label>
-                <select id="filtro-raio" class="hub-select hub-select--modal">
-                  <option>5 km</option>
-                  <option>10 km</option>
-                  <option>20 km</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div id="painel-filtros-evento" class="hub-search-filtros is-hidden">
-            <p class="hub-search-filtros__titulo">Filtros de evento (opcional)</p>
-            <div class="hub-search-filtros__grid">
-              <div>
-                <label class="hub-label" for="filtro-categoria-header">Categoria</label>
-                <select id="filtro-categoria-header" class="hub-select hub-select--modal">${opcoesCategoria}</select>
-              </div>
-              <div>
-                <label class="hub-label" for="filtro-data-header">Data</label>
-                <input type="date" id="filtro-data-header" class="hub-input hub-select--modal" />
-              </div>
-            </div>
-          </div>
-        </div>
-        `
-            : '<div class="hub-search-wrap"></div>'
-        }
+        
 
         <div class="hub-profile-pill">
           <button type="button" id="btn-menu" class="hub-icon-btn" aria-label="Menu">${iconMenu()}</button>

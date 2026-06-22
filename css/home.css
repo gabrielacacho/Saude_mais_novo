@@ -109,7 +109,6 @@
   gap: 0.25rem;
 }
 
-/* Mapa simulado */
 .mapa-placeholder {
   background: linear-gradient(160deg, #e8e4df 0%, #d4cfc8 45%, #c5bfb6 100%);
   min-height: 280px;
@@ -118,86 +117,6 @@
   padding: 1rem;
 }
 
-.mapa-placeholder::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.5;
-}
-
-.mapa-placeholder__label {
-  position: relative;
-  z-index: 10;
-  display: block;
-  width: fit-content;
-  margin: 0.5rem auto 0;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #4b5563;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 0.25rem;
-}
-
-.mapa-placeholder__hint {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  right: 0.5rem;
-  text-align: center;
-  font-size: 0.625rem;
-  color: #6b7280;
-  z-index: 10;
-}
-
-.mapa-pins {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-}
-
-.pin-mapa {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  z-index: 6;
-}
-
-.pin-mapa__icon {
-  transform: rotate(45deg);
-  display: flex;
-  color: #fff;
-}
-
-.pin-mapa__icon .hub-icon {
-  width: 0.875rem;
-  height: 0.875rem;
-  color: #fff;
-}
-
-.pin-mapa--posto {
-  background: #d65454;
-}
-
-.pin-mapa--evento {
-  background: #f0c24d;
-}
-
-.pin-mapa--pos-1 { top: 35%; left: 25%; }
-.pin-mapa--pos-2 { top: 55%; left: 45%; }
-.pin-mapa--pos-3 { top: 40%; left: 65%; }
-.pin-mapa--pos-4 { top: 65%; left: 30%; }
 
 /* Calendário — células com tamanho uniforme */
 .cal-header-dia {
@@ -265,16 +184,12 @@
   padding: 2px 3px;
   border-radius: 3px;
   border: none;
-  cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
   text-align: left;
   text-wrap: wrap;
 }
 
-.cal-evento-mini:hover {
-  filter: brightness(1.08);
-}
 
 /* Listagem */
 .page-home .eventos-titulo {

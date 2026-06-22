@@ -63,7 +63,13 @@ body {
   justify-content: center;
   padding: 2.5rem 1rem;
 }
-
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
 /* ---------- Cabeçalho ---------- */
 .hub-site-header {
     width: 100%;
@@ -86,8 +92,11 @@ body {
     display:flex;
     align-items:center;
     justify-content:space-between;
-    height:160px;
-    position:relative;
+    min-width: 100px;
+    width: 70%;
+    min-height:130px;
+    position:sticky;
+    top: 0;
 }
 
 .hub-brand-left{
@@ -103,9 +112,10 @@ body {
 }
 
 .logo-prefeitura{
-    width:175px;
-    height:auto;
-    object-fit:contain;
+  color: white;
+  width:250px;
+  height:auto;
+  object-fit:contain;
 }
 
 .logo-minhasaude{
@@ -118,29 +128,27 @@ body {
   flex-shrink: 0;
   width: 3.5rem;
   height: 2.5rem;
-  background: #9ca3af;
+  background: #ffffff;
   border-radius: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.625rem;
-  color: #374151;
+  color: #ffffff;
   font-weight: 500;
   text-decoration: none;
 }
 
 .hub-search-wrap {
-  position: relative;
-  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
-  min-width: 200px;
+  width: 100%;
   max-width: 36rem;
-  margin-top:100px;
+  min-width: 200px;
+  margin: 20px auto;
   position: relative;
-  right: 60px;
 }
 
 .hub-search {
@@ -340,7 +348,7 @@ body {
   opacity: 0.9;
 }
 
-/* ---------- Popover (mapa + calendário) ---------- */
+/* ---------- Popover Base (mapa + calendário) ---------- */
 .hub-popover {
   position: absolute;
   z-index: 9999999;
@@ -351,32 +359,116 @@ body {
   border: 2px solid var(--cor-borda);
   border-radius: 0.5rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  
+  /* Estado inicial seguro */
   opacity: 0;
   visibility: hidden;
-  transform: translateY(4px) rotate(45deg);
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-  pointer-events: none;
-}
-
-.pin-mapa:hover .hub-popover,
-.pin-mapa:focus-within .hub-popover
-
-{
-  opacity: 1;
-  visibility: visible;
-   transform: translateY(0px) rotate(45deg);
   pointer-events: auto;
+  
+  /* Transição simples sem rotações quebradas */
+  transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
+/* Opcional: Estilo da setinha indicadora */
+.hub-popover::before {
+  content: "";
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: #fff;
+  border-left: 2px solid var(--cor-borda);
+  border-top: 2px solid var(--cor-borda);
+  transform: rotate(45deg);
+}
+
+
+/* ==========================================================================
+   2. Comportamento Correto no CALENDÁRIO (Blindado contra cortes)
+   ========================================================================== */
+.cal-evento-mini-wrap {
+  position: relative !important;
+  display: block !important; /* Força o wrap a se comportar como bloco */
+  width: 100% !important;
+  overflow: visible !important; /* Garante que o wrap não corte nada */
+}
+
+/* BLINDAGEM TOTAL: Força o grid, as linhas e os dias do seu calendário a NÃO cortarem o balão */
+#calendario-grid,
+.cal-dia, 
+.cal-dia__eventos,
+.cal-cell,
+td, tr {
+  overflow: visible !important; /* Destrói qualquer overflow: hidden que os pais tenham */
+}
+
+/* Posição física do popover no calendário (Acima do evento) */
+.cal-evento-mini-wrap .hub-popover {
+  position: absolute !important;
+  z-index: 99999999 !important; /* Camada estratosférica */
+  
+  /* Garante dimensões reais e fixas para o navegador não zerar o tamanho */
+  width: 200px !important; 
+  min-width: 200px !important;
+  height: auto !important;
+  
+  /* Posicionamento exato acima do botão */
+  bottom: calc(100% + 8px) !important; 
+  left: 50% !important;
+  top: auto !important;
+  right: auto !important;
+  transform: translateX(-50%) !important; /* Centraliza no meio do dia */
+}
+
+/* Gatilhos de Ativação (Unificando a força do Hover) */
 .cal-evento-mini-wrap:hover .hub-popover,
-.cal-evento-mini-wrap.is-popover-open .hub-popover{
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0px);
-  pointer-events: auto;
-  bottom: 100%;
+.cal-evento-mini:hover + .hub-popover,
+.cal-evento-mini-wrap.is-popover-open .hub-popover {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  display: block !important; /* Injeta o bloco na tela */
 }
 
+/* Faz o botão ficar na camada correta */
+.cal-evento-mini-wrap:hover .cal-evento-mini {
+  position: relative;
+  z-index: 1 !important;
+}
+
+/* Ajuste da setinha na base do balão */
+.cal-evento-mini-wrap .hub-popover::before {
+  content: "";
+  position: absolute;
+  bottom: -6px; 
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  border-left: none;
+  border-top: none;
+  border-right: 2px solid var(--cor-borda);
+  border-bottom: 2px solid var(--cor-borda);
+}
+
+
+/* CORREÇÃO DE CONFLITO: Garante que o botão vá para trás do popover quando estiver aberto */
+.cal-evento-mini-wrap:hover .cal-evento-mini,
+.cal-evento-mini-wrap.is-popover-open .cal-evento-mini {
+  position: relative;
+  z-index: 1 !important;
+}
+
+/* Correção Visual da Setinha apontando para baixo */
+.cal-evento-mini-wrap .hub-popover::before {
+  bottom: -6px; /* Joga a setinha para a base do balão */
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  border-left: none;
+  border-top: none;
+  border-right: 2px solid var(--cor-borda);
+  border-bottom: 2px solid var(--cor-borda);
+}
+
+
+/* ---------- Elementos Internos do Popover ---------- */
 .hub-popover__tipo {
   display: flex;
   align-items: center;
@@ -426,19 +518,6 @@ body {
   border-color: var(--cor-destaque);
 }
 
-.pin-mapa .hub-popover {
-  bottom: calc(100% + 8px);
-  left: 50%;
-  margin-left: -5.5rem;
-}
-
-.cal-evento-mini-wrap .hub-popover {
-  left: 0;
-  right: 0;
-  top: calc(100% + 4px);
-  overflow: visible;
-}
-
 .hub-dropdown {
   position: absolute;
   right: 1rem;
@@ -481,7 +560,7 @@ body {
 }
 
 .hub-dropdown-item:hover {
-  background: #fdf2f8;
+  background: #f0f0f0;
 }
 
 .hub-dropdown hr {
@@ -690,7 +769,7 @@ body {
 }
 
 .hub-link:hover {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .hub-link--muted {
