@@ -12,6 +12,7 @@
   grid-template-columns: 1fr;
   align-items: start;
   gap: 1.5rem;
+  margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
@@ -99,7 +100,7 @@
 
 .page-home .hub-cal-body {
   padding: 0.75rem;
-  background:rgba(252, 228, 236, 0.5);
+  background:rgba(184, 184, 184, 0.5);
 }
 
 #calendario-grid {
@@ -210,12 +211,13 @@
 }
 
 .cal-dia {
-  aspect-ratio: 1;
-  min-height: 3.25rem;
-  font-size: 0.65rem;
-  background-color: rgba(27, 185, 236);
-  border-radius: 0.25rem;
-  padding: 0.2rem;
+  aspect-ratio: auto; 
+  min-height: 3.5rem; /* Reduzido para diminuir a altura do calendário */
+  font-size: 0.7rem; /* Fonte levemente menor */
+  background-color: #FFFFFF;
+  border: 1px solid var(--cor-borda); 
+  border-radius: 4px;
+  padding: 0.25rem; /* Menos espaçamento interno */
   display: flex;
   flex-direction: column;
   overflow: visible;

@@ -1,20 +1,19 @@
 /* ==========================================================================
    Hub Saúde — estilos globais (elementos compartilhados)
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --cor-primaria:#13b9ed;
-  --cor-destaque: #002b6b;
-
-  --cor-fundo: #fce4ec;
-  --cor-fundo-claro: #fde2f3;
-  --cor-cal-celula: #f8bbd0;
-  --cor-borda: #c95b6a;
-  --cor-botao-inscrito: #4caf50;
-  --raio-card: 1rem;
-  --raio-pill: 9999px;
-  --sombra-card: 0 4px 14px rgba(0, 0, 0, 0.08);
+  --cor-primaria: #22B8E6; /* Azul Claro Institucional */
+  --cor-destaque: #003B8E; /* Azul Escuro Institucional */
+  --cor-fundo: #F5F7FA; /* Fundo do site em cinza bem claro */
+  --cor-fundo-claro: #FFFFFF; /* Fundo branco puro para modais e botões */
+  --cor-cal-celula: #E8EDF2; /* Cinza claro para o grid do calendário */
+  --cor-borda: #D6DDE5; /* Borda cinza suave e profissional */
+  --cor-botao-inscrito: #0056B3; /* Azul secundário */
+  --raio-card: 12px; /* Menos arredondado, mais formal */
+  --raio-pill: 24px;
+  --sombra-card: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra quase invisível */
 }
 
 *,
@@ -25,10 +24,11 @@
 
 body {
   margin: 0;
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
-  background-color: #fefefe;
-  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--cor-fundo); /* Agora usa o fundo cinza oficial */
+  color: #1E293B; /* Texto grafite quase preto, mais suave que o preto puro */
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Utilitários de cor (complementam Tailwind) */
@@ -65,27 +65,21 @@ body {
 }
 
 /* ---------- Cabeçalho ---------- */
-.hub-site-header{
-    width:100%;
-    background:
-    radial-gradient(
-        circle,
-        rgba(0,81,160,1) 0%,
-        rgba(0,43,107,1) 56%,
-        rgba(0,43,107,1) 100%
-    );
-
-    color:white;
-    position:sticky;
-    top:0;
-    z-index:1000;
+.hub-site-header {
+    width: 100%;
+    background-color: var(--cor-destaque);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
+
 /*faixa azul-clara*/
-.hub-site-header::after{
-    content:"";
-    display:block;
-    height:24px;
-    background:#13B9ED;
+.hub-site-header::after {
+    content: "";
+    display: block;
+    height: 6px; /* Faixa mais fina e elegante */
+    background: var(--cor-primaria);
 }
 
 .hub-header-inner{
@@ -599,12 +593,13 @@ body {
 .hub-input,
 .hub-select {
   width: 100%;
-  border: 2px solid var(--cor-borda);
-  border-radius: 0.75rem;
+  border: 1px solid var(--cor-borda); /* Bordas finas são mais profissionais */
+  border-radius: 8px; /* Menos arredondado */
   padding: 0.625rem 1rem;
   font-family: inherit;
   font-size: 0.875rem;
-  background: rgba(253, 226, 243, 0.5);
+  background: var(--branco); /* Fundo branco e limpo */
+  color: #1E293B;
 }
 
 .hub-input:focus,
@@ -739,4 +734,19 @@ body {
     height: auto;
     margin-right: 20px;
     margin-top: -25px;
+}
+
+.logo-saude-texto {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.05em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.logo-saude-texto span {
+  color: var(--cor-primaria);
+  margin-left: 2px;
 }

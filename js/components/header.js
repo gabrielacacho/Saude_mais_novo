@@ -21,9 +21,7 @@ export function renderHeader(container, options = {}) {
         </div>
 
         <div class="hub-brand-center">
-            <img src="./imagem/logo-minhasaude.png"
-                alt="MinhaSaude.Rio"
-                class="logo-minhasaude">
+            <div class="logo-saude-texto">Saúde<span>+</span></div>
         </div>
 
         ${
