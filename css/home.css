@@ -273,7 +273,7 @@
 }
 
 .hub-event-card__img-wrap {
-  aspect-ratio: 4 / 3;
+  height: 160px; /* Travou a altura da imagem para não explodir */
   overflow: hidden;
 }
 
@@ -294,9 +294,10 @@
 
 .hub-event-card__title {
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0 0 0.5rem;
   line-height: 1.3;
+  color: var(--texto-princ);
 }
 
 .hub-event-card__meta {
