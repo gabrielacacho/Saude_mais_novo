@@ -73,7 +73,14 @@ a:hover {
 /* ---------- Cabeçalho ---------- */
 .hub-site-header {
     width: 100%;
-    background-color: var(--cor-destaque);
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,81,160,1) 0%,
+            rgba(0,43,107,1) 56%,
+            rgba(0,43,107,1) 100%
+        );
+
     color: white;
     position: sticky;
     top: 0;
@@ -84,7 +91,7 @@ a:hover {
 .hub-site-header::after {
     content: "";
     display: block;
-    height: 6px; /* Faixa mais fina e elegante */
+    height: 15px;
     background: var(--cor-primaria);
 }
 
