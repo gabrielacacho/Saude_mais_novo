@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil — Hub Saúde</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/perfil.css" />
+</head>
+<body class="page-perfil">
+  <div id="header-root"></div>
+
+  <main class="hub-container perfil-main">
+    <header class="perfil-header">
+      <div id="perfil-avatar" class="perfil-avatar">M</div>
+      <div class="perfil-header__info">
+        <span id="perfil-tipo" class="perfil-tipo">—</span>
+        <h1 id="perfil-nome">—</h1>
+        <p id="perfil-bio" class="perfil-bio"></p>
+      </div>
+    </header>
+
+    <section class="perfil-dados hub-card-auth">
+      <h2 class="perfil-secao-titulo">Dados da conta</h2>
+      <dl class="perfil-dl" id="perfil-dados-lista"></dl>
+    </section>
+
+    <section id="perfil-secao-inscricoes" class="perfil-secao is-hidden">
+      <h2 class="perfil-secao-titulo">Minhas inscrições</h2>
+      <div id="perfil-inscricoes" class="perfil-lista-cards"></div>
+    </section>
+
+    <section id="perfil-secao-gerenciados" class="perfil-secao is-hidden">
+      <h2 class="perfil-secao-titulo">Eventos gerenciados</h2>
+      <div id="perfil-gerenciados" class="perfil-lista-cards"></div>
+    </section>
+
+    <section id="perfil-secao-admin" class="perfil-secao is-hidden">
+      <h2 class="perfil-secao-titulo">Painel administrativo</h2>
+      <ul id="perfil-permissoes" class="perfil-permissoes"></ul>
+      <div class="perfil-admin-stats">
+        <div class="perfil-stat"><span class="perfil-stat__num">6</span><span class="perfil-stat__label">Eventos ativos</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">3</span><span class="perfil-stat__label">Postos mapeados</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">128</span><span class="perfil-stat__label">Inscrições (mock)</span></div>
+      </div>
+    </section>
+
+    <p class="perfil-voltar">
+      <a href="index.html" class="hub-link">← Voltar ao início</a>
+    </p>
+  </main>
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/perfil.js"></script>
+</body>
+</html>

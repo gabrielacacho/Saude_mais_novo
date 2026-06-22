@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hub Saúde — Eventos e Postos</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body class="page-home">
+  <div id="header-root"></div>
+
+  <p id="admin-badge" class="hub-admin-badge is-hidden hub-container">
+    Modo Administrador — painel extra visível apenas neste perfil (mock)
+  </p>
+
+  <main class="hub-container">
+    <section class="hub-widgets" aria-label="Mapa e calendário">
+      <article class="hub-panel">
+        <div class="hub-panel-header bg-mapa-header hub-panel-header--input">
+          <span class="hub-panel-header__icon" aria-hidden="true"></span>
+          <label class="hub-panel-header-input-wrap">
+            <span class="sr-only">Buscar local no mapa</span>
+            <input type="text" id="mapa-busca-local" class="hub-panel-header-input" placeholder="Digite o local" value="Urca" autocomplete="off" />
+          </label>
+        </div>
+        <div class="mapa-placeholder" id="mapa-container" aria-label="Mapa simulado — integração futura com Google Maps">
+          <p class="mapa-placeholder__label" id="mapa-local-label">URCA</p>
+          <div id="mapa-pins" class="mapa-pins"></div>
+          <p class="mapa-placeholder__hint">Placeholder — Google Maps em breve</p>
+        </div>
+      </article>
+
+      <article class="hub-panel">
+        <div class="hub-panel-header bg-cal-header cal-header-controls">
+          <span class="hub-panel-header__icon hub-panel-header__icon--cal" aria-hidden="true"></span>
+          <label class="cal-select-wrap">
+            <span class="sr-only">Mês</span>
+            <select id="cal-mes" class="cal-periodo-select" aria-label="Mês"></select>
+          </label>
+          <span class="cal-ano-fixo" aria-label="Ano">2026</span>
+        </div>
+        <div class="hub-cal-body">
+          <div id="calendario-grid"></div>
+        </div>
+      </article>
+    </section>
+
+    <section aria-label="Listagem de eventos">
+      <h2 class="eventos-titulo">
+        Eventos na
+        <label class="eventos-titulo__regiao-wrap">
+          <span class="sr-only">Local dos eventos</span>
+          <input type="text" id="regiao-nome" class="eventos-titulo__regiao" value="Urca" placeholder="digite o local" autocomplete="off" />
+        </label>
+      </h2>
+      <div id="eventos-grid"></div>
+    </section>
+  </main>
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/home.js"></script>
+</body>
+</html>

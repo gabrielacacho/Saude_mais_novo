@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar — Hub Saúde</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body class="page-login page-layout--centered">
+  <div id="header-root"></div>
+
+  <main>
+    <div class="auth-wrapper">
+      <div class="hub-card-auth">
+        <div class="hub-card-auth-header">
+          <h1>Bem-vindo de volta</h1>
+          <p>Acesse sua conta no hub de saúde</p>
+        </div>
+
+        <form id="form-login" class="hub-card-auth-body hub-form">
+          <div>
+            <label for="email" class="hub-label">E-mail</label>
+            <input id="email" name="email" type="email" required autocomplete="email" class="hub-input" placeholder="seu@email.com" />
+          </div>
+          <div>
+            <label for="senha" class="hub-label">Senha</label>
+            <input id="senha" name="senha" type="password" required minlength="6" autocomplete="current-password" class="hub-input" placeholder="••••••••" />
+          </div>
+          <label class="hub-checkbox-row">
+            <input type="checkbox" />
+            Lembrar de mim
+          </label>
+          <button type="submit" class="hub-btn hub-btn--primary hub-btn--block">Entrar</button>
+        </form>
+
+        <div class="hub-card-auth-footer">
+          <p>
+            Ainda não tem conta?
+            <a href="cadastro.html" class="hub-link">Cadastre-se</a>
+          </p>
+          <a href="index.html" class="hub-link--muted">← Voltar ao início</a>
+        </div>
+      </div>
+
+      <p class="hub-footer-note">
+        Login simulado — qualquer e-mail e senha redirecionam para a home.
+      </p>
+    </div>
+  </main>
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/login.js"></script>
+</body>
+</html>

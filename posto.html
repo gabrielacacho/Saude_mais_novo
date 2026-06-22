@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Posto de Saúde — Hub Saúde</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/posto.css" />
+</head>
+<body class="page-posto">
+  <div id="header-root"></div>
+
+  <div id="posto-erro" class="posto-erro is-hidden">
+    <p>Posto não encontrado</p>
+    <a href="index.html" class="hub-btn hub-btn--primary">Voltar ao início</a>
+  </div>
+
+  <main id="posto-conteudo" class="hub-container posto-main">
+    <div class="posto-hero">
+      <div class="posto-hero__icon" aria-hidden="true"></div>
+      <div>
+        <span id="posto-tag" class="hub-tag">Posto de saúde</span>
+        <h1 id="posto-nome" class="posto-hero__titulo">—</h1>
+        <p id="posto-endereco" class="posto-hero__meta"></p>
+      </div>
+    </div>
+
+    <section class="posto-info-grid">
+      <div class="posto-card">
+        <h2>Horário de funcionamento</h2>
+        <p id="posto-horario"></p>
+      </div>
+      <div class="posto-card">
+        <h2>Serviços</h2>
+        <ul id="posto-servicos" class="posto-servicos"></ul>
+      </div>
+    </section>
+
+    <section class="posto-descricao">
+      <h2>Sobre o posto</h2>
+      <p id="posto-descricao"></p>
+    </section>
+
+    <section class="posto-eventos">
+      <h2>Eventos nesta região</h2>
+      <div id="posto-eventos-lista" class="posto-eventos-lista"></div>
+    </section>
+
+    <p class="posto-voltar">
+      <a href="index.html" class="hub-link">← Voltar para o mapa</a>
+    </p>
+  </main>
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/posto.js"></script>
+</body>
+</html>

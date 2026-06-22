@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Página de login
+   ========================================================================== */
+
+.page-login .auth-wrapper {
+  width: 100%;
+  max-width: 28rem;
+}
+
+.page-login .hub-card-auth-footer {
+  padding: 0 1.5rem 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.page-login .hub-card-auth-footer p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.page-login .hub-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.page-login .hub-checkbox-row input {
+  accent-color: var(--cor-destaque);
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro — Hub Saúde</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/cadastro.css" />
+</head>
+<body class="page-cadastro page-layout--centered">
+  <div id="header-root"></div>
+
+  <main>
+    <section id="step-tipo" class="hub-card-auth">
+      <div class="hub-card-auth-header">
+        <h1>Criar conta</h1>
+        <p>Como você deseja se cadastrar?</p>
+      </div>
+      <div class="hub-card-auth-body cadastro-tipo-list">
+        <button type="button" data-tipo="comum" class="cadastro-tipo-btn">
+          <span class="cadastro-tipo-btn__icon cadastro-tipo-btn__icon--comum" aria-hidden="true">👤</span>
+          <div>
+            <span class="cadastro-tipo-btn__title">Usuário Comum</span>
+            <span class="cadastro-tipo-btn__desc">Participar de eventos e campanhas de saúde</span>
+          </div>
+        </button>
+        <button type="button" data-tipo="institucional" class="cadastro-tipo-btn">
+          <span class="cadastro-tipo-btn__icon cadastro-tipo-btn__icon--inst" aria-hidden="true">🏥</span>
+          <div>
+            <span class="cadastro-tipo-btn__title">Usuário Institucional</span>
+            <span class="cadastro-tipo-btn__desc">UBS, clínicas e entidades da rede de saúde</span>
+          </div>
+        </button>
+        <button type="button" id="btn-continuar-tipo" class="hub-btn hub-btn--primary hub-btn--block">Continuar</button>
+        <p class="cadastro-login-link">
+          Já tem conta? <a href="login.html" class="hub-link">Entrar</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="step-form" class="hub-card-auth is-hidden">
+      <div class="hub-card-auth-header">
+        <h2>Dados de cadastro</h2>
+        <p>Perfil: <span id="tipo-selecionado-label" class="cadastro-perfil-label">—</span></p>
+      </div>
+      <form id="form-cadastro" class="hub-card-auth-body hub-form">
+        <div id="campos-dinamicos"></div>
+        <div class="cadastro-step-actions">
+          <button type="button" id="btn-voltar" class="hub-btn hub-btn--outline">Voltar</button>
+          <button type="submit" class="hub-btn hub-btn--primary">Finalizar</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="step-sucesso" class="hub-card-auth cadastro-sucesso is-hidden">
+      <div class="cadastro-sucesso__emoji" aria-hidden="true">✅</div>
+      <h2>Cadastro realizado!</h2>
+      <p>Sua conta foi criada com sucesso (simulação).</p>
+      <button type="button" id="btn-ir-login" class="hub-btn hub-btn--primary hub-btn--block">Ir para o login</button>
+      <a href="index.html" class="hub-link">Explorar eventos sem login</a>
+    </section>
+  </main>
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/cadastro.js"></script>
+</body>
+</html>

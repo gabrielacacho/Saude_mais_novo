@@ -1,0 +1,110 @@
+/* Página do posto de saúde */
+
+.page-posto .posto-main {
+  padding: 1.5rem 1rem 3rem;
+}
+
+.posto-erro {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.posto-erro p {
+  font-weight: 700;
+  color: var(--cor-destaque);
+  margin-bottom: 1rem;
+}
+
+.posto-hero {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: 1rem;
+  border: 4px solid var(--cor-borda);
+  box-shadow: var(--sombra-card);
+}
+
+.posto-hero__icon {
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--cor-destaque);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.posto-hero__titulo {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.posto-hero__meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.posto-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .posto-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.posto-card {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 2px solid var(--cor-borda);
+}
+
+.posto-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--cor-destaque);
+}
+
+.posto-servicos {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.posto-descricao {
+  background: var(--cor-fundo-claro);
+  border: 2px solid var(--cor-borda);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.posto-descricao h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.posto-eventos h2 {
+  margin-bottom: 1rem;
+}
+
+.posto-eventos-lista {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.posto-voltar {
+  margin-top: 2rem;
+  text-align: center;
+}

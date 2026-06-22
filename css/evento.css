@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Página de detalhes do evento
+   ========================================================================== */
+
+.page-evento main {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.evento-erro {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.evento-erro p {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--cor-destaque);
+  margin-bottom: 1rem;
+}
+
+.evento-banner-wrap {
+  position: relative;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.evento-banner__img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.evento-banner__tag {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: var(--cor-destaque);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.evento-info {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .evento-info {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.evento-info__detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.evento-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .evento-acoes {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 768px) {
+  .evento-acoes {
+    width: auto;
+  }
+}
+
+.evento-acoes .hub-btn {
+  flex: 1;
+  min-width: 10rem;
+}
+
+.evento-acoes .hub-btn--inscrito {
+  background-color: var(--cor-botao-inscrito) !important;
+}
+
+.evento-descricao {
+  margin-top: 2rem;
+  border: 4px solid var(--cor-borda);
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  background: var(--cor-fundo-claro);
+}
+
+.evento-descricao h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+  .evento-descricao h2 {
+    font-size: 1.125rem;
+  }
+}
+
+.evento-descricao p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #1f2937;
+  margin: 0;
+}
+
+.evento-voltar {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.evento-voltar a {
+  font-size: 0.875rem;
+}
+
+.evento-meta-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.hub-btn--disabled {
+  opacity: 0.65;
+  pointer-events: none;
+  cursor: default;
+}
