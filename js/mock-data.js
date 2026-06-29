@@ -60,6 +60,7 @@ export const EVENTOS = [
     descricao:
       'Quem disse que o ritmo tem idade? Está chegando o Vem Zumbar 60+, um evento pensado exclusivamente para quem quer celebrar a vida com movimento, música e muita alegria! A Zumba Gold é uma modalidade adaptada, focada no equilíbrio, na coordenação motora e, claro, no prazer de dançar. É a oportunidade perfeita para exercitar o corpo de forma leve, ao som de ritmos latinos e internacionais, em um ambiente totalmente festivo e seguro.',
     categoria: 'Campanha',
+    status: 'Ativo',
     data: '2026-05-18',
     dataExibicao: '18/05/2026',
     localizacao: 'Pérola Negra',
@@ -76,6 +77,7 @@ export const EVENTOS = [
     descricao:
       'Encontro educativo com cardiologista da rede municipal. Orientações sobre alimentação, medicação e hábitos saudáveis para idosos e familiares.',
     categoria: 'Palestra',
+    status: 'Ativo',
     data: '2026-05-03',
     dataExibicao: '03/05/2026',
     localizacao: 'UBS Santa Teresa',
@@ -92,6 +94,7 @@ export const EVENTOS = [
     descricao:
       'Mutirão de vacinação contra gripe. Traga documento com foto e cartão de vacinas. Prioridade para grupos de risco.',
     categoria: 'Vacinação',
+    status: 'Ativo',
     data: '2026-05-10',
     dataExibicao: '10/05/2026',
     localizacao: 'Posto Saúde Copacabana',
@@ -108,6 +111,7 @@ export const EVENTOS = [
     descricao:
       'Atendimento odontológico preventivo e orientação de higiene bucal. Agendamento por ordem de chegada até esgotar vagas.',
     categoria: 'Consulta',
+    status: 'Ativo',
     data: '2026-05-22',
     dataExibicao: '22/05/2026',
     localizacao: 'Clínica da Família Tijuca',
@@ -124,6 +128,7 @@ export const EVENTOS = [
     descricao:
       'Rastreamento orientado e encaminhamentos. Equipe multiprofissional presente para esclarecimentos e cadastro no programa municipal.',
     categoria: 'Mutirão',
+    status: 'Ativo',
     data: '2026-05-17',
     dataExibicao: '17/05/2026',
     localizacao: 'Centro de Saúde Urca',
@@ -140,6 +145,7 @@ export const EVENTOS = [
     descricao:
       'Triagem rápida com enfermagem. Resultados na hora com orientação nutricional básica para valores alterados.',
     categoria: 'Exame',
+    status: 'Ativo',
     data: '2026-05-25',
     dataExibicao: '25/05/2026',
     localizacao: 'UBS Praia Vermelha',

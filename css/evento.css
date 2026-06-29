@@ -147,3 +147,39 @@
   pointer-events: none;
   cursor: default;
 }
+
+/*comentario*/
+.evento-comentarios{
+    margin-top:32px;
+}
+
+#lista-comentarios{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:16px;
+}
+
+.evento-comentario{
+    padding:16px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    background:#fff;
+}
+
+.evento-comentario__usuario{
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.evento-comentario__data{
+    font-size:.85rem;
+    color:#777;
+    margin-bottom:8px;
+}
+
+#comentario-texto{
+    width:100%;
+    min-height:90px;
+    margin-bottom:12px;
+}

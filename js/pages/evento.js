@@ -27,6 +27,7 @@ function renderEvento(ev) {
   const capacidade = document.getElementById('evento-capacidade');
   const descricao = document.getElementById('evento-descricao');
   const tituloDesc = document.getElementById('evento-descricao-titulo');
+  const status = document.getElementById('evento-status');
 
   if (banner) {
     banner.src = ev.foto_capa;
@@ -36,6 +37,7 @@ function renderEvento(ev) {
   if (data) data.textContent = ev.dataExibicao;
   if (local) local.textContent = ev.localizacao;
   if (categoria) categoria.textContent = ev.categoria;
+  if (status) status.textContent = ev.status;
   if (capacidade) capacidade.textContent = `${ev.numero_participantes} / ${ev.capacidade_maxima}`;
   if (descricao) descricao.textContent = ev.descricao;
   if (tituloDesc) tituloDesc.textContent = `💃 ${ev.titulo}: Energia, Saúde e Diversão!`;
@@ -64,6 +66,71 @@ function renderEvento(ev) {
   });
 }
 
+/*comentarios*/
+function renderComentarios(eventoId) {
+
+  const lista = document.getElementById('lista-comentarios');
+
+  if (!lista) return;
+
+  const comentarios = JSON.parse(
+    localStorage.getItem(`comentarios_${eventoId}`) || '[]'
+  );
+
+  lista.innerHTML = '';
+
+  comentarios.forEach(c => {
+
+    lista.innerHTML += `
+      <div class="evento-comentario">
+        <div class="evento-comentario__usuario">${c.usuario}</div>
+        <div class="evento-comentario__data">${c.data}</div>
+        <p>${c.texto}</p>
+      </div>
+    `;
+
+  });
+
+}
+
+function configurarComentarios(eventoId){
+
+  const botao = document.getElementById('btn-comentar');
+  const textarea = document.getElementById('comentario-texto');
+
+  if(!botao || !textarea) return;
+
+  renderComentarios(eventoId);
+
+  botao.addEventListener('click',()=>{
+
+    const texto = textarea.value.trim();
+
+    if(!texto) return;
+
+    const comentarios = JSON.parse(
+      localStorage.getItem(`comentarios_${eventoId}`) || '[]'
+    );
+
+    comentarios.push({
+      usuario:'Usuário',
+      texto,
+      data:new Date().toLocaleString('pt-BR')
+    });
+
+    localStorage.setItem(
+      `comentarios_${eventoId}`,
+      JSON.stringify(comentarios)
+    );
+
+    textarea.value='';
+
+    renderComentarios(eventoId);
+
+  });
+
+}
+
 function init() {
   renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'evento' });
   renderFooter(document.getElementById('footer-root'));
@@ -79,6 +146,8 @@ function init() {
   }
 
   renderEvento(ev);
+  /*comentario*/
+  configurarComentarios(ev.id);
 }
 
 document.addEventListener('DOMContentLoaded', init);
