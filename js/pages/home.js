@@ -8,6 +8,7 @@ import {
   getEventoById,
   getPostoById,
 } from "../mock-data.js";
+import { listarEventos } from "../services/evento-api.js"; //api de brinquedo
 import { renderHeader } from "../components/header.js";
 import { renderFooter } from "../components/footer.js";
 import {
@@ -242,37 +243,42 @@ function bindCalendarioPopovers(grid) {
     });
   });
 }
-
-function renderEventos() {
+//api de brinquedo
+async function renderEventos() {
   const grid = document.getElementById("eventos-grid");
   const inputRegiao = document.getElementById("regiao-nome");
+
   if (!inputRegiao || !grid) return;
 
   const textoLocal = getLocal();
+
   if (document.activeElement !== inputRegiao) {
     inputRegiao.value = textoLocal;
   }
 
-  let lista = eventosFiltradosPorLocal(textoLocal);
-  lista = aplicarFiltrosEvento(lista);
-  if (!lista.length) lista = aplicarFiltrosEvento(EVENTOS.slice(0, 6));
+  try {
+    const lista = await listarEventos();
 
-  grid.innerHTML = lista
-    .map(
-      (ev) => `
-    <a href="evento.html?id=${ev.id}" class="hub-event-card">
-      <div class="hub-event-card__img-wrap">
-        <img src="${ev.foto_capa}" alt="${ev.titulo}" class="hub-event-card__img" loading="lazy" />
-      </div>
-      <div class="hub-event-card__body">
-        <h3 class="hub-event-card__title">${ev.titulo}</h3>
-        <p class="hub-event-card__meta">${iconCalendar()} ${ev.dataExibicao}</p>
-        <p class="hub-event-card__meta">${iconPin()} ${ev.localizacao}</p>
-      </div>
-    </a>
-  `,
-    )
-    .join("");
+    grid.innerHTML = lista
+      .map(
+        (ev) => `
+      <a href="evento.html?id=${ev.id}" class="hub-event-card">
+        <div class="hub-event-card__img-wrap">
+          <img src="${ev.foto_capa}" alt="${ev.titulo}" class="hub-event-card__img" loading="lazy" />
+        </div>
+        <div class="hub-event-card__body">
+          <h3 class="hub-event-card__title">${ev.titulo}</h3>
+          <p class="hub-event-card__meta">${iconCalendar()} ${ev.dataExibicao}</p>
+          <p class="hub-event-card__meta">${iconPin()} ${ev.localizacao}</p>
+        </div>
+      </a>
+    `
+      )
+      .join("");
+
+  } catch (erro) {
+    console.error("Erro ao carregar os eventos:", erro);
+  }
 }
 
 function initSeletorCalendario() {
