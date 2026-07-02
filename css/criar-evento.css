@@ -1,0 +1,210 @@
+/* ==========================================================================
+   PÁGINA: CRIAR EVENTO (FORMULÁRIO DE AVALIAÇÃO)
+   ========================================================================== */
+
+/* Container Principal da Página */
+.criar-evento-main {
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 70vh;
+}
+
+/* Caixa Branca do Formulário (Baseada no estilo hub-card-auth do seu projeto) */
+.form-evento-section {
+  width: 100%;
+  max-width: 680px; /* Largura ideal para não espremer os campos */
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+/* Título Principal da Seção */
+.form-titulo {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+  color: #1e3a8a; /* Azul padrão do sistema */
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+}
+
+/* Configuração do Form para empilhar os blocos */
+.hub-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espaçamento vertical fixo e idêntico entre os campos */
+  width: 100%;
+}
+
+/* Linha para colocar dois campos lado a lado (ex: Datas e Público/Vagas) */
+.form-row {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+/* Faz com que cada campo dentro de uma linha divida o espaço por igual */
+.form-row .form-group {
+  flex: 1;
+}
+
+/* Estrutura de cada Bloco de Campo (Label + Input) */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Espaço exato entre o texto da label e a caixinha */
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Força campos específicos a ocuparem 100% da largura da caixa */
+.form-group.full-width {
+  width: 100%;
+}
+
+/* Estilização das Labels (Textos de indicação) */
+.form-group label, 
+.label-grupo {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0;
+}
+
+/* Inputs de Texto, Datas e Números */
+.hub-input, 
+.hub-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #334155;
+  background-color: #ffffff;
+  box-sizing: border-box; /* Impede o input de passar do limite da caixa */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Efeito de foco ao clicar nas caixinhas */
+.hub-input:focus, 
+.hub-textarea:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+}
+
+/* Caixa de Descrição (Textarea) */
+.hub-textarea {
+  resize: vertical; /* Permite esticar apenas para baixo, nunca para as laterais */
+  min-height: 100px;
+}
+
+/* Grupo de botões de escolha (Radio) */
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+/* Label individual de cada Radio */
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+/* Input nativo do Radio */
+.radio-label input[type="radio"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* Zona de Upload / Anexo de Documentos */
+.upload-zone {
+  width: 100%;
+  border: 2px dashed #cbd5e1;
+  padding: 2.2rem 1rem;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+/* Efeito ao passar o mouse na zona de upload */
+.upload-zone:hover {
+  border-color: #0056b3;
+  background-color: #f1f5f9;
+}
+
+/* Esconde o botão cinza nativo horrível do sistema operacional */
+.hub-file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Texto descritivo dentro do upload */
+.upload-placeholder {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* Rodapé do Formulário (Área dos Botões) */
+.form-actions {
+  display: flex;
+  justify-content: flex-end; /* Alinha os botões na direita */
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 1.5rem;
+  width: 100%;
+}
+
+/* Ajuste específico para o link de Cancelar se comportar como texto centralizado */
+.form-actions .hub-btn--text {
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.form-actions .hub-btn--text:hover {
+  color: #334155;
+}
+
+/* Link inferior para voltar ao perfil */
+.perfil-voltar {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Responsividade: Ajuste automático para telas de celular */
+@media (max-width: 600px) {
+  .form-evento-section {
+    padding: 1.5rem;
+  }
+  
+  .form-row {
+    flex-direction: column; /* Em telas pequenas, as datas e vagas ficam uma embaixo da outra */
+    gap: 1.5rem;
+  }
+}

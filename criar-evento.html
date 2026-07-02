@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar Evento — Hub Saúde</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/perfil.css" />
+  
+  <link rel="stylesheet" href="css/criar-evento.css" />
+</head>
+<body class="page-criar-evento">
+  
+  <div id="header-root"></div>
+
+  <main class="hub-container criar-evento-main">
+  
+  <section class="form-evento-section hub-card-auth">
+    <h2 class="form-titulo">Novo Evento para Avaliação</h2>
+    
+    <form class="hub-form" onsubmit="return false;">
+      
+      <div class="form-group full-width">
+        <label for="evt-nome">Nome do Evento</label>
+        <input type="text" id="evt-nome" class="hub-input" placeholder="Ex: Campanha de Vacinação Zona Sul" />
+      </div>
+
+      <div class="form-group full-width">
+        <label for="evt-descricao">Descrição</label>
+        <textarea id="evt-descricao" class="hub-textarea" rows="4" placeholder="Detalhes sobre o evento, objetivos e orientações..."></textarea>
+      </div>
+
+      <div class="form-group full-width">
+        <label class="label-grupo">Categoria do Evento</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="evt-categoria" value="mutirao" checked />
+            Mutirão
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="evt-categoria" value="exames" />
+            Exames
+          </label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="evt-data-inicio">Data de Início</label>
+          <input type="datetime-local" id="evt-data-inicio" class="hub-input" />
+        </div>
+        <div class="form-group">
+          <label for="evt-data-fim">Data de Término</label>
+          <input type="datetime-local" id="evt-data-fim" class="hub-input" />
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="evt-local">Localização (Endereço)</label>
+        <input type="text" id="evt-local" class="hub-input" placeholder="Ex: UBS Centro, Rua Principal, 123" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="evt-publico">Público-Alvo</label>
+          <input type="text" id="evt-publico" class="hub-input" placeholder="Ex: Todos, Idosos, Gestantes..." />
+        </div>
+        <div class="form-group">
+          <label for="evt-vagas">Número Máximo de Participantes</label>
+          <input type="number" id="evt-vagas" class="hub-input" min="1" placeholder="Ex: 150" />
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="evt-anexo">Anexar Fotos / Cartazes ou Informações</label>
+        <div class="upload-zone">
+          <input type="file" id="evt-anexo" class="hub-file-input" multiple />
+          <span class="upload-placeholder">Clique aqui ou arraste os arquivos para anexar</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="perfil.html" class="hub-btn hub-btn--text">Cancelar</a>
+        <button type="submit" class="hub-btn hub-btn--primary">Enviar para Análise</button>
+      </div>
+
+    </form>
+  </section>
+
+  <p class="perfil-voltar">
+    <a href="perfil.html" class="hub-link">← Voltar ao Perfil</a>
+  </p>
+</main>
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/criar-evento.js"></script>
+</body>
+</html>

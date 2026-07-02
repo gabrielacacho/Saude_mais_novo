@@ -75,4 +75,19 @@ function init() {
   }
 }
 
+  /*OTÃO INSTITUCIONAL SOME NOS OUTROS PERFIS
+  if (chave === 'institucional') {
+    const container = document.getElementById('area-institucional-acoes');
+
+    if (container) {
+      container.innerHTML = `
+        <div style="margin-top: 20px;">
+          <a href="criar-evento.html" class="hub-btn hub-btn--primary">
+            Indexar documentação
+          </a>
+        </div>
+      `;
+    }
+  }
+*/
 document.addEventListener('DOMContentLoaded', init);
