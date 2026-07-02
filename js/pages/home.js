@@ -360,7 +360,7 @@ function init() {
   renderCalendario();
   renderEventos();
 
-  // --- CORREÇÃO DO EVENTO GLOBAL DE FECHAMENTO ---
+  // CORREÇÃO DO EVENTO GLOBAL DE FECHAMENTO
   document.addEventListener("click", (e) => {
     // Se o clique veio de dentro de um quadradinho de evento, não faz nada (deixa o bindCalendarioPopovers cuidar)
     if (e.target.closest(".cal-evento-mini-wrap")) {
@@ -407,7 +407,7 @@ function init() {
   updateAdmin();
   window.addEventListener("perfil-alterado", updateAdmin);
   
-  // --- CONTROLE DO BADGE INSTITUCIONAL ---
+  //CONTROLE DO BADGE INSTITUCIONAL
   const institucionalBadge = document.getElementById("institucional-badge");
   const updateInstitucional = () => {
     const perfil = sessionStorage.getItem("perfilMock") || "comum";
@@ -440,9 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
       attribution: "© OpenStreetMap",
     }).addTo(mapa);
 
-    // ==========================================================================
     // MARCADORES DOS EVENTOS (MOCK-DATA)
-    // ==========================================================================
 
     // 1. Vem Zumbar 60+ (Localização: Pérola Negra, Urca)
     L.marker([-22.9548, -43.1672]).addTo(mapa).bindPopup(`
@@ -499,9 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ==========================================================================
 // 3. Função para renderizar o componente de busca (Versão À Prova de Falhas)
-// ==========================================================================
 function renderizarBuscador() {
   const container = document.getElementById("container-busca");
 
@@ -510,7 +506,7 @@ function renderizarBuscador() {
     return;
   }
 
-  // 🛡️ CHECAGEM DE SEGURANÇA DAS VARIÁVEIS
+  // CHECAGEM DE SEGURANÇA DAS VARIÁVEIS
   const deveMostrarBusca =
     typeof showSearch !== "undefined" ? showSearch : true;
   const valorLocal = typeof getLocal === "function" ? getLocal() : "";
@@ -523,7 +519,7 @@ function renderizarBuscador() {
       ? opcoesCategoria
       : `<option>Vacinação</option><option>Consulta</option>`;
 
-  // 🛡️ CHECAGEM DE SEGURANÇA DOS ÍCONES (Se a função não existir, usa um SVG reserva)
+  // CHECAGEM DE SEGURANÇA DOS ÍCONES (Se a função não existir, usa um SVG reserva)
   const pinoSvg =
     typeof iconPin === "function"
       ? iconPin()
@@ -597,9 +593,7 @@ function renderizarBuscador() {
   }
 }
 
-// ==========================================================================
 // 4. Inicialização do Buscador e seus Respectivos Eventos
-// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
   // Executa a renderização primeiro
   renderizarBuscador();
@@ -624,7 +618,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnFiltroEvento && painelFiltroEvento) {
     btnFiltroEvento.addEventListener("click", () => {
       painelFiltroEvento.classList.toggle("is-hidden");
-      // Opcional: fecha o outro painel se abrir este
+      // Opcional, mas vou manterr: fecha o outro painel se abrir este
       if (painelFiltroLocal) painelFiltroLocal.classList.add("is-hidden");
     });
   }

@@ -668,7 +668,7 @@ td, tr {
   opacity: 1;
 }
 
-/* ---------- Formulários ---------- */
+/* Formulários*/
 .hub-label {
   display: block;
   font-size: 0.875rem;
@@ -679,7 +679,7 @@ td, tr {
 .hub-input,
 .hub-select {
   width: 100%;
-  border: 1px solid var(--cor-borda); /* Bordas finas são mais profissionais */
+  border: 1px solid var(--cor-borda); /* Bordas finas são mais profissionais! (DISCORDO KKKK)*/
   border-radius: 8px; /* Menos arredondado */
   padding: 0.625rem 1rem;
   font-family: inherit;
@@ -700,7 +700,7 @@ td, tr {
   border-radius: 0.5rem;
 }
 
-/* ---------- Cards / painéis ---------- */
+/* Cards / painéis*/
 .hub-panel {
   background: #fff;
   border-radius: 1rem;

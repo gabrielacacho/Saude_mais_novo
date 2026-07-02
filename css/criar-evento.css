@@ -1,6 +1,4 @@
-/* ==========================================================================
-   PÁGINA: CRIAR EVENTO (FORMULÁRIO DE AVALIAÇÃO)
-   ========================================================================== */
+/* PÁGINA: CRIAR EVENTO FORMULÁRIO DE AVALIAÇÃO NÃO JULGUE, NÃO SOU DESIGN */
 
 /* Container Principal da Página */
 .criar-evento-main {
@@ -66,7 +64,7 @@
   width: 100%;
 }
 
-/* Estilização das Labels (Textos de indicação) */
+/* Estilização das Labels que éo Textos de indicação) */
 .form-group label, 
 .label-grupo {
   font-size: 0.95rem;
@@ -166,7 +164,7 @@
   font-size: 0.95rem;
 }
 
-/* Rodapé do Formulário (Área dos Botões) */
+/* Rodapé do formulário area dos botões */
 .form-actions {
   display: flex;
   justify-content: flex-end; /* Alinha os botões na direita */

@@ -1,6 +1,4 @@
-/* ==========================================================================
-   Página inicial — mapa, calendário, listagem
-   ========================================================================== */
+/* Página inicial — mapa, calendário, listagem */
 
 .page-home main {
   padding-top: 1.5rem;
@@ -117,11 +115,9 @@
   padding: 1rem;
 }
 
-/* ==========================================================================
-   AJUSTE DE BORDA: Impedir corte dos eventos da esquerda (Domingo e Segunda)
-   ========================================================================== */
+/* AJUSTE DE BORDA: Impedir corte dos eventos da esquerda (Domingo e Segunda)*/
 
-/* 1. Altera o comportamento padrão do popover para alinhar à esquerda em vez de centralizar */
+/*Altera o comportamento padrão do popover para alinhar à esquerda em vez de centralizar */
 .cal-evento-mini-wrap .hub-popover {
     position: absolute !important;
     z-index: 999999 !important;
@@ -137,7 +133,7 @@
     display: block !important;
 }
 
-/* 2. Se o popover for o do ÚLTIMO dia da linha (Sábado), nós alinhamos ele pela direita 
+/*Se o popover for o do ÚLTIMO dia da linha (Sábado), nós alinhamos ele pela direita 
       para ele não ser cortado na outra ponta da tela! */
 #calendario-grid .cal-dia:nth-child(7n) .hub-popover,
 #calendario-grid .cal-dia:nth-child(7n-1) .hub-popover {
@@ -145,16 +141,14 @@
     right: 0 !important;
 }
 
-/* 3. Blindagem de segurança nos containers pais da página inteira */
+/*Blindagem de segurança nos containers pais da página inteira */
 .page-home main,
 .page-home .hub-widgets,
 .hub-panel {
     overflow: visible !important; /* Garante que nenhuma div ancestral corte o popover */
 }
 
-/* ==========================================================================
-   REMOVER SETAS DO POP-UP (DESIGN LIMPO)
-   ========================================================================== */
+/* REMOVER SETAS DO POP-UP (DESIGN LIMPO)*/
 
 /* Remove completamente qualquer triângulo ou indicador debaixo do balão */
 .cal-evento-mini-wrap .hub-popover::before,
@@ -163,12 +157,12 @@
     display: none !important;
 }
 
-/* Ajusta o respiro do balão para ele flutuar elegantemente colado ao bloco */
+/*Ajusta o respiro do balão para ele flutuar elegantemente colado ao bloco */
 .cal-evento-mini-wrap .hub-popover {
     bottom: calc(100% + 4px) !important; /* Espaçamento menor e mais discreto */
 }
 
-/* Calendário — células com tamanho uniforme */
+/* Calendário -células com tamanho uniforme */
 .cal-header-dia {
   aspect-ratio: 1;
   display: flex;
