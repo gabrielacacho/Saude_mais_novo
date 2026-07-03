@@ -13,22 +13,27 @@
   
   <div id="header-root"></div>
 
-  <main class="hub-container criar-evento-main">
+ <main class="hub-container criar-evento-main">
   
-  <section class="form-evento-section hub-card-auth">
-    <h2 class="form-titulo">Novo Evento para Avaliação</h2>
+  <section class="form-evento-section">
+    <header class="form-header-auth">
+      <h1>Novo Evento para Avaliação</h1>
+      <p>Preencha os dados abaixo para submeter o evento</p>
+    </header>
     
-    <form class="hub-form" onsubmit="return false;">
-      
-      <div class="form-group full-width">
-        <label for="evt-nome">Nome do Evento</label>
-        <input type="text" id="evt-nome" class="hub-input" placeholder="Ex: Titulo tal" />
-      </div>
+    <div class="form-body-auth">
+      <form class="hub-form" onsubmit="return false;">
+        <div class="form-group full-width">
+          <label for="evt-nome">Nome do Evento</label>
+          <input type="text" id="evt-nome" class="hub-input" placeholder="Ex: Titulo tal" />
+        </div>
 
-      <div class="form-group full-width">
-        <label for="evt-descricao">Descrição</label>
-        <textarea id="evt-descricao" class="hub-textarea" rows="4" placeholder="Detalhes sobre o evento, objetivos e orientações..."></textarea>
-      </div>
+        <div class="form-group full-width">
+          <label for="evt-descricao">Descrição</label>
+          <textarea id="evt-descricao" class="hub-textarea" rows="4" placeholder="Detalhes sobre o evento, objetivos e orientações..."></textarea>
+        </div>
+
+
 
       <div class="form-group full-width">
         <label class="label-grupo">Categoria do Evento</label>
@@ -52,6 +57,10 @@
           <label class="radio-label">
             <input type="radio" name="evt-categoria" value="exames" />
             Consulta
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="evt-categoria" value="exames" />
+            Outro
           </label>
         </div>
       </div>

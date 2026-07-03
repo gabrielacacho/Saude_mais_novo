@@ -1,6 +1,4 @@
-/* ==========================================================================
-   Hub Saúde — estilos globais (elementos compartilhados)
-   ========================================================================== */
+/* Hub Saúde — estilos globais (elementos compartilhados)*/
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
@@ -111,12 +109,19 @@ a:hover {
     align-items:center;
     margin-left:-170px;
 }
-
+/*deixei a logo sude mais bem alinhado no centro*/
+.hub-brand-center {
+    position: absolute;
+    left: 50%; /* Mudou de 45% para 50% (o centro real da tela) */
+    transform: translateX(-50%); /* Garante que o meio da palavra fique no meio do 50% */
+}
+/*antigo alinhamento da logo (caso queira voltar)
 .hub-brand-center{
     position:absolute;
     left:45%;
     transform:translateX(-50%);
 }
+*/
 
 .logo-prefeitura{
   color: white;
@@ -797,6 +802,7 @@ td, tr {
   font-size: 0.875rem;
 }
 
+/*---------------footer--------------------*/
 .hub-footer-note {
   text-align: center;
   font-size: 0.625rem;

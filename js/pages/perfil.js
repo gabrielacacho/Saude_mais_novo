@@ -24,7 +24,8 @@ function init() {
   document.getElementById('perfil-avatar').textContent = usuario.avatarInicial;
   document.getElementById('perfil-tipo').textContent = usuario.tipo;
   document.getElementById('perfil-nome').textContent = usuario.nome;
-  document.getElementById('perfil-bio').textContent = usuario.bio;
+  //comentei a bio aqui ( e no perfil.html) já que não temos certeza se vamos usar 
+  //document.getElementById('perfil-bio').textContent = usuario.bio;
 
   const dados = document.getElementById('perfil-dados-lista');
   const linhas = [

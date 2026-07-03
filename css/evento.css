@@ -181,3 +181,99 @@
     min-height:90px;
     margin-bottom:12px;
 }
+
+/* ==========================================================================
+   ESTILIZAÇÃO DOS DESTAQUES E ACESSIBILIDADE (AJUSTE DE COR E ESPAÇAMENTO)
+   ========================================================================== */
+
+/* Ajusta o container geral aumentando o espaçamento entre as linhas */
+.page-evento .evento-info__detalhes {
+    font-size: 1.1rem; 
+    gap: 1.25rem;      /* Aumentou o espaçamento vertical entre cada item */
+}
+
+/* Garante o alinhamento perfeito à esquerda e remove recuos */
+.page-evento .evento-info__detalhes .hub-meta-row,
+.page-evento .evento-info__detalhes #evento-categoria,
+.page-evento .evento-info__detalhes #evento-status {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- DATA E LOCAL (COR PRETA E MAIOR) --- */
+.page-evento .evento-info__detalhes #evento-data,
+.page-evento .evento-info__detalhes #evento-local {
+    font-size: 1.25rem;       /* Fonte ligeiramente maior */
+    font-weight: 600;       
+    color: #000000;           /* Preto Puro */
+}
+
+
+/* --- CATEGORIA (CAMPANHA) --- */
+.page-evento .evento-info__detalhes #evento-categoria {
+    background: transparent;
+    border: none;
+    text-transform: none;
+}
+.page-evento .evento-info__detalhes #evento-categoria::before { 
+    content: "Categoria: "; 
+    color: #000000;           /* Preto Puro */
+    font-weight: 700;         /* Negrito para destacar o rótulo */
+    margin-right: 0.5rem; 
+}
+.page-evento .evento-info__detalhes #evento-categoria::after {
+    content: "Campanha";                  
+    color: var(--cor-destaque); /* Mantém o azul escuro padrão para a palavra Campanha */
+    font-weight: 700;           
+}
+.page-evento .evento-info__detalhes #evento-categoria { font-size: 0; }
+.page-evento .evento-info__detalhes #evento-categoria::before { font-size: 1.25rem; }
+.page-evento .evento-info__detalhes #evento-categoria::after { font-size: 1.25rem; }
+
+
+/* --- STATUS (ATIVO) --- */
+.page-evento .evento-info__detalhes #evento-status {
+    background: transparent;
+    border: none;
+    text-transform: none;
+}
+.page-evento .evento-info__detalhes #evento-status::before { 
+    content: "Status: "; 
+    color: #000000;           /* Preto Puro */
+    font-weight: 700;         
+    margin-right: 0.5rem; 
+}
+.page-evento .evento-info__detalhes #evento-status::after {
+    content: "Ativo";
+    background-color: #dcfce7; /* Fundo verde claro */
+    color: #15803d;            /* Texto verde escuro de dentro */
+    border: 1px solid #bbf7d0;
+    font-size: 0.95rem;        /* Ajuste fino na elipse */
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.35rem 1.1rem;
+    border-radius: 9999px;     
+    box-shadow: 0 2px 4px rgba(21, 128, 61, 0.08);
+}
+.page-evento .evento-info__detalhes #evento-status { font-size: 0; }
+.page-evento .evento-info__detalhes #evento-status::before { font-size: 1.25rem; }
+.page-evento .evento-info__detalhes #evento-status::after { font-size: 0.95rem; }
+
+
+/* --- NÚMERO MÁXIMO DE INSCRITOS / CAPACIDADE --- */
+.page-evento .evento-info__detalhes #evento-capacidade {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000000;           /* Número do contador em Preto */
+}
+
+/* Cria a palavra "Inscritos: " em preto antes do número */
+.page-evento .evento-info__detalhes #evento-capacidade::before {
+    content: "Inscritos: ";
+    color: #000000;           /* Preto Puro */
+    font-weight: 700;
+    margin-right: 0.4rem;
+}

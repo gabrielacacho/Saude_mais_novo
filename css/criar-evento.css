@@ -1,5 +1,7 @@
 /* PÁGINA: CRIAR EVENTO FORMULÁRIO DE AVALIAÇÃO NÃO JULGUE, NÃO SOU DESIGN */
 
+/* PÁGINA: CRIAR EVENTO FORMULÁRIO DE AVALIAÇÃO */
+
 /* Container Principal da Página */
 .criar-evento-main {
   padding: 3rem 1rem;
@@ -9,36 +11,53 @@
   min-height: 70vh;
 }
 
-/* Caixa Branca do Formulário (Baseada no estilo hub-card-auth do seu projeto) */
+/* Caixa do Formulário (Inspirada no box da página de cadastro) */
 .form-evento-section {
   width: 100%;
-  max-width: 680px; /* Largura ideal para não espremer os campos */
+  max-width: 680px; 
   background: #ffffff;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 16px; /* Bordas um pouco mais arredondadas e modernas */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra suave idêntica ao cadastro */
   box-sizing: border-box;
+  overflow: hidden; /* Garante que o header azul respeite o arredondamento */
 }
 
-/* Título Principal da Seção */
-.form-titulo {
-  margin-top: 0;
-  margin-bottom: 2rem;
-  font-size: 1.6rem;
-  color: #1e3a8a; /* Azul padrão do sistema */
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 0.75rem;
+/* Header do Formulário (Copiando o efeito exato da página de cadastro) */
+.form-header-auth {
+  background-color: #003B8E; 
+  color: #ffffff;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+
+.form-header-auth h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.form-header-auth p {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* Corpo do formulário (Dando o espaçamento interno do card) */
+.form-body-auth {
+  padding: 2.5rem;
 }
 
 /* Configuração do Form para empilhar os blocos */
 .hub-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Espaçamento vertical fixo e idêntico entre os campos */
+  gap: 1.5rem; 
   width: 100%;
 }
 
-/* Linha para colocar dois campos lado a lado (ex: Datas e Público/Vagas) */
+/* Linha para colocar dois campos lado a lado */
 .form-row {
   display: flex;
   gap: 1.25rem;
@@ -54,37 +73,36 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Espaço exato entre o texto da label e a caixinha */
+  gap: 0.5rem; 
   align-items: flex-start;
   width: 100%;
 }
 
-/* Força campos específicos a ocuparem 100% da largura da caixa */
 .form-group.full-width {
   width: 100%;
 }
 
-/* Estilização das Labels que éo Textos de indicação) */
+/* Estilização das Labels */
 .form-group label, 
 .label-grupo {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #334155;
+  color: #1e293b; /* Cor ligeiramente mais escura para melhor legibilidade */
   margin: 0;
 }
 
-/* Inputs de Texto, Datas e Números */
+/* Inputs de Texto, Datas e Números (Inspirados na elegância das caixas do cadastro) */
 .hub-input, 
 .hub-textarea {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.85rem 1rem; /* Um pouquinho mais de padding para dar aspecto premium */
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 8px; /* Arredondamento combinando com o card */
   font-family: inherit;
   font-size: 0.95rem;
   color: #334155;
   background-color: #ffffff;
-  box-sizing: border-box; /* Impede o input de passar do limite da caixa */
+  box-sizing: border-box; 
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -92,20 +110,21 @@
 .hub-input:focus, 
 .hub-textarea:focus {
   outline: none;
-  border-color: #0056b3;
-  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+  border-color: #044272; /* Foco usando o azul oficial */
+  box-shadow: 0 0 0 3px rgba(4, 66, 114, 0.15);
 }
 
 /* Caixa de Descrição (Textarea) */
 .hub-textarea {
-  resize: vertical; /* Permite esticar apenas para baixo, nunca para as laterais */
-  min-height: 100px;
+  resize: vertical; 
+  min-height: 120px;
 }
 
-/* Grupo de botões de escolha (Radio) */
+/* Estilização das Categorias (Organizando os Radios em grid fluida) */
 .radio-group {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap; /* Permite quebrar linha no celular se faltar espaço */
+  gap: 1rem 1.5rem;
   margin-top: 0.25rem;
 }
 
@@ -116,15 +135,8 @@
   gap: 0.5rem;
   cursor: pointer;
   font-size: 0.95rem;
-  color: #475569;
-}
-
-/* Input nativo do Radio */
-.radio-label input[type="radio"] {
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
-  margin: 0;
+  color: #334155;
+  font-weight: 500;
 }
 
 /* Zona de Upload / Anexo de Documentos */
@@ -141,13 +153,11 @@
   transition: border-color 0.2s, background-color 0.2s;
 }
 
-/* Efeito ao passar o mouse na zona de upload */
 .upload-zone:hover {
-  border-color: #0056b3;
+  border-color: #044272;
   background-color: #f1f5f9;
 }
 
-/* Esconde o botão cinza nativo horrível do sistema operacional */
 .hub-file-input {
   position: absolute;
   top: 0;
@@ -158,25 +168,23 @@
   cursor: pointer;
 }
 
-/* Texto descritivo dentro do upload */
 .upload-placeholder {
   color: #64748b;
   font-size: 0.95rem;
 }
 
-/* Rodapé do formulário area dos botões */
+/* Rodapé do formulário */
 .form-actions {
   display: flex;
-  justify-content: flex-end; /* Alinha os botões na direita */
+  justify-content: flex-end; 
   align-items: center;
   gap: 1.5rem;
-  margin-top: 1.5rem;
-  border-top: 2px solid #f1f5f9;
+  margin-top: 2rem;
+  border-top: 1px solid #e2e8f0;
   padding-top: 1.5rem;
   width: 100%;
 }
 
-/* Ajuste específico para o link de Cancelar se comportar como texto centralizado */
 .form-actions .hub-btn--text {
   text-decoration: none;
   color: #64748b;
@@ -186,7 +194,7 @@
 }
 
 .form-actions .hub-btn--text:hover {
-  color: #334155;
+  color: #1e293b;
 }
 
 /* Link inferior para voltar ao perfil */
@@ -195,14 +203,14 @@
   text-align: center;
 }
 
-/* Responsividade: Ajuste automático para telas de celular */
+/* Responsividade: Celulares */
 @media (max-width: 600px) {
-  .form-evento-section {
+  .form-body-auth {
     padding: 1.5rem;
   }
   
   .form-row {
-    flex-direction: column; /* Em telas pequenas, as datas e vagas ficam uma embaixo da outra */
+    flex-direction: column; 
     gap: 1.5rem;
   }
 }
