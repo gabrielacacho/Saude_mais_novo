@@ -40,6 +40,7 @@ export function renderHeader(container, options = {}) {
         <button type="button" data-perfil="institucional" class="hub-dropdown-item">Institucional</button>
         <button type="button" data-perfil="administrador" class="hub-dropdown-item">Administrador</button>
         <hr />
+        <a href="sobre.html" class="hub-dropdown-item">Sobre Nós</a>
         <a href="perfil.html" class="hub-dropdown-item">Meu perfil</a>
         <a href="login.html" class="hub-dropdown-item">Entrar</a>
         <a href="cadastro.html" class="hub-dropdown-item">Cadastrar</a>
