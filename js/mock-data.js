@@ -194,7 +194,7 @@ export const POSTOS_SAUDE = [
   },
 ];
 
-/** Pins do mapa mock — posição via classe CSS (sem inline) */
+/** Pins do mapa mock- posição via classe CSS (sem inline) */
 export const PINS_MAPA = [
   { tipo: 'posto', refId: 'p1', pos: 1 },
   { tipo: 'posto', refId: 'p3', pos: 2 },
@@ -202,22 +202,24 @@ export const PINS_MAPA = [
   { tipo: 'evento', refId: 'evt-2', pos: 4 },
 ];
 
+//------------Essas funções simulam consultas ao banco de dados--------------
+//Retorna um único evento pelo id
 export function getEventoById(id) {
   return EVENTOS.find((e) => e.id === id);
 }
-
+//Retorna todos os eventos pertencentes a uma região
 export function getEventosPorRegiao(regiaoId) {
   return EVENTOS.filter((e) => e.regiao === regiaoId);
 }
-
+//Retorna uma região pelo id
 export function getRegiaoById(id) {
   return REGIOES.find((r) => r.id === id) || REGIOES[0];
 }
-
+//Retorna um posto de saúde pelo id
 export function getPostoById(id) {
   return POSTOS_SAUDE.find((p) => p.id === id);
 }
-
+//Retorna o perfil de um usuário
 export function getUsuarioPerfil(chave) {
   return USUARIOS[chave] || USUARIOS.comum;
 }

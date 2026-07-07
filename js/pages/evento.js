@@ -1,4 +1,5 @@
-import { getEventoById } from '../mock-data.js';
+//import { getEventoById } from '../mock-data.js';
+import { getEventoById } from '../services/evento-api.js';
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar, iconPin, iconUsers } from '../utils/icons.js';
@@ -131,13 +132,15 @@ function configurarComentarios(eventoId){
 
 }
 
-function init() {
+//function init() 
+async function init() {
   renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'evento' });
   renderFooter(document.getElementById('footer-root'));
   injectEventoIcons();
 
   const id = getQueryId() || 'evt-1';
-  const ev = getEventoById(id);
+  //const ev = getEventoById(id);
+  const ev = await getEventoById(id);
 
   if (!ev) {
     document.getElementById('evento-conteudo')?.classList.add('is-hidden');
