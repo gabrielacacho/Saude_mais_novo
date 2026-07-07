@@ -1,4 +1,7 @@
-import { getUsuarioPerfil, getEventoById, getRegiaoById } from '../mock-data.js';
+//import { getUsuarioPerfil, getEventoById, getRegiaoById } from '../mock-data.js';
+import { getUsuarioPerfil, getRegiaoById } from '../mock-data.js';
+import { getEventoById } from '../services/evento-api.js';//Assim migramos só os eventos
+
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar, iconPin } from '../utils/icons.js';
@@ -13,7 +16,8 @@ function renderMiniEvento(ev) {
   `;
 }
 
-function init() {
+//function init() {
+async function init() {
   const chave = sessionStorage.getItem('perfilMock') || 'comum';
   const usuario = getUsuarioPerfil(chave);
 
@@ -47,11 +51,19 @@ function init() {
     document.getElementById('perfil-secao-inscricoes')?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-inscricoes');
     if (el) {
-      el.innerHTML = usuario.inscricoes
+    /*  el.innerHTML = usuario.inscricoes
         .map((id) => getEventoById(id))
         .filter(Boolean)
         .map(renderMiniEvento)
-        .join('');
+        .join('');*/
+        const eventos = await Promise.all(
+          usuario.inscricoes.map((id) => getEventoById(id))
+          );
+
+        el.innerHTML = eventos
+          .filter(Boolean)
+          .map(renderMiniEvento)
+          .join('');
     }
   }
 
@@ -59,8 +71,16 @@ function init() {
     document.getElementById('perfil-secao-gerenciados')?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-gerenciados');
     if (el) {
-      el.innerHTML = usuario.eventosGerenciados
+    /*  el.innerHTML = usuario.eventosGerenciados
         .map((id) => getEventoById(id))
+        .filter(Boolean)
+        .map(renderMiniEvento)
+        .join('');*/
+        const eventos = await Promise.all(
+          usuario.eventosGerenciados.map((id) => getEventoById(id))
+        );
+
+        el.innerHTML = eventos
         .filter(Boolean)
         .map(renderMiniEvento)
         .join('');
