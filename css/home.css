@@ -9,26 +9,29 @@
   display: grid;
   grid-template-columns: 1fr;
   align-items: start;
-  gap: 1.5rem;
-  margin-top: 2rem;
+  gap: 1rem;
+  margin-top: 0;
   margin-bottom: 2rem;
 }
 
 @media (min-width: 1024px) {
   .page-home .hub-widgets {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.6fr 1fr;
   }
 }
 
 
 .hub-panel-header--input {
   gap: 0.5rem;
+  
 }
 
 .hub-panel-header-input-wrap {
   flex: 1;
   min-width: 0;
   margin: 0;
+    border-radius:18px;
+
 }
 
 .hub-panel-header-input {
@@ -54,6 +57,8 @@
 .hub-panel-header-input:focus {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
 }
+
+
 
 .cal-header-controls {
   flex-wrap: wrap;
@@ -109,7 +114,7 @@
 
 .mapa-placeholder {
   background: linear-gradient(160deg, #e8e4df 0%, #d4cfc8 45%, #c5bfb6 100%);
-  min-height: 280px;
+  height: 480px;
   position: relative;
   overflow: hidden;
   padding: 1rem;
@@ -366,4 +371,57 @@
 
 .hub-admin-badge.is-hidden {
   display: none;
+}
+
+.hub-hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:32px;
+
+    margin:10px auto 5px;
+    padding:20px 50px;
+    margin-bottom:0px;
+
+    background:#F8FAFC;
+    border:1px solid #E2E8F0;
+    border-radius:18px;
+}
+
+.hub-hero-text{
+    flex:1;
+}
+
+
+.hub-hero h1{
+    font-size:1.7rem;
+    margin:0 0 10px;
+    line-height:1.2;
+}
+
+.hub-hero p{
+    margin:0;
+    font-size:1rem;
+    max-width:600px;
+    color:#666;
+    line-height:1.5;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:12px;
+    flex-shrink:0;
+}
+
+.btn-primary{
+    background:#1e88e5;
+    color:#fff;
+    padding:12px 22px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.btn-primary:hover{
+    background:#1565c0;
 }

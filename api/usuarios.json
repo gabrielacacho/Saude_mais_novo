@@ -1,0 +1,40 @@
+ {
+  "comum": {
+    "id": "u1",
+    "nome": "Maria Silva",
+    "tipo": "Comum",
+    "avatarInicial": "M",
+    "email": "maria.silva@email.com",
+    "telefone": "(21) 98765-4321",
+    "bio": "Participante ativa de campanhas de saúde e bem-estar na comunidade.",
+    "inscricoes": ["evt-1", "evt-2"],
+    "regiaoPreferida": "urca"
+  },
+  "institucional": {
+    "id": "u2",
+    "nome": "UBS Centro",
+    "tipo": "Institucional",
+    "avatarInicial": "U",
+    "email": "contato@ubscentro.saude.gov.br",
+    "telefone": "(21) 3456-7890",
+    "bio": "Unidade Básica de Saúde responsável por eventos e mutirões na região central.",
+    "inscricoes": ["evt-3"],
+    "eventosGerenciados": ["evt-3", "evt-2"],
+    "cnpj": "12.345.678/0001-90"
+  },
+  "administrador": {
+    "id": "u3",
+    "nome": "Admin Sistema",
+    "tipo": "Administrador",
+    "avatarInicial": "A",
+    "email": "admin@hubsaude.gov.br",
+    "telefone": "(21) 3000-0000",
+    "bio": "Gestão da plataforma, moderação de eventos e relatórios da rede municipal.",
+    "inscricoes": [],
+    "permissoes": [
+      "moderar_eventos",
+      "gerenciar_usuarios",
+      "exportar_relatorios"
+    ]
+  }
+}

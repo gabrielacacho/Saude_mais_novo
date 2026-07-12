@@ -1,13 +1,15 @@
 import {
-  EVENTOS,
-  REGIOES,
-  USUARIOS,
+  //EVENTOS,
+  //REGIOES,
+  //USUARIOS,
   PINS_MAPA,
-  getEventosPorRegiao,
+  //getEventosPorRegiao,
   getRegiaoById,
   getEventoById,
   getPostoById,
 } from "../mock-data.js";
+import { getUsuarioByPerfil } from "../services/usuarios-api.js";
+import { listarRegioes } from "../services/regiao-api.js";
 import { listarEventos } from "../services/evento-api.js"; //api de brinquedo
 import { renderHeader } from "../components/header.js";
 import { renderFooter } from "../components/footer.js";
@@ -40,19 +42,20 @@ let mesAtual = 4;
 let filtroEvento = { termo: "", categoria: "", data: "" };
 let filtroLocalCategoria = "";
 
-function getInscricoes() {
+async function getInscricoes() {
   const perfil = sessionStorage.getItem("perfilMock") || "comum";
-  return USUARIOS[perfil]?.inscricoes || [];
+  const usuario = await getUsuarioByPerfil(perfil);
+  return usuario?.inscricoes || [];
 }
 
-function resolveRegiaoId(texto) {
+function resolveRegiaoId(texto, regioes) {
   const t = texto.trim().toLowerCase();
   if (!t) return "urca";
-  const porId = REGIOES.find((r) => r.id === t.replace(/\s+/g, "-"));
+  const porId =regioes.find((r) => r.id === t.replace(/\s+/g, "-"));
   if (porId) return porId.id;
-  const porNome = REGIOES.find((r) => r.nome.toLowerCase() === t);
+  const porNome = regioes.find((r) => r.nome.toLowerCase() === t);
   if (porNome) return porNome.id;
-  const parcial = REGIOES.find(
+  const parcial = regioes.find(
     (r) => r.nome.toLowerCase().includes(t) || t.includes(r.nome.toLowerCase()),
   );
   return parcial?.id || null;
@@ -67,23 +70,58 @@ function passaFiltroLocalPosto(servicos) {
   if (!filtroLocalCategoria) return true;
   return servicos.some((s) => s === filtroLocalCategoria);
 }
-
-function eventosFiltradosPorLocal(textoLocal) {
+/*
+async function eventosFiltradosPorLocal(textoLocal) {
+  const eventos = await listarEventos();
   const regiaoId = resolveRegiaoId(textoLocal);
   let lista;
+
   if (regiaoId) {
-    lista = getEventosPorRegiao(regiaoId);
-    if (!lista.length) lista = [...EVENTOS];
+    // Filtra os eventos da região usando os dados da API
+    lista = eventos.filter((e) => e.regiao === regiaoId);
+    // Se não encontrar nenhum, mostra todos
+    if (!lista.length) lista = [...eventos];
   } else {
     const t = textoLocal.trim().toLowerCase();
+
     lista = !t
-      ? [...EVENTOS]
-      : EVENTOS.filter(
+      ? [...eventos]
+      : eventos.filter(
           (e) =>
             e.localizacao.toLowerCase().includes(t) ||
-            getRegiaoById(e.regiao).nome.toLowerCase().includes(t),
+            getRegiaoById(e.regiao).nome.toLowerCase().includes(t)
         );
   }
+  return lista.filter((e) => passaFiltroEvento(e.categoria));
+}*/
+
+async function eventosFiltradosPorLocal(textoLocal) {
+  const eventos = await listarEventos();
+  const regioes = await listarRegioes();
+
+  const regiaoId = resolveRegiaoId(textoLocal, regioes);
+
+  let lista;
+
+  if (regiaoId) {
+    lista = eventos.filter((e) => e.regiao === regiaoId);
+
+    if (!lista.length) lista = [...eventos];
+  } else {
+    const t = textoLocal.trim().toLowerCase();
+
+    lista = !t
+      ? [...eventos]
+      : eventos.filter((e) => {
+          const regiao = regioes.find((r) => r.id === e.regiao);
+
+          return (
+            e.localizacao.toLowerCase().includes(t) ||
+            regiao?.nome.toLowerCase().includes(t)
+          );
+        });
+  }
+
   return lista.filter((e) => passaFiltroEvento(e.categoria));
 }
 
@@ -146,7 +184,7 @@ function htmlCalEvento(ev) {
   `;
 }
 
-function renderCalendario() {
+async function renderCalendario() {
   const grid = document.getElementById("calendario-grid");
   if (!grid) {
     console.error(
@@ -157,13 +195,14 @@ function renderCalendario() {
 
   const mes = mesAtual;
   const ano = ANO_FIXO;
+  const eventos = await listarEventos();
 
   const primeiroDia = new Date(ano, mes, 1).getDay();
   const diasNoMes = new Date(ano, mes + 1, 0).getDate();
   const diasMesAnterior = new Date(ano, mes, 0).getDate();
 
   // Filtra garantindo que o evento tenha uma data válida antes de dar split
-  const eventosNoMes = EVENTOS.filter((e) => {
+const eventosNoMes = eventos.filter((e) => {
     if (!e.data) return false;
     const [y, m] = e.data.split("-").map(Number);
     return y === ano && m === mes + 1 && passaFiltroEvento(e.categoria);
@@ -243,7 +282,7 @@ function bindCalendarioPopovers(grid) {
     });
   });
 }
-//api de brinquedo
+//api de brinquedo9adicionei os fgiltros
 async function renderEventos() {
   const grid = document.getElementById("eventos-grid");
   const inputRegiao = document.getElementById("regiao-nome");
@@ -257,9 +296,12 @@ async function renderEventos() {
   }
 
   try {
-    const lista = await listarEventos();
+    // Agora usa a função que aplica o filtro de local
+    const lista = await eventosFiltradosPorLocal(textoLocal);
+    // Depois aplica os demais filtros (texto, categoria e data)
+    const eventos = aplicarFiltrosEvento(lista);
 
-    grid.innerHTML = lista
+    grid.innerHTML = eventos
       .map(
         (ev) => `
       <a href="evento.html?id=${ev.id}" class="hub-event-card">

@@ -1,14 +1,17 @@
-import { getPostoById, getRegiaoById, EVENTOS } from '../mock-data.js';
+//import { getPostoById, getRegiaoById, EVENTOS } from '../mock-data.js';
+import { getPostoById } from "../services/posto-api.js";
+import { getEventosPorRegiao } from '../services/evento-api.js';
+import { listarRegioes } from "../services/regiao-api.js";
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconPin, iconCalendar, iconBuilding } from '../utils/icons.js';
 
-function init() {
+async function init() {
   renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'posto' });
   renderFooter(document.getElementById('footer-root'));
 
   const id = new URLSearchParams(window.location.search).get('id');
-  const posto = id ? getPostoById(id) : null;
+  const posto = id ? await getPostoById(id) : null;
 
   if (!posto) {
     document.getElementById('posto-conteudo')?.classList.add('is-hidden');
@@ -31,7 +34,9 @@ function init() {
     servicos.innerHTML = posto.servicos.map((s) => `<li>${s}</li>`).join('');
   }
 
-  const eventos = EVENTOS.filter((e) => e.regiao === posto.regiao);
+  //const eventos = EVENTOS.filter((e) => e.regiao === posto.regiao);
+  const eventos = await getEventosPorRegiao(posto.regiao);
+  const regioes = await listarRegioes();
   const lista = document.getElementById('posto-eventos-lista');
   if (lista) {
     lista.innerHTML = eventos.length
@@ -41,7 +46,7 @@ function init() {
         <a href="evento.html?id=${ev.id}" class="perfil-mini-card">
           <strong>${ev.titulo}</strong>
           <span>${iconCalendar()} ${ev.dataExibicao}</span>
-          <span>${iconPin()} ${getRegiaoById(ev.regiao).nome}</span>
+          <span>${iconPin()} ${regioes.find((r) => r.id === ev.regiao)?.nome || ""}</span>
         </a>
       `
           )
