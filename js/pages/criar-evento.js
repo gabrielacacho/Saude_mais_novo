@@ -1,15 +1,12 @@
-// Aqui estão importadas as dependências necessárias da nova página, thais
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 
 function init() {
-  // Injeta os layouts globais (Header/Footer) garantindo a identidade visual
   renderHeader(document.getElementById('header-root'), { showSearch: false, activePage: 'perfil' });
   renderFooter(document.getElementById('footer-root'));
 
   console.log('Layouts globais (Header/Footer) injetados com sucesso!');
 
-  // --- DAQUI PARA BAIXO ENTRA A NOSSA LÓGICA DO FORMULÁRIO ---
   const form = document.querySelector('.hub-form');
 
   if (form) {
