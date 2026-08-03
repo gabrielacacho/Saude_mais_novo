@@ -1,4 +1,4 @@
-const API_URL = "/Sa-de-/api/eventos.json";
+const API_URL = "/api/eventos.json";
 
 //listando
 export async function listarEventos() {

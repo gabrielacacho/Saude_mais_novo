@@ -1,4 +1,4 @@
-const API_URL = "/Sa-de-/api/regiao.json";
+const API_URL = "/api/regiao.json";
 
 export async function listarRegioes() {
   const resposta = await fetch(API_URL);
