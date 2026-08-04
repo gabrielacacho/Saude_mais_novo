@@ -1,0 +1,47 @@
+[
+  {
+    "id": "p1",
+    "nome": "UBS Santa Teresa",
+    "lat": -22.915,
+    "lng": -43.185,
+    "regiao": "santa-teresa",
+    "endereco": "R. Alm. Alexandrino, 500 — Santa Teresa",
+    "horario": "Seg a Sex, 8h às 17h",
+    "descricao": "Atendimento clínico, vacinação e orientação em saúde para a comunidade de Santa Teresa.",
+    "servicos": [
+      "Consultas",
+      "Vacinação",
+      "Palestras"
+    ]
+  },
+  {
+    "id": "p2",
+    "nome": "Posto Copacabana",
+    "lat": -22.971,
+    "lng": -43.182,
+    "regiao": "copacabana",
+    "endereco": "Av. Nossa Sra. de Copacabana, 1200",
+    "horario": "Seg a Sáb, 7h às 19h",
+    "descricao": "Posto de referência para campanhas de imunização e triagem rápida.",
+    "servicos": [
+      "Vacinação",
+      "Exames",
+      "Mutirões"
+    ]
+  },
+  {
+    "id": "p3",
+    "nome": "Centro de Saúde Urca",
+    "lat": -22.949,
+    "lng": -43.163,
+    "regiao": "urca",
+    "endereco": "R. Monsenhor Pena, 45 — Urca",
+    "horario": "Seg a Sex, 8h às 18h",
+    "descricao": "Centro com foco em prevenção, campanhas para 60+ e atividades comunitárias.",
+    "servicos": [
+      "Campanhas",
+      "Consultas",
+      "Exames"
+    ]
+  }
+]
