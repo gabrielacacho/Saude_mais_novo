@@ -1,9 +1,7 @@
-/** Cabeçalho global compartilhado */
-
 import { REGIOES } from '../mock-data.js';
 import { bindLocalInputs, getLocal, onLocalChange, refreshLocalInputs } from '../utils/sync-local.js';
 import { htmlOpcoesCategoria } from '../utils/filtros.js';
-import { iconPin, iconCalendar, iconFilter, iconMenu } from '../utils/icons.js';
+import { iconPin, iconCalendar, iconFilter } from '../utils/icons.js'; // Removido o iconMenu
 
 const opcoesRegiao = REGIOES.map((r) => `<option value="${r.nome}">${r.nome}</option>`).join('');
 const opcoesCategoria = htmlOpcoesCategoria();
@@ -13,6 +11,7 @@ export function renderHeader(container, options = {}) {
 
   container.innerHTML = `
     <header class="hub-site-header">
+      <!-- BARRA PRINCIPAL AZUL ESCURA -->
       <div class="hub-container hub-header-inner">
         <div class="hub-brand-left">
             <img src="./imagem/Logo-PrefeituraSUS.png"
@@ -21,30 +20,34 @@ export function renderHeader(container, options = {}) {
         </div>
 
         <div class="hub-brand-center">
-            <div class="logo-saude-texto"><a href="./index.html">Saúde<span>+</span></a></div>
+            <div class="logo-saude-texto"><a href="./index.html">Saúde<span>Aqui</span></a></div>
         </div>
 
-        
-
         <div class="hub-profile-pill">
-          <button type="button" id="btn-menu" class="hub-icon-btn" aria-label="Menu">${iconMenu()}</button>
-          <a href="perfil.html" id="btn-perfil" class="hub-avatar" title="Meu perfil">
+          <!-- O avatar agora funciona como botão para abrir o menu de perfis -->
+          <button type="button" id="btn-perfil" class="hub-avatar" aria-label="Menu de Perfil" aria-expanded="false" title="Meu perfil">
             <span id="avatar-inicial">M</span>
-          </a>
+          </button>
         </div>
       </div>
 
-      <div id="menu-dropdown" class="hub-dropdown is-hidden">
+      <!-- NOVO MENU AZUL CLARO (ACESSIBILIDADE) -->
+      <nav class="hub-nav-secundaria" aria-label="Navegação Principal">
+        <div class="hub-container nav-links">
+          ${activePage !== 'home' ? '<a href="index.html" class="nav-item">Início</a>' : ''}
+          <a href="sobre.html" class="nav-item">Sobre Nós</a>
+          <a href="perfil.html" class="nav-item">Meu perfil</a>
+          <a href="login.html" class="nav-item">Entrar</a>
+          <a href="cadastro.html" class="nav-item">Cadastrar</a>
+        </div>
+      </nav>
+
+      <!-- DROPDOWN DE MOCK DE PERFIL (Abre ao clicar no Avatar) -->
+      <div id="perfil-dropdown" class="hub-dropdown is-hidden">
         <p class="hub-dropdown-label">Alternar perfil (mock)</p>
         <button type="button" data-perfil="comum" class="hub-dropdown-item">Usuário Comum</button>
         <button type="button" data-perfil="institucional" class="hub-dropdown-item">Institucional</button>
         <button type="button" data-perfil="administrador" class="hub-dropdown-item">Administrador</button>
-        <hr />
-        <a href="sobre.html" class="hub-dropdown-item">Sobre Nós</a>
-        <a href="perfil.html" class="hub-dropdown-item">Meu perfil</a>
-        <a href="login.html" class="hub-dropdown-item">Entrar</a>
-        <a href="cadastro.html" class="hub-dropdown-item">Cadastrar</a>
-        ${activePage !== 'home' ? '<a href="index.html" class="hub-dropdown-item">Início</a>' : ''}
       </div>
     </header>
   `;
@@ -53,15 +56,24 @@ export function renderHeader(container, options = {}) {
 }
 
 function bindHeaderEvents(container, showSearch) {
-  const menu = container.querySelector('#menu-dropdown');
+  // Lógica para abrir o menu de perfis no avatar
+  const menuPerfil = container.querySelector('#perfil-dropdown');
+  const btnPerfil = container.querySelector('#btn-perfil');
 
-  const toggleMenu = () => menu?.classList.toggle('is-hidden');
+  const toggleMenu = (e) => {
+    e.stopPropagation();
+    menuPerfil?.classList.toggle('is-hidden');
+    const isExpanded = !menuPerfil?.classList.contains('is-hidden');
+    btnPerfil?.setAttribute('aria-expanded', isExpanded);
+  };
 
-  container.querySelector('#btn-menu')?.addEventListener('click', toggleMenu);
+  btnPerfil?.addEventListener('click', toggleMenu);
 
+  // Fecha o menu ao clicar fora
   document.addEventListener('click', (e) => {
-    if (!container.contains(e.target)) {
-      menu?.classList.add('is-hidden');
+    if (!container.querySelector('.hub-profile-pill')?.contains(e.target) && !menuPerfil?.contains(e.target)) {
+      menuPerfil?.classList.add('is-hidden');
+      btnPerfil?.setAttribute('aria-expanded', 'false');
     }
   });
 
@@ -155,7 +167,7 @@ function bindHeaderEvents(container, showSearch) {
       const avatar = container.querySelector('#avatar-inicial');
       if (avatar) avatar.textContent = iniciais[perfil] || 'M';
       sessionStorage.setItem('perfilMock', perfil);
-      menu?.classList.add('is-hidden');
+      menuPerfil?.classList.add('is-hidden');
       window.dispatchEvent(new CustomEvent('perfil-alterado', { detail: { perfil } }));
     });
   });

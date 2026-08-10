@@ -842,3 +842,61 @@ td, tr {
   color: var(--cor-primaria);
   margin-left: 2px;
 }
+
+/* =========================================
+   BARRA DE NAVEGAÇÃO SECUNDÁRIA (AZUL CLARO)
+========================================= */
+
+/* Transforma a linha fina numa barra espessa */
+.hub-nav-secundaria {
+  background-color: #29B5E8; /* Ajuste para o azul claro exato do seu projeto se necessário */
+  width: 100%;
+  display: block;
+}
+
+/* Alinha os links e dá espaçamento */
+.nav-links {
+  display: flex;
+  flex-wrap: wrap; /* Permite que os botões caiam de linha em telas de celular muito finas */
+  align-items: center;
+  justify-content: center; /* Centraliza os links. Mude para flex-start se preferir na esquerda */
+  gap: 16px;
+  padding: 8px 16px;
+}
+
+/* Estilo dos Links (Alto contraste, letra legível) */
+.nav-item {
+  color: #003B8E; /* Azul escuro do header principal para contraste máximo */
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Efeito Hover Acessível */
+.nav-item:hover,
+.nav-item:focus {
+  background-color: #003B8E;
+  color: #FFFFFF;
+  outline: none; /* Remove outline padrão para usar o próprio hover como foco */
+}
+
+/* Ajuste no posicionamento do Dropdown do avatar */
+#perfil-dropdown {
+  position: absolute;
+  right: 16px;
+  top: 70px; /* Ajuste dependendo da altura da sua navbar azul escura */
+  z-index: 999;
+}
+
+/* Se você tinha a pílula branca cobrindo o avatar, deixamos ela limpa só pro botão */
+.hub-profile-pill {
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+.hub-avatar {
+  cursor: pointer;
+}

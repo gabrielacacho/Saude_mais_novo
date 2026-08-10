@@ -1,75 +1,146 @@
-/* PÁGINA SOBRE NÓS */
+/* =========================================
+   PÁGINA SOBRE NÓS - ESTILO CLEAN E CONTÍNUO
+========================================= */
 
 .sobre-main {
-  padding: 3rem 1rem;
+  padding: 2rem 1rem; /* Reduzido para aproximar mais o conteúdo */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3rem; /* Dá o espaço perfeito entre o primeiro e o segundo bloco na rolagem */
+  gap: 2rem; /* Transição mais suave entre os blocos */
   min-height: 80vh;
 }
 
-/* Ajustes finos do bloco de conteúdo */
 .bloco-sobre {
   width: 100%;
 }
 
 .conteudo-texto p {
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 0.95rem; /* Fonte um pouco menor e mais elegante */
+  line-height: 1.5;
   color: #334155;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem; /* Menos espaço sobrando */
 }
 
 .conteudo-texto p:last-child {
   margin-bottom: 0;
 }
 
-/* Customização opcional para o segundo cabeçalho se quiser mudar o tom */
 .header-passos {
-  background-color: #002d6e; /* Um azul sutilmente mais escuro ou o mesmo do nav */
+  background-color: #003B8E; /* Mantido igual ao nav para não criar quebra visual brusca */
 }
 
-/* Layout da lista de passos */
+/* =========================================
+   LISTA DE PASSOS (COMO CADASTRAR)
+========================================= */
+
 .passos-lista {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.25rem; /* Passos mais próximos uns dos outros */
 }
 
-/* Cada linha do passo a passo */
 .passo-item {
   display: flex;
-  gap: 1.25rem;
+  gap: 1rem;
   align-items: flex-start;
 }
 
-/* O círculo com o número do passo (Combina perfeitamente com a identidade visual) */
+/* Círculo numérico menor e mais delicado */
 .passo-numero {
-  background-color: #003B8E; /* O azul do seu formulário/nav */
+  background-color: #003B8E;
   color: #ffffff;
-  font-weight: 700;
-  font-size: 1.1rem;
-  width: 36px;
-  height: 36px;
+  font-weight: 600; /* Menos "gordo" */
+  font-size: 0.95rem;
+  width: 28px; /* Reduzido de 36px */
+  height: 28px; /* Reduzido de 36px */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; /* Impede o círculo de achatar no celular */
-  box-shadow: 0 4px 6px rgba(0, 59, 142, 0.15);
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 59, 142, 0.1); /* Sombra quase imperceptível */
 }
 
 .passo-conteudo h3 {
-  margin: 0 0 0.35rem 0;
-  font-size: 1.1rem;
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
   color: #1e293b;
   font-weight: 600;
 }
 
 .passo-conteudo p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #475569;
-  line-height: 1.5;
+  line-height: 1.4;
+}
+
+/* =========================================
+   GRID DA EQUIPE (QUEM FAZ ACONTECER)
+========================================= */
+
+.equipe-grid {
+  display: grid;
+  /* Cards menores para não ficarem gigantes na tela */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.equipe-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: #ffffff;
+  padding: 16px 12px; /* Card mais enxuto */
+  border-radius: 6px;
+  border: 1px solid #e2e8f0; /* Borda bem sutil */
+  transition: transform 0.2s ease;
+}
+
+/* Efeito de hover simples, sem sombras exageradas */
+.equipe-card:hover {
+  transform: translateY(-3px); 
+}
+
+/* Foto menor e mais proporcional */
+.equipe-foto-wrapper {
+  width: 72px; 
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 2px solid #003B8E; /* Bordinha combinando com o tema */
+}
+
+.equipe-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.equipe-nome {
+  font-size: 0.9rem;
+  color: #333333;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+/* Botão do LinkedIn mais discreto */
+.equipe-linkedin {
+  display: inline-block;
+  padding: 6px 16px;
+  background-color: #0077b5;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+.equipe-linkedin:hover {
+  opacity: 0.85; /* Fica levemente transparente ao invés de mudar bruscamente de cor */
 }
