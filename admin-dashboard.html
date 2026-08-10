@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hub Saúde — Adm Dashboard</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/admin-dashboard.css" />
+</head>
+<body>
+
+  <div id="header-root"></div>
+
+  <!-- Layout Principal -->
+  <div class="hub-container admin-layout">
+    
+    <!-- Menu Lateral (Sidebar) -->
+    <aside class="admin-sidebar">
+      <a href="index.html" class="admin-side-btn">INÍCIO</a>
+      <a href="#" class="admin-side-btn">INSTITUIÇÕES</a>
+      <a href="perfil.html" class="admin-side-btn">MEU PERFIL</a>
+      <a href="index.html" class="admin-side-btn">SAIR</a>
+    </aside>
+
+    <!-- Painel Azul Central -->
+    <main class="admin-main-panel">
+      
+      <!-- Box de Boas-Vindas -->
+      <div class="admin-welcome-box">
+        <h2 id="admin-welcome-nome">BEM VINDO, FULANO DE TAL!</h2>
+      </div>
+
+      <!-- Grid de Cards em 3 Colunas -->
+      <section class="admin-cards-container">
+        
+        <div class="admin-card">
+          <span class="admin-card-num" id="count-pending">0</span>
+          <span class="admin-card-label">PENDENTES</span>
+        </div>
+
+        <div class="admin-card">
+          <span class="admin-card-num" id="count-active">0</span>
+          <span class="admin-card-label">ATIVAS</span>
+        </div>
+
+        <div class="admin-card">
+          <span class="admin-card-num" id="count-blocked">0</span>
+          <span class="admin-card-label">BLOQUEADAS</span>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+
+  <footer id="footer-root"></footer>
+
+  <script type="module" src="js/pages/admin-dashboard.js"></script>
+</body>
+</html>

@@ -213,3 +213,499 @@
 .card-add-evento:hover .text-add {
   color: #0056b3; /* Cor de destaque ao passar o mouse */
 }
+
+/*inicio do dash*/
+.avaliador-instituicao {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 4px solid var(--cor-borda);
+  border-radius: 1rem;
+  box-shadow: var(--sombra-card);
+}
+
+.avaliador-titulo {
+  margin: 0 0 1.25rem;
+  font-size: 1.25rem;
+  color: var(--cor-destaque);
+}
+
+/* ---------- Pesquisa ---------- */
+.avaliador-pesquisa {
+  width: 380px;
+  max-width: 100%;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.icone-pesquisa {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+
+  fill: none;
+  stroke: #64748b;
+  stroke-width: 2;
+
+  pointer-events: none;
+}
+
+.avaliador-pesquisa__input {
+  width: 100%;
+  height: 42px;
+  padding: 0.6rem 1rem 0.6rem 2.6rem;
+
+  border: 2px solid var(--cor-borda);
+  border-radius: 8px;
+
+  background: #fff;
+  color: #1E293B;
+
+  font-family: inherit;
+  font-size: 0.875rem;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avaliador-pesquisa__input::placeholder {
+  color: #9ca3af;
+}
+
+.avaliador-pesquisa__input:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 2px rgba(0, 59, 142, 0.12);
+}
+
+
+/* ---------- Filtros ---------- */
+
+.avaliador-filtros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.avaliador-filtro {
+  min-height: 70px;
+
+  border: 2px solid var(--cor-borda);
+  border-radius: 12px;
+
+  background: #fff;
+  color: #475569;
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+/* Onde o mouse está */
+
+.avaliador-filtro:hover {
+  border-color: var(--cor-destaque);
+  color: var(--cor-destaque);
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-card);
+}
+
+
+/* Filtro selecionado */
+
+.avaliador-filtro--ativo {
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: #fff;
+}
+
+
+/* Mouse em cima do selecionado */
+
+.avaliador-filtro--ativo:hover {
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: #fff;
+}
+
+
+/* Clique */
+
+.avaliador-filtro:active {
+  transform: translateY(0);
+}
+
+
+/* ---------- Tabela ---------- */
+
+.avaliador-tabela-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 2px solid var(--cor-borda);
+  border-radius: 8px;
+}
+
+.avaliador-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+  font-size: 0.875rem;
+}
+
+
+/* Cabeçalho */
+
+.avaliador-tabela thead {
+  background: var(--cor-fundo-claro);
+}
+
+.avaliador-tabela th {
+  padding: 0.9rem 1rem;
+
+  color: var(--cor-destaque);
+  font-weight: 700;
+  text-align: left;
+
+  border-bottom: 2px solid var(--cor-borda);
+}
+
+
+/* Células */
+
+.avaliador-tabela td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--cor-borda);
+  color: #1E293B;
+}
+
+
+/* Última linha */
+
+.avaliador-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* Hover na linha */
+
+.avaliador-tabela tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.avaliador-tabela tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+
+/* ---------- Botão "Ver ficha" ---------- */
+
+.avaliador-ver-ficha {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.45rem 0.75rem;
+
+  border: 2px solid var(--cor-destaque);
+  border-radius: 6px;
+
+  background: #fff;
+  color: var(--cor-destaque);
+
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.avaliador-ver-ficha:hover {
+  background: var(--cor-destaque);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.avaliador-ver-ficha:active {
+  transform: translateY(0);
+}
+
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 640px) {
+
+  .avaliador-instituicao {
+    padding: 1rem;
+  }
+
+  .avaliador-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .avaliador-filtro {
+    min-height: 55px;
+  }
+
+}
+
+/*pop-up*/
+/* =========================================
+   MODAL - FICHA DA INSTITUIÇÃO
+   ========================================= */
+
+.modal-ficha {
+  display: none;
+
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 2rem;
+
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.modal-ficha__conteudo {
+  position: relative;
+
+  width: min(850px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+
+  padding: 2rem;
+
+  background: #fff;
+  border: 2px solid var(--cor-borda);
+  border-radius: 14px;
+
+  box-shadow: var(--sombra-card);
+}
+
+.modal-ficha__conteudo h2 {
+  margin: 0 0 1.5rem;
+
+  color: var(--cor-destaque);
+  font-size: 1.5rem;
+}
+
+.modal-ficha__fechar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #64748b;
+
+  font-size: 1.8rem;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.modal-ficha__fechar:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.modal-ficha__corpo {
+  min-height: 300px;
+
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 1.5rem;
+}
+
+/*estilo das ionfo do pop-up por enquanto*/
+/* =========================================
+   CONTEÚDO DA FICHA DA INSTITUIÇÃO
+   ========================================= */
+
+.ficha-bloco {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.ficha-bloco h3,
+.ficha-indeferimento h3 {
+  margin: 0 0 1.25rem;
+  color: var(--cor-destaque);
+  font-size: 1.05rem;
+}
+
+.ficha-dados {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem 2rem;
+}
+
+.ficha-dados div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ficha-dados span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.ficha-dados strong {
+  color: #1e293b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.ficha-descricao {
+  margin: 0;
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.ficha-documentos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.ficha-documento {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.8rem 1rem;
+
+  background: #f8fafc;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+}
+
+.ficha-documento span {
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.ficha-documento button {
+  border: none;
+  background: transparent;
+  color: var(--cor-destaque);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ficha-decisao {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.ficha-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  margin-bottom: 1rem;
+
+  color: #334155;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.ficha-check input {
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.ficha-btn {
+  border: none;
+  border-radius: 7px;
+  padding: 0.7rem 1.3rem;
+
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ficha-btn--aprovar {
+  background: #16a34a;
+  color: #fff;
+}
+
+.ficha-btn--aprovar:hover {
+  background: #15803d;
+}
+
+.ficha-indeferimento {
+  padding-top: 1.5rem;
+}
+
+.ficha-motivo {
+  width: 100%;
+  box-sizing: border-box;
+
+  resize: vertical;
+
+  padding: 0.8rem;
+
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.ficha-motivo:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+}
+
+.ficha-btn--negar {
+  margin-top: 0.8rem;
+
+  background: #dc2626;
+  color: #fff;
+}
+
+.ficha-btn--negar:hover {
+  background: #b91c1c;
+}
+
+
+/* Responsividade */
+
+@media (max-width: 650px) {
+  .ficha-dados {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+

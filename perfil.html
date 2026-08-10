@@ -52,11 +52,288 @@
       <h2 class="perfil-secao-titulo">Painel administrativo</h2>
       <ul id="perfil-permissoes" class="perfil-permissoes"></ul>
       <div class="perfil-admin-stats">
-        <div class="perfil-stat"><span class="perfil-stat__num">6</span><span class="perfil-stat__label">Eventos ativos</span></div>
-        <div class="perfil-stat"><span class="perfil-stat__num">3</span><span class="perfil-stat__label">Postos mapeados</span></div>
-        <div class="perfil-stat"><span class="perfil-stat__num">128</span><span class="perfil-stat__label">Inscrições</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">2</span><span class="perfil-stat__label">Pendentes</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">6</span><span class="perfil-stat__label">Ativas</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">1</span><span class="perfil-stat__label">Bloqueada</span></div>
       </div>
     </section>
+
+    <!---inicio da tentativa de dash-->
+<!-- Painel: Avaliador de instituição -->
+ <section id="avaliador-instituicao" class="avaliador-instituicao">
+
+  <h2 class="avaliador-titulo">Avaliador de instituição</h2>
+
+  <!-- Pesquisa -->
+<div class="avaliador-pesquisa">
+
+  <svg
+    class="icone-pesquisa"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <circle cx="11" cy="11" r="7"></circle>
+    <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+  </svg>
+
+  <input
+    type="search"
+    id="pesquisa-instituicao"
+    class="avaliador-pesquisa__input"
+    placeholder="Pesquisar instituição..."
+  />
+
+</div>
+
+  <!-- Filtros -->
+  <div class="avaliador-filtros">
+
+    <button
+      type="button"
+      class="avaliador-filtro avaliador-filtro--ativo"
+      data-filtro="pendentes"
+    >
+      Pendentes
+    </button>
+
+    <button
+      type="button"
+      class="avaliador-filtro"
+      data-filtro="ativas"
+    >
+      Ativas
+    </button>
+
+    <button
+      type="button"
+      class="avaliador-filtro"
+      data-filtro="bloqueadas"
+    >
+      Bloqueadas
+    </button>
+
+  </div>
+
+  <!-- Tabela -->
+  <div class="avaliador-tabela-wrap">
+
+    <table class="avaliador-tabela">
+
+      <thead>
+        <tr>
+          <th scope="col">Nome social</th>
+          <th scope="col">CNPJ</th>
+          <th scope="col">Data do requerimento</th>
+          <th scope="col">Ver ficha</th>
+        </tr>
+      </thead>
+
+      <tbody id="avaliador-instituicoes-lista">
+
+        <tr>
+          <td>Clínica Bem-Estar</td>
+          <td>00.000.000/0001-00</td>
+          <td>08/08/2026</td>
+          <td>
+            <button type="button" class="avaliador-ver-ficha">
+              Ver ficha
+            </button>
+          </td>
+        </tr>
+
+        <tr>
+          <td>Instituto Vida Plena</td>
+          <td>11.111.111/0001-11</td>
+          <td>09/08/2026</td>
+          <td>
+            <button type="button" class="avaliador-ver-ficha">
+              Ver ficha
+            </button>
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+<!--pop-up-->
+<!-- Modal da ficha da instituição( passar depois para o json/api)-->
+<div id="modal-ficha-instituicao" class="modal-ficha">
+
+  <div class="modal-ficha__conteudo">
+
+    <button
+      type="button"
+      class="modal-ficha__fechar"
+      aria-label="Fechar ficha"
+    >&times;
+    </button>
+
+    <h2 id="modal-nome-instituicao">
+      Clínica Bem-Estar
+    </h2>
+
+    <div class="modal-ficha__corpo">
+      
+
+  <section class="ficha-bloco">
+    <h3>Identificação da instituição</h3>
+
+    <div class="ficha-dados">
+      <div>
+        <span>Razão social</span>
+        <strong>Clínica Bem-Estar LTDA</strong>
+      </div>
+
+      <div>
+        <span>Nome social / nome fantasia</span>
+        <strong>Clínica Bem-Estar</strong>
+      </div>
+
+      <div>
+        <span>CNPJ</span>
+        <strong>00.000.000/0001-00</strong>
+      </div>
+
+      <div>
+        <span>Endereço</span>
+        <strong>Rua das Flores, 120 - Centro, Rio de Janeiro/RJ</strong>
+      </div>
+
+      <div>
+        <span>Tipo de instituição</span>
+        <strong>Empresa privada</strong>
+      </div>
+
+      <div>
+        <span>Site / rede social oficial</span>
+        <strong>www.clinicabemestar.com.br</strong>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="ficha-bloco">
+    <h3>Responsável pela instituição</h3>
+
+    <div class="ficha-dados">
+
+      <div>
+        <span>Nome completo</span>
+        <strong>Mariana Oliveira Santos</strong>
+      </div>
+
+      <div>
+        <span>Cargo / função</span>
+        <strong>Diretora administrativa</strong>
+      </div>
+
+      <div>
+        <span>E-mail</span>
+        <strong>mariana@clinicabemestar.com.br</strong>
+      </div>
+
+      <div>
+        <span>Telefone</span>
+        <strong>(21) 99999-0000</strong>
+      </div>
+
+    </div>
+  </section>
+
+
+  <section class="ficha-bloco">
+    <h3>Atuação da instituição</h3>
+
+    <p class="ficha-descricao">
+      A Clínica Bem-Estar atua na promoção da saúde e qualidade de vida,
+      oferecendo serviços de atendimento e orientação em saúde. A instituição
+      também participa de ações comunitárias e atividades gratuitas de
+      conscientização e prevenção em saúde.
+    </p>
+  </section>
+
+
+  <section class="ficha-bloco">
+    <h3>Documentos apresentados</h3>
+
+    <div class="ficha-documentos">
+
+      <div class="ficha-documento">
+        <span>Comprovante de CNPJ</span>
+        <button type="button">Visualizar</button>
+      </div>
+
+      <div class="ficha-documento">
+        <span>Documento do responsável</span>
+        <button type="button">Visualizar</button>
+      </div>
+
+      <div class="ficha-documento">
+        <span>Comprovante de vínculo com a instituição</span>
+        <button type="button">Visualizar</button>
+      </div>
+
+    </div>
+  </section>
+
+
+  <section class="ficha-decisao">
+
+    <label class="ficha-check">
+      <input type="checkbox" id="confirmar-avaliacao">
+
+      <span>
+        Confirmo que verifiquei os dados e documentos apresentados
+        e que a instituição atende aos requisitos para utilização
+        da plataforma.
+      </span>
+    </label>
+
+    <button
+      type="button"
+      class="ficha-btn ficha-btn--aprovar"
+    >
+      Aprovar instituição
+    </button>
+
+  </section>
+
+
+  <section class="ficha-indeferimento">
+
+    <h3>Descreva o motivo do indeferimento</h3>
+
+    <textarea
+      id="motivo-indeferimento"
+      class="ficha-motivo"
+      placeholder="Informe o motivo pelo qual a instituição não atende aos requisitos..."
+      rows="4"
+    ></textarea>
+
+    <button
+      type="button"
+      class="ficha-btn ficha-btn--negar"
+    >
+      Negar instituição
+    </button>
+
+          </section>
+
+        </div>
+
+    </div>
+
+  </div>
+
+</div>
+<!----fim-->
+
 
     <p class="perfil-voltar">
       <a href="index.html" class="hub-link">← Voltar ao início</a>

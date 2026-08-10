@@ -112,3 +112,45 @@ async function init() {
   }
 */
 document.addEventListener('DOMContentLoaded', init);
+
+
+// =========================================
+// MODAL - FICHA DA INSTITUIÇÃO
+// =========================================
+const modalFicha = document.getElementById('modal-ficha-instituicao');
+const fecharModalFicha = document.querySelector('.modal-ficha__fechar');
+const nomeInstituicao = document.getElementById('modal-nome-instituicao');
+
+const botoesVerFicha = document.querySelectorAll('.avaliador-ver-ficha');
+
+botoesVerFicha.forEach((botao) => {
+  botao.addEventListener('click', () => {
+
+    // Pega a linha da instituição clicada
+    const linha = botao.closest('tr');
+
+    // Pega o nome da primeira coluna
+    const nome = linha.querySelector('td').textContent.trim();
+
+    // Coloca o nome no título do modal
+    nomeInstituicao.textContent = nome;
+
+    // Abre o modal
+    modalFicha.style.display = 'flex';
+  });
+});
+
+
+// Fechar pelo X
+fecharModalFicha?.addEventListener('click', () => {
+  modalFicha.style.display = 'none';
+});
+
+
+// Fechar clicando no fundo escuro
+modalFicha?.addEventListener('click', (evento) => {
+  if (evento.target === modalFicha) {
+    modalFicha.style.display = 'none';
+  }
+});
+

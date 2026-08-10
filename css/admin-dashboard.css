@@ -1,0 +1,159 @@
+/* ==========================================================================
+   PAINEL ADMINISTRATIVO (PADRÃO HUB SAÚDE)
+   ========================================================================== */
+
+.admin-layout {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem 3rem;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+
+  /* Garante que o conteúdo ocupe a altura total da tela descontando Header + Footer */
+  min-height: calc(100vh - 180px);
+}
+
+/* --------------------------------------------------------------------------
+   1. MENU LATERAL (SIDEBAR)
+   -------------------------------------------------------------------------- */
+.admin-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #fff;
+  border: 2px solid var(--cor-borda);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: var(--sombra-card);
+}
+
+.admin-side-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--cor-fundo-claro, #f8fafc);
+  border: 1px solid var(--cor-borda);
+  color: #4b5563;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
+}
+
+/* Efeito ao passar o mouse */
+.admin-side-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--cor-destaque);
+}
+
+/* Estilo para quando a classe .active for aplicada no elemento */
+.admin-side-btn.active {
+  background-color: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   2. PAINEL PRINCIPAL
+   -------------------------------------------------------------------------- */
+.admin-main-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Banner de Boas-Vindas */
+.admin-welcome-box {
+  background: #fff;
+  border: 2px solid var(--cor-borda);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--sombra-card);
+}
+
+.admin-welcome-box h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cor-destaque);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admin-welcome-box p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* --------------------------------------------------------------------------
+   3. CARDS DE MÉTRICAS
+   -------------------------------------------------------------------------- */
+.admin-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.admin-card {
+  background: #fff;
+  border: 2px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sombra-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.admin-card-num {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--cor-destaque);
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.admin-card-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVIDADE
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-cards-container {
+    grid-template-columns: 1fr;
+  }
+}

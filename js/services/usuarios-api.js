@@ -1,4 +1,4 @@
-const API_URL = "/Sa-de-/api/usuarios.json";
+const API_URL = "/api/usuarios.json";
 
 export async function listarUsuarios() {
   const response = await fetch(API_URL);
