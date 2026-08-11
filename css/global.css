@@ -1,17 +1,17 @@
-/* Hub Saúde — estilos globais (elementos compartilhados)*/
+/* estilos globais do hub saude */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --cor-primaria: #22B8E6; /* Azul Claro Institucional */
-  --cor-destaque: #003B8E; /* Azul Escuro Institucional */
-  --cor-fundo: #F5F7FA; /* Fundo do site em cinza bem claro */
-  --cor-fundo-claro: #FFFFFF; /* Fundo branco puro para modais e botões */
-  --cor-cal-celula: #E8EDF2; /* Cinza claro para o grid do calendário */
-  --cor-borda: #D6DDE5; /* Borda cinza suave e profissional */
-  --cor-botao-inscrito: #0056B3; /* Azul secundário */
-  --raio-card: 12px; /* Menos arredondado, mais formal */
+  --cor-primaria: #22B8E6; 
+  --cor-destaque: #003B8E; 
+  --cor-fundo: #F5F7FA; 
+  --cor-fundo-claro: #FFFFFF; 
+  --cor-cal-celula: #E8EDF2; 
+  --cor-borda: #D6DDE5; 
+  --cor-botao-inscrito: #0056B3; 
+  --raio-card: 12px; 
   --raio-pill: 24px;
-  --sombra-card: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra quase invisível */
+  --sombra-card: 0 2px 8px rgba(0, 0, 0, 0.05); 
 }
 
 *,
@@ -23,13 +23,13 @@
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background-color: var(--cor-fundo); /* Agora usa o fundo cinza oficial */
-  color: #1E293B; /* Texto grafite quase preto, mais suave que o preto puro */
+  background-color: var(--cor-fundo); 
+  color: #1E293B; 
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Utilitários de cor (complementam Tailwind) */
+/* cores rapidas pra usar no html */
 .bg-hub-header { background-color: var(--cor-destaque); }
 .bg-hub-page { background-color: var(--cor-fundo); }
 .bg-mapa-header { background-color: var(--cor-primaria); }
@@ -38,7 +38,7 @@ body {
 .text-hub-destaque { color: var(--cor-destaque); }
 .border-hub { border-color: var(--cor-borda); }
 
-/* Layout */
+/* layout base */
 .hub-container {
   width: 100%;
   max-width: 80rem;
@@ -61,79 +61,61 @@ body {
   justify-content: center;
   padding: 2.5rem 1rem;
 }
+
 a {
   color: inherit;
   text-decoration: none;
 }
+
 a:hover {
   text-decoration: none;
 }
-/* ---------- Cabeçalho ---------- */
+
+/* cabecalho */
 .hub-site-header {
-    width: 100%;
-    background:
-        radial-gradient(
-            circle,
-            rgba(0,81,160,1) 0%,
-            rgba(0,43,107,1) 56%,
-            rgba(0,43,107,1) 100%
-        );
-
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-/*faixa azul-clara*/
-.hub-site-header::after {
-    content: "";
-    display: block;
-    height: 15px;
-    background: var(--cor-primaria);
-}
-
-.hub-header-inner{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    min-width: 100px;
-    width: 70%;
-    min-height:130px;
-    position:sticky;
-    top: 0;
-}
-
-.hub-brand-left{
-    display:flex;
-    align-items:center;
-    margin-left:-170px;
-}
-/*deixei a logo sude mais bem alinhado no centro*/
-.hub-brand-center {
-    position: absolute;
-    left: 50%; /* Mudou de 45% para 50% (o centro real da tela) */
-    transform: translateX(-50%); /* Garante que o meio da palavra fique no meio do 50% */
-}
-/*antigo alinhamento da logo (caso queira voltar)
-.hub-brand-center{
-    position:absolute;
-    left:45%;
-    transform:translateX(-50%);
-}
-*/
-
-.logo-prefeitura{
+  width: 100%;
+  background: radial-gradient(circle, rgba(0,81,160,1) 0%, rgba(0,43,107,1) 56%, rgba(0,43,107,1) 100%);
   color: white;
-  width:250px;
-  height:auto;
-  object-fit:contain;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.logo-minhasaude{
-    height:60px;
-    width:auto;
-    object-fit:contain;
+.hub-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 100px;
+  width: 70%;
+  min-height: 130px; /* manteve o 130px pra nao encolher bruscamente */
+  position: sticky;
+  top: 0;
+}
+
+.hub-brand-left {
+  display: flex;
+  align-items: center;
+  margin-left: -170px;
+}
+
+/* centraliza a logo perfeitamente */
+.hub-brand-center {
+  position: absolute;
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+.logo-prefeitura {
+  color: white;
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+}
+
+.logo-minhasaude {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
 }
 
 .hub-logo {
@@ -151,6 +133,7 @@ a:hover {
   text-decoration: none;
 }
 
+/* barra de pesquisa */
 .hub-search-wrap {
   display: flex;
   flex-direction: column;
@@ -269,6 +252,7 @@ a:hover {
   }
 }
 
+/* esconde texto mas deixa pro leitor de tela */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -281,6 +265,7 @@ a:hover {
   border: 0;
 }
 
+/* icones */
 .hub-icon {
   width: 1rem;
   height: 1rem;
@@ -308,6 +293,7 @@ a:hover {
   color: var(--cor-destaque);
 }
 
+/* botoes e avatar do header */
 .hub-profile-pill {
   display: flex;
   align-items: center;
@@ -360,7 +346,7 @@ a:hover {
   opacity: 0.9;
 }
 
-/* ---------- Popover Base (mapa + calendário) ---------- */
+/* popover (balao do mapa e calendario) */
 .hub-popover {
   position: absolute;
   z-index: 9999999;
@@ -371,17 +357,12 @@ a:hover {
   border: 2px solid var(--cor-borda);
   border-radius: 0.5rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  
-  /* Estado inicial seguro */
   opacity: 0;
   visibility: hidden;
   pointer-events: auto;
-  
-  /* Transição simples sem rotações quebradas */
   transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-/* Opcional: Estilo da setinha indicadora */
 .hub-popover::before {
   content: "";
   position: absolute;
@@ -393,65 +374,53 @@ a:hover {
   transform: rotate(45deg);
 }
 
-
-/* ==========================================================================
-   2. Comportamento Correto no CALENDÁRIO (Blindado contra cortes)
-   ========================================================================== */
+/* forca o calendario a nao cortar o balaozinho */
 .cal-evento-mini-wrap {
   position: relative !important;
-  display: block !important; /* Força o wrap a se comportar como bloco */
+  display: block !important; 
   width: 100% !important;
-  overflow: visible !important; /* Garante que o wrap não corte nada */
+  overflow: visible !important; 
 }
 
-/* BLINDAGEM TOTAL: Força o grid, as linhas e os dias do seu calendário a NÃO cortarem o balão */
 #calendario-grid,
-.cal-dia, 
+.cal-dia,
 .cal-dia__eventos,
 .cal-cell,
 td, tr {
-  overflow: visible !important; /* Destrói qualquer overflow: hidden que os pais tenham */
+  overflow: visible !important; 
 }
 
-/* Posição física do popover no calendário (Acima do evento) */
 .cal-evento-mini-wrap .hub-popover {
   position: absolute !important;
-  z-index: 99999999 !important; /* Camada estratosférica */
-  
-  /* Garante dimensões reais e fixas para o navegador não zerar o tamanho */
-  width: 200px !important; 
+  z-index: 99999999 !important; 
+  width: 200px !important;
   min-width: 200px !important;
   height: auto !important;
-  
-  /* Posicionamento exato acima do botão */
-  bottom: calc(100% + 8px) !important; 
+  bottom: calc(100% + 8px) !important;
   left: 50% !important;
   top: auto !important;
   right: auto !important;
-  transform: translateX(-50%) !important; /* Centraliza no meio do dia */
+  transform: translateX(-50%) !important; 
 }
 
-/* Gatilhos de Ativação (Unificando a força do Hover) */
 .cal-evento-mini-wrap:hover .hub-popover,
 .cal-evento-mini:hover + .hub-popover,
 .cal-evento-mini-wrap.is-popover-open .hub-popover {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
-  display: block !important; /* Injeta o bloco na tela */
+  display: block !important; 
 }
 
-/* Faz o botão ficar na camada correta */
 .cal-evento-mini-wrap:hover .cal-evento-mini {
   position: relative;
   z-index: 1 !important;
 }
 
-/* Ajuste da setinha na base do balão */
 .cal-evento-mini-wrap .hub-popover::before {
   content: "";
   position: absolute;
-  bottom: -6px; 
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
   border-left: none;
@@ -460,27 +429,13 @@ td, tr {
   border-bottom: 2px solid var(--cor-borda);
 }
 
-
-/* CORREÇÃO DE CONFLITO: Garante que o botão vá para trás do popover quando estiver aberto */
 .cal-evento-mini-wrap:hover .cal-evento-mini,
 .cal-evento-mini-wrap.is-popover-open .cal-evento-mini {
   position: relative;
   z-index: 1 !important;
 }
 
-/* Correção Visual da Setinha apontando para baixo */
-.cal-evento-mini-wrap .hub-popover::before {
-  bottom: -6px; /* Joga a setinha para a base do balão */
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  border-left: none;
-  border-top: none;
-  border-right: 2px solid var(--cor-borda);
-  border-bottom: 2px solid var(--cor-borda);
-}
-
-
-/* ---------- Elementos Internos do Popover ---------- */
+/* estilo dos textos dentro do popover */
 .hub-popover__tipo {
   display: flex;
   align-items: center;
@@ -530,6 +485,7 @@ td, tr {
   border-color: var(--cor-destaque);
 }
 
+/* menu dropdown */
 .hub-dropdown {
   position: absolute;
   right: 1rem;
@@ -581,7 +537,7 @@ td, tr {
   border-top: 1px solid #f3f4f6;
 }
 
-/* ---------- Modal ---------- */
+/* modal (janelas que pulam na tela) */
 .hub-modal {
   position: fixed;
   inset: 0;
@@ -633,7 +589,7 @@ td, tr {
   font-size: 0.875rem;
 }
 
-/* ---------- Botões ---------- */
+/* botoes gerais */
 .hub-btn {
   display: inline-flex;
   align-items: center;
@@ -673,7 +629,7 @@ td, tr {
   opacity: 1;
 }
 
-/* Formulários*/
+/* inputs de form */
 .hub-label {
   display: block;
   font-size: 0.875rem;
@@ -684,12 +640,12 @@ td, tr {
 .hub-input,
 .hub-select {
   width: 100%;
-  border: 1px solid var(--cor-borda); /* Bordas finas são mais profissionais! (DISCORDO KKKK)*/
-  border-radius: 8px; /* Menos arredondado */
+  border: 1px solid var(--cor-borda); 
+  border-radius: 8px; 
   padding: 0.625rem 1rem;
   font-family: inherit;
   font-size: 0.875rem;
-  background: var(--branco); /* Fundo branco e limpo */
+  background: var(--cor-fundo-claro); 
   color: #1E293B;
 }
 
@@ -705,7 +661,7 @@ td, tr {
   border-radius: 0.5rem;
 }
 
-/* Cards / painéis*/
+/* cards e paineis */
 .hub-panel {
   background: #fff;
   border-radius: 1rem;
@@ -802,7 +758,7 @@ td, tr {
   font-size: 0.875rem;
 }
 
-/*---------------footer--------------------*/
+/* rodape */
 .hub-footer-note {
   text-align: center;
   font-size: 0.625rem;
@@ -821,21 +777,23 @@ td, tr {
   background-color: #044272;
 }
 
-.hub-footer-logo img{
-    width: 240px;
-    height: auto;
-    margin-right: 20px;
-    margin-top: -25px;
+.hub-footer-logo img {
+  width: 240px;
+  height: auto;
+  margin-right: 20px;
+  margin-top: -25px;
 }
 
 .logo-saude-texto {
-  font-size: 4rem;
+  font-size: 4rem; 
   font-weight: 700;
   color: #FFFFFF;
   letter-spacing: -0.05em;
   margin: 0;
   display: flex;
   align-items: center;
+  line-height: 1; 
+  white-space: nowrap; 
 }
 
 .logo-saude-texto span {
@@ -843,60 +801,69 @@ td, tr {
   margin-left: 2px;
 }
 
-/* =========================================
-   BARRA DE NAVEGAÇÃO SECUNDÁRIA (AZUL CLARO)
-========================================= */
-
-/* Transforma a linha fina numa barra espessa */
+/* barra azul clara - menu secundario */
 .hub-nav-secundaria {
-  background-color: #29B5E8; /* Ajuste para o azul claro exato do seu projeto se necessário */
+  background-color: #29B5E8;
   width: 100%;
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 48px; 
 }
 
-/* Alinha os links e dá espaçamento */
+/* alinha os botoes no centro */
 .nav-links {
   display: flex;
-  flex-wrap: wrap; /* Permite que os botões caiam de linha em telas de celular muito finas */
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center; /* Centraliza os links. Mude para flex-start se preferir na esquerda */
+  justify-content: center;
   gap: 16px;
-  padding: 8px 16px;
+  width: 100%;
+  padding: 0 16px; 
 }
 
-/* Estilo dos Links (Alto contraste, letra legível) */
+/* botoes do menu */
 .nav-item {
-  color: #003B8E; /* Azul escuro do header principal para contraste máximo */
+  color: #003B8E;
   text-decoration: none;
   font-weight: 700;
   font-size: 1rem;
-  padding: 8px 16px;
+  padding: 6px 12px; 
   border-radius: 4px;
   transition: background-color 0.2s, color 0.2s;
+ 
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-/* Efeito Hover Acessível */
 .nav-item:hover,
 .nav-item:focus {
   background-color: #003B8E;
   color: #FFFFFF;
-  outline: none; /* Remove outline padrão para usar o próprio hover como foco */
+  outline: none;
 }
 
-/* Ajuste no posicionamento do Dropdown do avatar */
+/* segura o dropdown embaixo do botao */
+.nav-dropdown-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.setinha {
+  font-size: 0.7rem; 
+}
+
+/* menu de trocar perfil */
 #perfil-dropdown {
   position: absolute;
-  right: 16px;
-  top: 70px; /* Ajuste dependendo da altura da sua navbar azul escura */
+  top: 100%; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  margin-top: 4px; 
   z-index: 999;
-}
-
-/* Se você tinha a pílula branca cobrindo o avatar, deixamos ela limpa só pro botão */
-.hub-profile-pill {
-  background: transparent;
-  padding: 0;
-  border: none;
-}
-.hub-avatar {
-  cursor: pointer;
+  min-width: 180px;
 }

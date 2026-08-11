@@ -47,24 +47,30 @@ async function init() {
       .join('');
   }
 
-  if (usuario.inscricoes?.length) {
+ // pega o perfil que ta salvo agora no mock
+  const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
+
+  // so mostra as inscricoes se for usuario comum e tiver alguma coisa salva
+  if (perfilAtual === 'comum' && usuario.inscricoes?.length) {
+    
     document.getElementById('perfil-secao-inscricoes')?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-inscricoes');
+    
     if (el) {
-    /*  el.innerHTML = usuario.inscricoes
-        .map((id) => getEventoById(id))
-        .filter(Boolean)
-        .map(renderMiniEvento)
-        .join('');*/
+        // busca os eventos pelo id e espera tudo carregar
         const eventos = await Promise.all(
           usuario.inscricoes.map((id) => getEventoById(id))
-          );
+        );
 
+        // joga na tela
         el.innerHTML = eventos
           .filter(Boolean)
           .map(renderMiniEvento)
           .join('');
     }
+  } else {
+    // esconde a div senao vai aparecer pro institucional e bugar a tela
+    document.getElementById('perfil-secao-inscricoes')?.classList.add('is-hidden');
   }
 
   if (usuario.eventosGerenciados?.length) {
