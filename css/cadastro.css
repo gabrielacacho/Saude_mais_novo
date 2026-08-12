@@ -1,8 +1,8 @@
-/*Página de cadastro */
+/* Página de cadastro */
 
 .page-cadastro main {
   flex: 1;
-  max-width: 32rem;
+  max-width: 70rem;
   width: 100%;
   margin: 0 auto;
   padding: 2rem 1rem;
@@ -64,8 +64,10 @@
 
 .cadastro-step-actions {
   display: flex;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--cor-borda, #e2e8f0);
 }
 
 .cadastro-step-actions .hub-btn {
@@ -110,4 +112,113 @@
 
 .cadastro-perfil-label {
   font-weight: 700;
+}
+
+/* =========================================================
+   CONTROLE DE CARD E CABEÇALHO AZUL (ESTILO DA IMAGEM)
+   ========================================================= */
+
+/* Card base */
+.page-cadastro .hub-card-auth {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 !important; /* Remove o padding do card para o cabeçalho sangrar até a borda */
+  border-radius: 1rem !important;
+  overflow: hidden !important; /* Garante o encaixe perfeito das bordas arredondadas */
+  background: #fff;
+  transition: max-width 0.25s ease-in-out;
+}
+
+/* Expansão para o formulário na Etapa 2 */
+.page-cadastro:has(#step-form:not(.is-hidden)) .hub-card-auth {
+  max-width: 1100px !important;
+}
+
+/* Estilização do cabeçalho azul colado no topo */
+.page-cadastro .hub-card-header,
+.page-cadastro [class*="card-header"],
+.page-cadastro [class*="header-blue"] {
+  background-color: var(--cor-primaria, #004691) !important;
+  color: #ffffff !important;
+  padding: 1.5rem 1rem !important;
+  text-align: center !important;
+  margin: 0 0 2rem 0 !important;
+  border-radius: 0 !important; /* Reseta bordas para respeitar o overflow: hidden do pai */
+}
+
+/* Conteúdo interno com padding para não encostar na borda branca do card */
+.page-cadastro .hub-card-body,
+.page-cadastro form,
+.page-cadastro #step-tipo,
+.page-cadastro #step-sucesso {
+  padding: 0 2rem 2rem 2rem;
+}
+
+/* =========================================================
+   ESTRUTURA DE GRID E LARGURA DE CAMPOS
+   ========================================================= */
+
+.cadastro-grid-duplo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.cadastro-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.hub-form-section-title {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cor-destaque, #2d3748);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid var(--cor-borda, #e2e8f0);
+}
+
+.cadastro-secao-inferior {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--cor-borda, #cbd5e0);
+}
+
+/* =========================================================
+   CONTROLE DE LARGURA: ARQUIVOS E SENHAS
+   ========================================================= */
+
+/* 1. Limita a largura dos campos de Upload de Arquivo */
+#campos-dinamicos input[type="file"] {
+  max-width: 380px;
+  width: 100%;
+}
+
+/* 2. Coloca os campos de senha LADO A LADO com mais espaçamento */
+.cadastro-grid-senhas {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 380px)) !important; /* Lado a lado com no máximo 380px cada */
+  gap: 2.5rem !important; /* Distância maior entre o campo de Senha e Confirmar Senha */
+  width: 100%;
+  margin-top: 1.75rem !important; /* Afasta as senhas do campo de arquivo que fica em cima */
+  margin-bottom: 1rem !important; /* Dá um respiro antes da linha/botões de baixo */
+}
+
+/* Garante que o input de senha dentro da grid não passe do limite */
+.cadastro-grid-senhas .hub-input,
+.cadastro-grid-senhas input {
+  max-width: 380px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .cadastro-grid-senhas {
+    grid-template-columns: 1fr !important;
+  }
 }
