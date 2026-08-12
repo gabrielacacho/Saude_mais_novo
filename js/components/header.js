@@ -17,8 +17,13 @@ export function renderHeader(container, options = {}) {
             <img src="./imagem/Logo-PrefeituraSUS.png" alt="Prefeitura do Rio" class="logo-prefeitura">
         </div>
 
-        <div class="hub-brand-center">
-            <div class="logo-saude-texto"><a href="./index.html">Saúde<span>Aqui</span></a></div>
+<div class="hub-brand-center">
+            <div class="logo-saude-texto">
+                <a href="./index.html" style="display: flex; align-items: center;">
+                    Saúde<span>Aqui</span>
+                    <img src="./imagem/pin_transparente.png" alt="Pin Saúde Aqui" class="pin-titulo">
+                </a>
+            </div>
         </div>
         
         <!-- tiramos o avatar daqui -->

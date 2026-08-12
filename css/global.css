@@ -3,7 +3,7 @@
 
 :root {
   --cor-primaria: #22B8E6; 
-  --cor-destaque: #003B8E; 
+  --cor-destaque: #; 
   --cor-fundo: #F5F7FA; 
   --cor-fundo-claro: #FFFFFF; 
   --cor-cal-celula: #E8EDF2; 
@@ -37,6 +37,15 @@ body {
 .bg-cal-cell { background-color: var(--cor-cal-celula); }
 .text-hub-destaque { color: var(--cor-destaque); }
 .border-hub { border-color: var(--cor-borda); }
+
+/* tamanho exato do pin ao lado do titulo */
+.pin-titulo {
+  height: 90px; 
+  width: auto;
+  margin-left: 15px; /* agora o espaço fica do lado esquerdo da imagem */
+  flex-shrink: 0; 
+  object-fit: contain;
+}
 
 /* layout base */
 .hub-container {
