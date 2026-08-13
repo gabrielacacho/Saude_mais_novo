@@ -1,6 +1,5 @@
-//import { getUsuarioPerfil, getEventoById, getRegiaoById } from '../mock-data.js';
 import { getUsuarioPerfil, getRegiaoById } from '../mock-data.js';
-import { getEventoById } from '../services/evento-api.js';//Assim migramos só os eventos
+import { getEventoById } from '../services/evento-api.js'; // migrando só os eventos
 
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
@@ -16,21 +15,19 @@ function renderMiniEvento(ev) {
   `;
 }
 
-//function init() {
 async function init() {
-  const chave = sessionStorage.getItem('perfilMock') || 'comum';
-  const usuario = getUsuarioPerfil(chave);
+  const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
+  const usuario = getUsuarioPerfil(perfilAtual);
 
   renderHeader(document.getElementById('header-root'), { showSearch: false, activePage: 'perfil' });
   renderFooter(document.getElementById('footer-root'));
 
-  document.title = `${usuario.nome} — Hub Saúde`;
+  document.title = `${usuario.nome} — Saúde Aqui`;
   document.getElementById('perfil-avatar').textContent = usuario.avatarInicial;
   document.getElementById('perfil-tipo').textContent = usuario.tipo;
   document.getElementById('perfil-nome').textContent = usuario.nome;
-  //comentei a bio aqui ( e no perfil.html) já que não temos certeza se vamos usar 
-  //document.getElementById('perfil-bio').textContent = usuario.bio;
 
+  // preenche os dados basicos
   const dados = document.getElementById('perfil-dados-lista');
   const linhas = [
     ['E-mail', usuario.email],
@@ -47,81 +44,67 @@ async function init() {
       .join('');
   }
 
- // pega o perfil que ta salvo agora no mock
-  const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
+  // mapeia todas as secoes pra controlar a exibicao
+  const secaoInscricoes = document.getElementById('perfil-secao-inscricoes');
+  const secaoGerenciados = document.getElementById('perfil-secao-gerenciados');
+  const secaoAdmin = document.getElementById('perfil-secao-admin');
+  const secaoAvaliador = document.getElementById('avaliador-instituicao'); // o dash novo
 
-  // so mostra as inscricoes se for usuario comum e tiver alguma coisa salva
+  // trava de seguranca: esconde tudo antes de decidir o que mostrar
+  if (secaoInscricoes) secaoInscricoes.classList.add('is-hidden');
+  if (secaoGerenciados) secaoGerenciados.classList.add('is-hidden');
+  if (secaoAdmin) secaoAdmin.classList.add('is-hidden');
+  if (secaoAvaliador) secaoAvaliador.classList.add('is-hidden');
+
+  // carrega tela de usuario comum
   if (perfilAtual === 'comum' && usuario.inscricoes?.length) {
-    
-    document.getElementById('perfil-secao-inscricoes')?.classList.remove('is-hidden');
+    secaoInscricoes?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-inscricoes');
     
     if (el) {
-        // busca os eventos pelo id e espera tudo carregar
-        const eventos = await Promise.all(
-          usuario.inscricoes.map((id) => getEventoById(id))
-        );
-
-        // joga na tela
-        el.innerHTML = eventos
-          .filter(Boolean)
-          .map(renderMiniEvento)
-          .join('');
+      const eventos = await Promise.all(
+        usuario.inscricoes.map((id) => getEventoById(id))
+      );
+      el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
     }
-  } else {
-    // esconde a div senao vai aparecer pro institucional e bugar a tela
-    document.getElementById('perfil-secao-inscricoes')?.classList.add('is-hidden');
   }
 
-  if (usuario.eventosGerenciados?.length) {
-    document.getElementById('perfil-secao-gerenciados')?.classList.remove('is-hidden');
+  // carrega tela institucional
+  if (perfilAtual === 'institucional' && usuario.eventosGerenciados?.length) {
+    secaoGerenciados?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-gerenciados');
+    
     if (el) {
-    /*  el.innerHTML = usuario.eventosGerenciados
-        .map((id) => getEventoById(id))
-        .filter(Boolean)
-        .map(renderMiniEvento)
-        .join('');*/
-        const eventos = await Promise.all(
-          usuario.eventosGerenciados.map((id) => getEventoById(id))
-        );
-
-        el.innerHTML = eventos
-        .filter(Boolean)
-        .map(renderMiniEvento)
-        .join('');
+      const eventos = await Promise.all(
+        usuario.eventosGerenciados.map((id) => getEventoById(id))
+      );
+      el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
     }
   }
 
-  if (usuario.permissoes?.length) {
-    document.getElementById('perfil-secao-admin')?.classList.remove('is-hidden');
-    const ul = document.getElementById('perfil-permissoes');
-    if (ul) {
-      ul.innerHTML = usuario.permissoes.map((p) => `<li>${p.replace(/_/g, ' ')}</li>`).join('');
+  // carrega tela do admin (painel de permissoes + dashboard avaliador)
+  if (perfilAtual === 'administrador') {
+    // painel antigo de permissoes
+    if (usuario.permissoes?.length) {
+      secaoAdmin?.classList.remove('is-hidden');
+      const ul = document.getElementById('perfil-permissoes');
+      if (ul) {
+        ul.innerHTML = usuario.permissoes.map((p) => `<li>${p.replace(/_/g, ' ')}</li>`).join('');
+      }
+    }
+    
+    // painel novo de avaliacao 
+    if (secaoAvaliador) {
+      secaoAvaliador.classList.remove('is-hidden');
     }
   }
 }
 
-  /*OTÃO INSTITUCIONAL SOME NOS OUTROS PERFIS
-  if (chave === 'institucional') {
-    const container = document.getElementById('area-institucional-acoes');
-
-    if (container) {
-      container.innerHTML = `
-        <div style="margin-top: 20px;">
-          <a href="criar-evento.html" class="hub-btn hub-btn--primary">
-            Indexar documentação
-          </a>
-        </div>
-      `;
-    }
-  }
-*/
 document.addEventListener('DOMContentLoaded', init);
 
 
 // =========================================
-// MODAL - FICHA DA INSTITUIÇÃO
+// modal - ficha da instituicao
 // =========================================
 const modalFicha = document.getElementById('modal-ficha-instituicao');
 const fecharModalFicha = document.querySelector('.modal-ficha__fechar');
@@ -131,32 +114,28 @@ const botoesVerFicha = document.querySelectorAll('.avaliador-ver-ficha');
 
 botoesVerFicha.forEach((botao) => {
   botao.addEventListener('click', () => {
-
-    // Pega a linha da instituição clicada
+    // pega a linha da instituicao clicada
     const linha = botao.closest('tr');
 
-    // Pega o nome da primeira coluna
+    // pega o nome da primeira coluna
     const nome = linha.querySelector('td').textContent.trim();
 
-    // Coloca o nome no título do modal
+    // coloca o nome no titulo do modal
     nomeInstituicao.textContent = nome;
 
-    // Abre o modal
+    // abre o modal
     modalFicha.style.display = 'flex';
   });
 });
 
-
-// Fechar pelo X
+// fechar pelo x
 fecharModalFicha?.addEventListener('click', () => {
   modalFicha.style.display = 'none';
 });
 
-
-// Fechar clicando no fundo escuro
+// fechar clicando no fundo escuro
 modalFicha?.addEventListener('click', (evento) => {
   if (evento.target === modalFicha) {
     modalFicha.style.display = 'none';
   }
 });
-

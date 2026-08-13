@@ -540,40 +540,50 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // 3. Função para renderizar o componente de busca (Versão À Prova de Falhas)
+// renderiza a barra de busca com foco em eventos e acoes de saude
 function renderizarBuscador() {
   const container = document.getElementById("container-busca");
 
-  if (!container) {
-    console.error("Elemento #container-busca não foi encontrado no HTML.");
-    return;
-  }
+  if (!container) return;
 
-  // CHECAGEM DE SEGURANÇA DAS VARIÁVEIS
-  const deveMostrarBusca =
-    typeof showSearch !== "undefined" ? showSearch : true;
+  const deveMostrarBusca = typeof showSearch !== "undefined" ? showSearch : true;
   const valorLocal = typeof getLocal === "function" ? getLocal() : "";
-  const regiaoOptions =
-    typeof opcoesRegiao !== "undefined"
+  
+  // opcoes de regioes reais do rio
+  const regiaoOptions = typeof opcoesRegiao !== "undefined"
       ? opcoesRegiao
-      : `<option>Zona Sul</option><option>Zona Norte</option>`;
-  const categoriaOptions =
-    typeof opcoesCategoria !== "undefined"
+      : `
+        <option value="">Todas as regiões</option>
+        <option>Centro</option>
+        <option>Zona Sul</option>
+        <option>Zona Norte</option>
+        <option>Zona Oeste</option>
+      `;
+      
+  // categorias focadas 100% em eventos, campanhas e acoes
+  const categoriaOptions = typeof opcoesCategoria !== "undefined"
       ? opcoesCategoria
-      : `<option>Vacinação</option><option>Consulta</option>`;
+      : `
+        <option value="">Todas as ações</option>
+        <option>Campanha de Vacinação</option>
+        <option>Mutirão de Saúde</option>
+        <option>Feira de Saúde</option>
+        <option>Palestra / Roda de Conversa</option>
+        <option>Oficina Educativa</option>
+        <option>Ação Comunitária</option>
+        <option>Atividade Física / Caminhada</option>
+        <option>Grupo de Apoio</option>
+      `;
 
-  // CHECAGEM DE SEGURANÇA DOS ÍCONES (Se a função não existir, usa um SVG reserva)
-  const pinoSvg =
-    typeof iconPin === "function"
+  const pinoSvg = typeof iconPin === "function"
       ? iconPin()
       : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
 
-  const calendarioSvg =
-    typeof iconCalendar === "function"
+  const calendarioSvg = typeof iconCalendar === "function"
       ? iconCalendar()
       : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
 
-  const filtroSvg =
-    typeof iconFilter === "function"
+  const filtroSvg = typeof iconFilter === "function"
       ? iconFilter()
       : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>`;
 
@@ -582,18 +592,19 @@ function renderizarBuscador() {
         <div class="hub-search-wrap">
           <div class="hub-search">
             <label class="hub-search-field hub-search-field--divider">
-              <span class="sr-only">Local</span>
+              <span class="sr-only">Buscar por local</span>
               ${pinoSvg}
-              <input type="text" id="search-local" class="hub-search-input" placeholder="Digite o local" autocomplete="off" value="${valorLocal}" />
-              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-local" aria-expanded="false" title="Filtros opcionais">${filtroSvg}</button>
+              <input type="text" id="search-local" class="hub-search-input" placeholder="Ex: Tijuca, Copacabana..." autocomplete="off" value="${valorLocal}" />
+              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-local" aria-expanded="false" aria-controls="painel-filtros-local" title="Filtros de local">${filtroSvg}</button>
             </label>
             <label class="hub-search-field">
-              <span class="sr-only">Evento</span>
+              <span class="sr-only">Buscar por evento</span>
               ${calendarioSvg}
-              <input type="text" id="search-evento" class="hub-search-input" placeholder="Digite o Evento" autocomplete="off" />
-              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-evento" aria-expanded="false" title="Filtros opcionais">${filtroSvg}</button>
+              <input type="text" id="search-evento" class="hub-search-input" placeholder="Ex: Mutirão, Palestra, Campanha..." autocomplete="off" />
+              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-evento" aria-expanded="false" aria-controls="painel-filtros-evento" title="Filtros de evento">${filtroSvg}</button>
             </label>
           </div>
+
           <div id="painel-filtros-local" class="hub-search-filtros is-hidden">
             <p class="hub-search-filtros__titulo">Filtros de local (opcional)</p>
             <div class="hub-search-filtros__grid">
@@ -602,24 +613,26 @@ function renderizarBuscador() {
                 <select id="filtro-regiao-header" class="hub-select hub-select--modal">${regiaoOptions}</select>
               </div>
               <div>
-                <label class="hub-label" for="filtro-categoria-local">Categoria</label>
+                <label class="hub-label" for="filtro-categoria-local">Tipo de ação</label>
                 <select id="filtro-categoria-local" class="hub-select hub-select--modal">${categoriaOptions}</select>
               </div>
               <div>
-                <label class="hub-label" for="filtro-raio">Raio (mock)</label>
+                <label class="hub-label" for="filtro-raio">Distância (mock)</label>
                 <select id="filtro-raio" class="hub-select hub-select--modal">
-                  <option>5 km</option>
-                  <option>10 km</option>
-                  <option>20 km</option>
+                  <option>Até 2 km (Bairro)</option>
+                  <option>Até 5 km (Bairros vizinhos)</option>
+                  <option>Até 15 km (Região)</option>
+                  <option>Cidade toda</option>
                 </select>
               </div>
             </div>
           </div>
+
           <div id="painel-filtros-evento" class="hub-search-filtros is-hidden">
             <p class="hub-search-filtros__titulo">Filtros de evento (opcional)</p>
             <div class="hub-search-filtros__grid">
               <div>
-                <label class="hub-label" for="filtro-categoria-header">Categoria</label>
+                <label class="hub-label" for="filtro-categoria-header">Tipo de ação</label>
                 <select id="filtro-categoria-header" class="hub-select hub-select--modal">${categoriaOptions}</select>
               </div>
               <div>
@@ -634,7 +647,6 @@ function renderizarBuscador() {
     container.innerHTML = '<div class="hub-search-wrap"></div>';
   }
 }
-
 // 4. Inicialização do Buscador e seus Respectivos Eventos
 document.addEventListener("DOMContentLoaded", () => {
   // Executa a renderização primeiro

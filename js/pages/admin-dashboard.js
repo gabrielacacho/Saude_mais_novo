@@ -2,45 +2,63 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 
 async function init() {
+  // pega quem ta logado no momento
+  const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
+
+  // barreira de seguranca: se nao for admin, manda pra home e para o codigo
+  if (perfilAtual !== 'administrador') {
+    window.location.href = 'index.html';
+    return;
+  }
+
   const headerRoot = document.getElementById('header-root');
   const footerRoot = document.getElementById('footer-root');
 
-  // 1. Renderiza o Header (sem a barra de busca, indicando a página ativa 'admin')
+  // renderiza o cabecalho sem barra de busca
   if (headerRoot) {
     renderHeader(headerRoot, { showSearch: false, activePage: 'admin' });
   }
 
-  // 2. Renderiza o Footer
+  // renderiza o rodape
   if (footerRoot) {
     renderFooter(footerRoot);
   }
 
-  // 3. Atualiza os dados da tela com base no perfil ativo
-  carregarDadosDashboard();
+  // carrega os numeros do painel
+  carregarDadosDashboard(perfilAtual);
 
-  // 4. Escuta o evento do dropdown do Header (quando você clica no Avatar e troca de perfil)
+  // se ele tiver na pagina de admin e trocar pro comum no menu, expulsa pra home
   window.addEventListener('perfil-alterado', (e) => {
-    carregarDadosDashboard(e.detail.perfil);
+    if (e.detail.perfil !== 'administrador') {
+      window.location.href = 'index.html';
+    }
   });
 }
 
 function carregarDadosDashboard(perfilChave) {
+  // pega os dados reais ou joga o padrao
   const chave = perfilChave || sessionStorage.getItem('perfilMock') || 'administrador';
-  const usuario = getUsuarioPerfil(chave);
+  
+  // obs: garanta que a funcao getUsuarioPerfil ta sendo importada no topo do seu arquivo
+  const usuario = typeof getUsuarioPerfil === 'function' ? getUsuarioPerfil(chave) : null;
 
-  document.title = `Painel Administrativo — Hub Saúde`;
+  document.title = `Painel Administrativo — Saúde Aqui`;
 
-  // Atualiza o nome de boas-vindas no painel
+  // arruma o nome de boas vindas
   const welcomeElement = document.getElementById('admin-welcome-nome');
   if (welcomeElement) {
-    const nomeExibicao = usuario?.nome ? usuario.nome.toUpperCase() : 'FULANO DE TAL';
+    const nomeExibicao = usuario?.nome ? usuario.nome.toUpperCase() : 'ADMINISTRADOR';
     welcomeElement.textContent = `BEM VINDO, ${nomeExibicao}!`;
   }
 
-  // Define os valores das métricas (Você pode integrar com API/Mock aqui)
-  document.getElementById('count-pending').textContent = '100';
-  document.getElementById('count-active').textContent = '1.000.000';
-  document.getElementById('count-blocked').textContent = '0';
+  // joga os numeros hardcoded por enquanto (mock)
+  const countPending = document.getElementById('count-pending');
+  const countActive = document.getElementById('count-active');
+  const countBlocked = document.getElementById('count-blocked');
+
+  if (countPending) countPending.textContent = '100';
+  if (countActive) countActive.textContent = '1.000.000';
+  if (countBlocked) countBlocked.textContent = '0';
 }
 
 document.addEventListener('DOMContentLoaded', init);
