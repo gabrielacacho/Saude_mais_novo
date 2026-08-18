@@ -130,9 +130,26 @@
   transition: max-width 0.25s ease-in-out;
 }
 
-/* Expansão para o formulário na Etapa 2 */
-.page-cadastro:has(#step-form:not(.is-hidden)) .hub-card-auth {
-  max-width: 1100px !important;
+/* O card de escolha do tipo de cadastro permanece com o tamanho original. */
+
+/* Cadastro comum: formulário menor e mais compacto. */
+.page-cadastro.cadastro-comum #step-form {
+  max-width: 520px;
+}
+
+/* Cadastro institucional: formulário maior para comportar os campos em duas colunas. */
+.page-cadastro.cadastro-institucional #step-form {
+  max-width: 1100px;
+}
+
+/* Aumenta o espaçamento vertical entre os campos do formulário */
+#campos-dinamicos > div {
+  margin-bottom: 18px;
+}
+
+/* Cria espaço entre o cabeçalho azul e o primeiro campo */
+.page-cadastro #campos-dinamicos {
+  padding-top: 1rem;
 }
 
 /* Estilização do cabeçalho azul colado no topo */

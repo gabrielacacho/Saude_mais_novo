@@ -37,4 +37,11 @@ export const iconUsers = () =>
     '<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.742-.963A8.001 8.001 0 0018 15v1h-2zM2 18v-1a6 6 0 0112 0v1H2z"/>'
   );
 
+  //notificação
+export const iconBell = () =>
+  svg(
+    '<path d="M10 2a5 5 0 00-5 5v2.586l-1.707 1.707A1 1 0 004 13h12a1 1 0 00.707-1.707L15 9.586V7a5 5 0 00-5-5zm0 16a2.5 2.5 0 002.45-2h-4.9A2.5 2.5 0 0010 18z"/>'
+  );
+  
 export const iconLg = (fn) => fn().replace('hub-icon', 'hub-icon hub-icon--lg');
+

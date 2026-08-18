@@ -28,10 +28,21 @@
             <label for="senha" class="hub-label">Senha</label>
             <input id="senha" name="senha" type="password" required minlength="6" autocomplete="current-password" class="hub-input" placeholder="••••••••" />
           </div>
-          <label class="hub-checkbox-row">
-            <input type="checkbox" />
-            Lembrar de mim
-          </label>
+          <!-- Opções relacionadas à senha -->
+          <div class="login-options">
+
+            <!-- Opção para manter o usuário conectado -->
+            <label class="hub-checkbox-row">
+              <input type="checkbox">
+              Lembrar de mim
+            </label>
+
+            <!-- Opção de recuperação de senha -->
+            <div class="recuperar-senha">
+              <a href="redefinir-senha.html">Esqueci minha senha?</a>
+            </div>
+
+          </div>
           <button type="submit" class="hub-btn hub-btn--primary hub-btn--block">Entrar</button>
         </form>
 

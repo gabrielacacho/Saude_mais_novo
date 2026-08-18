@@ -19,6 +19,12 @@ function campoHtml(label, name, type, placeholder = '') {
 }
 
 function renderCampos() {
+  // Define uma classe no body de acordo com o tipo de cadastro escolhido.
+  // Isso permite que o CSS diferencie o tamanho do cadastro comum
+  // do cadastro institucional.
+  document.body.classList.toggle('cadastro-comum', tipoUsuario === 'comum');
+  document.body.classList.toggle('cadastro-institucional', tipoUsuario === 'institucional');
+
   const container = document.getElementById('campos-dinamicos');
   if (!container) return;
 
@@ -28,6 +34,7 @@ function renderCampos() {
       campoHtml('CPF *', 'cpf', 'text', '000.000.000-00'),
       campoHtml('Data de nascimento *', 'nascimento', 'date'),
       campoHtml('E-mail *', 'email', 'email', 'email@exemplo.com'),
+      campoHtml('Telefone *', 'telefone', 'tel', '(00) 00000-0000'),
       campoHtml('Senha *', 'senha', 'password', 'Mínimo 6 caracteres'),
       campoHtml('Confirmar senha *', 'confirmarSenha', 'password', 'Repita a senha')
     ].join('');

@@ -142,6 +142,226 @@ a:hover {
   text-decoration: none;
 }
 
+/* =====================================================
+   SINO DE NOTIFICAÇÕES
+   Botão integrado ao cabeçalho azul
+   ===================================================== */
+
+.notificacoes-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.notificacoes-btn {
+  /* Remove o visual padrão do botão */
+  background: transparent;
+  border: none;
+
+  /* Tamanho do botão */
+  width: 48px;
+  height: 48px;
+
+  /* Centraliza o sino */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Cor do sino */
+  color: white;
+
+  /* Remove aparência padrão */
+  padding: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  /* Transição suave */
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Quando passa o mouse */
+.notificacoes-btn:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  transform: scale(1.05);
+}
+
+/* Quando clica */
+.notificacoes-btn:active {
+  transform: scale(0.95);
+}
+
+/* Faz o SVG do sino ficar bonito */
+.notificacoes-btn svg {
+  width: 25px;
+  height: 25px;
+  stroke: currentColor;
+}
+
+
+/* =====================================================
+   CONTADOR VERMELHO
+   ===================================================== */
+
+.notificacoes-contador {
+  position: absolute;
+
+  /* Canto superior direito do sino */
+  top: 2px;
+  right: 0px;
+
+  min-width: 18px;
+  height: 18px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #e53935;
+  color: white;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  border: 2px solid #063b82;
+}
+
+/* Quando não existem notificações */
+.notificacoes-contador.is-hidden {
+  display: none;
+}
+
+
+/* =====================================================
+   PAINEL DE NOTIFICAÇÕES
+   ===================================================== */
+
+.notificacoes-painel {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 360px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+  border: 1px solid #dbe3ed;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.notificacoes-btn .hub-icon {
+  color: white;
+}
+
+.notificacoes-btn svg {
+  width: 25px;
+  height: 25px;
+}
+
+.notificacoes-painel.is-hidden {
+  display: none;
+}
+
+
+/* Cabeçalho do painel */
+
+.notificacoes-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.notificacoes-cabecalho h3 {
+  margin: 0;
+  color: #064597;
+  font-size: 17px;
+}
+
+.notificacoes-marcar {
+  background: none;
+  border: none;
+  color: #1769aa;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notificacoes-marcar:hover {
+  text-decoration: underline;
+}
+
+
+/* =====================================================
+   ITENS DAS NOTIFICAÇÕES
+   ===================================================== */
+
+.notificacoes-lista {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.notificacao-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 18px;
+  background: white;
+  border: none;
+  border-bottom: 1px solid #edf0f4;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.notificacao-item:hover {
+  background-color: #f5f9fd;
+}
+
+
+/* Bolinha indicando notificação nova */
+.notificacao-ponto {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  margin-top: 5px;
+  background-color: #e53935;
+  border-radius: 50%;
+}
+
+
+/* Conteúdo */
+.notificacao-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.notificacao-conteudo strong {
+  color: #123b69;
+  font-size: 14px;
+}
+
+.notificacao-conteudo span {
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.notificacao-conteudo small {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/*fim da notificação*/
+
 /* barra de pesquisa */
 .hub-search-wrap {
   display: flex;

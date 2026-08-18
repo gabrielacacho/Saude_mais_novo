@@ -107,7 +107,142 @@ async function init() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', init);
+
+
+// ==========================================================
+// DASHBOARD DO ADMINISTRADOR
+// Filtros: Pendentes, Ativas e Bloqueadas
+// ==========================================================
+
+// ==========================================================
+// DASHBOARD DO ADMINISTRADOR
+// Filtros: Pendentes, Ativas e Bloqueadas
+// ==========================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Encontra o dashboard do administrador
+  const avaliador = document.getElementById('avaliador-instituicao');
+
+  if (!avaliador) return;
+
+  // Pega os três botões de filtro
+  const botoesFiltro = avaliador.querySelectorAll('.avaliador-filtro');
+
+  // Pega as linhas reais da tabela
+  const linhas = avaliador.querySelectorAll(
+    '#avaliador-instituicoes-lista tr[data-status]'
+  );
+
+  // Mostra o status escolhido
+  function aplicarFiltro(status, botaoSelecionado) {
+
+    linhas.forEach((linha) => {
+
+      // Mostra a linha se o status for igual ao filtro
+      if (linha.dataset.status === status) {
+        linha.style.display = '';
+      } else {
+        linha.style.display = 'none';
+      }
+
+    });
+
+    // Remove o destaque dos botões
+    botoesFiltro.forEach((botao) => {
+      botao.classList.remove('avaliador-filtro--ativo');
+    });
+
+    // Destaca o botão escolhido
+    botaoSelecionado?.classList.add('avaliador-filtro--ativo');
+
+    // Verifica se existem instituições nesse status
+    const existeInstituicao = Array.from(linhas).some(
+      (linha) => linha.dataset.status === status
+    );
+
+    mostrarMensagemVazia(status, !existeInstituicao);
+  }
+
+
+  // Mostra mensagem quando não houver instituições
+  function mostrarMensagemVazia(status, vazio) {
+
+    const tbody = document.getElementById(
+      'avaliador-instituicoes-lista'
+    );
+
+    if (!tbody) return;
+
+    // Remove mensagem anterior
+    tbody.querySelector('.avaliador-mensagem-vazia')?.remove();
+
+    if (!vazio) return;
+
+    let mensagem = '';
+
+    if (status === 'ativa') {
+      mensagem = 'Nenhuma instituição ativa no momento.';
+    }
+
+    if (status === 'bloqueada') {
+      mensagem = 'Nenhuma instituição bloqueada no momento.';
+    }
+
+    // Cria a mensagem apenas para categorias vazias
+    if (mensagem) {
+      const linhaMensagem = document.createElement('tr');
+
+      linhaMensagem.className = 'avaliador-mensagem-vazia';
+
+      linhaMensagem.innerHTML = `
+        <td colspan="4">
+          ${mensagem}
+        </td>
+      `;
+
+      tbody.appendChild(linhaMensagem);
+    }
+  }
+
+
+  // Configura os cliques dos filtros
+  botoesFiltro.forEach((botao) => {
+
+    botao.addEventListener('click', () => {
+
+      const filtro = botao.dataset.filtro;
+
+      // Converte o nome do botão para o status usado nas linhas
+      const status = filtro === 'pendentes'
+        ? 'pendente'
+        : filtro === 'ativas'
+          ? 'ativa'
+          : 'bloqueada';
+
+      aplicarFiltro(status, botao);
+    });
+
+  });
+
+
+  // Começa mostrando os pendentes
+  const botaoPendentes = avaliador.querySelector(
+    '[data-filtro="pendentes"]'
+  );
+
+  if (botaoPendentes) {
+    aplicarFiltro('pendente', botaoPendentes);
+  }
+
+});
+
+
+// ==========================================================
+// MODAL "VER FICHA"
+// Código que você já tinha
+// ==========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
   const modalFicha = document.getElementById('modal-ficha-instituicao');

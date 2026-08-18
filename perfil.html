@@ -18,10 +18,7 @@
       <div class="perfil-header__info">
         <span id="perfil-tipo" class="perfil-tipo">—</span>
         <h1 id="perfil-nome">—</h1>
-        <!--comentei a bio aqui( e no perfil.js) já que não temos certeza de usar-->
-        <!---<p id="perfil-bio" class="perfil-bio"></p>-->
       </div>
-      
 
     </header>
 
@@ -54,8 +51,8 @@
       <ul id="perfil-permissoes" class="perfil-permissoes"></ul>
       <div class="perfil-admin-stats">
         <div class="perfil-stat"><span class="perfil-stat__num">2</span><span class="perfil-stat__label">Pendentes</span></div>
-        <div class="perfil-stat"><span class="perfil-stat__num">6</span><span class="perfil-stat__label">Ativas</span></div>
-        <div class="perfil-stat"><span class="perfil-stat__num">1</span><span class="perfil-stat__label">Bloqueada</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">0</span><span class="perfil-stat__label">Ativas</span></div>
+        <div class="perfil-stat"><span class="perfil-stat__num">0</span><span class="perfil-stat__label">Bloqueadas</span></div>
       </div>
     </section>
 
@@ -135,7 +132,8 @@
 
       <tbody id="avaliador-instituicoes-lista">
 
-        <tr>
+      <!-- Instituição pendente -->
+        <tr data-status="pendente">
           <td>Clínica Bem-Estar</td>
           <td>00.000.000/0001-00</td>
           <td>08/08/2026</td>
@@ -146,7 +144,8 @@
           </td>
         </tr>
 
-        <tr>
+        <!-- Instituição pendente -->
+        <tr data-status="pendente">
           <td>Instituto Vida Plena</td>
           <td>11.111.111/0001-11</td>
           <td>09/08/2026</td>

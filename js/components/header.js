@@ -1,7 +1,7 @@
 import { REGIOES } from '../mock-data.js';
 import { bindLocalInputs, getLocal, onLocalChange, refreshLocalInputs } from '../utils/sync-local.js';
 import { htmlOpcoesCategoria } from '../utils/filtros.js';
-import { iconPin, iconCalendar, iconFilter } from '../utils/icons.js'; 
+import { iconPin, iconCalendar, iconFilter, iconBell } from '../utils/icons.js'; 
 
 const opcoesRegiao = REGIOES.map((r) => `<option value="${r.nome}">${r.nome}</option>`).join('');
 const opcoesCategoria = htmlOpcoesCategoria();
@@ -26,6 +26,99 @@ export function renderHeader(container, options = {}) {
             </div>
         </div>
         
+        <!-- =====================================================
+        SINO DE NOTIFICAÇÕES
+        Fica no lado direito da logo, na barra azul escura.
+        ===================================================== -->
+    <div class="notificacoes-wrapper">
+
+      <button
+        type="button"
+        id="btn-notificacoes"
+        class="notificacoes-btn"
+        aria-label="Notificações"
+        aria-expanded="false"
+      >
+        ${iconBell()}
+
+        <!-- Número de notificações não lidas -->
+        <span
+          id="notificacoes-contador"
+          class="notificacoes-contador"
+        >
+          3
+        </span>
+      </button>
+
+      <!-- Painel que aparece ao clicar no sino -->
+      <div
+        id="notificacoes-painel"
+        class="notificacoes-painel is-hidden"
+      >
+
+        <div class="notificacoes-cabecalho">
+          <h3>Notificações</h3>
+
+          <button
+            type="button"
+            id="btn-marcar-lidas"
+            class="notificacoes-marcar"
+          >
+            Marcar como lidas
+          </button>
+        </div>
+
+        <div
+          id="lista-notificacoes"
+          class="notificacoes-lista"
+        >
+
+          <button
+            type="button"
+            class="notificacao-item notificacao-item--nova"
+          >
+            <span class="notificacao-ponto"></span>
+
+            <span class="notificacao-conteudo">
+              <strong>Lembrete de Evento!!!</strong>
+              <span>Amanhã você tem "Vêm Zumbar 60+".</span>
+              <small>Há 10 minutos</small>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="notificacao-item notificacao-item--nova"
+          >
+            <span class="notificacao-ponto"></span>
+
+            <span class="notificacao-conteudo">
+              <strong>Talvez esse evento te enteresse...</strong>
+              <span>Palestra: Hipertensão e Você.</span>
+              <small>Há 1 hora</small>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="notificacao-item notificacao-item--nova"
+          >
+            <span class="notificacao-ponto"></span>
+
+            <span class="notificacao-conteudo">
+              <strong>Bem-vindo ao Hub Saúde</strong>
+              <span>Seu perfil foi criado com sucesso.</span>
+              <small>Hoje</small>
+            </span>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+
+
         <!-- tiramos o avatar daqui -->
       </div>
 
@@ -61,6 +154,41 @@ export function renderHeader(container, options = {}) {
 }
 
 function bindHeaderEvents(container, showSearch) {
+    // =====================================================
+  // NOTIFICAÇÕES
+  // =====================================================
+
+  const btnNotificacoes = container.querySelector('#btn-notificacoes');
+  const painelNotificacoes = container.querySelector('#notificacoes-painel');
+
+  btnNotificacoes?.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    const estaAberto = !painelNotificacoes.classList.contains('is-hidden');
+
+    painelNotificacoes.classList.toggle('is-hidden');
+
+    btnNotificacoes.setAttribute(
+      'aria-expanded',
+      String(!estaAberto)
+    );
+  });
+
+  // Não fecha quando clicar dentro do painel
+  painelNotificacoes?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  // Fecha quando clicar fora
+  document.addEventListener('click', (e) => {
+    if (!container.querySelector('.notificacoes-wrapper')?.contains(e.target)) {
+      painelNotificacoes?.classList.add('is-hidden');
+      btnNotificacoes?.setAttribute('aria-expanded', 'false');
+    }
+  });
+  //fim da notificação
+
+
   // abre e fecha o menu do meu perfil
   const menuPerfil = container.querySelector('#perfil-dropdown');
   const btnMeuPerfil = container.querySelector('#btn-meu-perfil');

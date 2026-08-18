@@ -28,3 +28,35 @@
 .page-login .hub-checkbox-row input {
   accent-color: var(--cor-destaque);
 }
+
+/* Organiza "Lembrar de mim" e "Esqueci minha senha?"
+   na mesma linha, um em cada lado. */
+.page-login .login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Remove espaçamentos que poderiam empurrar o texto para outra posição */
+.page-login .login-options .hub-checkbox-row {
+  margin: 0;
+}
+
+/* Opção de recuperação de senha */
+.page-login .recuperar-senha {
+  margin: 0;
+}
+
+.page-login .recuperar-senha a {
+  font-size: 0.8rem;
+  color: var(--cor-destaque);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.page-login .recuperar-senha a:hover {
+  text-decoration: underline;
+}

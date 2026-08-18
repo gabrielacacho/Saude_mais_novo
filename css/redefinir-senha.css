@@ -1,0 +1,37 @@
+/* Página de redefinição de senha */
+
+/* Mantém o card com o mesmo tamanho padrão da tela de login */
+.page-redefinir-senha .auth-wrapper {
+  width: 100%;
+  max-width: 28rem;
+}
+
+/* Texto explicativo dentro do formulário */
+.page-redefinir-senha .redefinir-instrucoes {
+  margin: 0 0 1.5rem;
+  color: #4b5563;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Espaçamento do botão */
+.page-redefinir-senha .hub-btn {
+  margin-top: 1.5rem;
+}
+
+/* Área do link para voltar ao login */
+.page-redefinir-senha .hub-card-auth-footer {
+  padding: 0 1.5rem 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+/* Link "Voltar para o login" */
+.page-redefinir-senha .hub-card-auth-footer .hub-link {
+  color: var(--cor-destaque);
+  text-decoration: none;
+}
+
+.page-redefinir-senha .hub-card-auth-footer .hub-link:hover {
+  text-decoration: underline;
+}
