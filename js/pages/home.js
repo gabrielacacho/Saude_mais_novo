@@ -95,33 +95,39 @@ async function eventosFiltradosPorLocal(textoLocal) {
   return lista.filter((e) => passaFiltroEvento(e.categoria));
 }*/
 
-async function eventosFiltradosPorLocal(textoLocal) {
+async function eventosFiltradosPorLocal(textoLocal = "") {
   const eventos = await listarEventos();
   const regioes = await listarRegioes();
 
-  const regiaoId = resolveRegiaoId(textoLocal, regioes);
+  const t = textoLocal.trim().toLowerCase();
 
-  let lista;
-
-  if (regiaoId) {
-    lista = eventos.filter((e) => e.regiao === regiaoId);
-
-    if (!lista.length) lista = [...eventos];
-  } else {
-    const t = textoLocal.trim().toLowerCase();
-
-    lista = !t
-      ? [...eventos]
-      : eventos.filter((e) => {
-          const regiao = regioes.find((r) => r.id === e.regiao);
-
-          return (
-            e.localizacao.toLowerCase().includes(t) ||
-            regiao?.nome.toLowerCase().includes(t)
-          );
-        });
+  // 1. Se a busca estiver vazia (carregamento inicial), retorna TODOS os eventos da API
+  if (!t) {
+    return eventos.filter((e) => passaFiltroEvento(e.categoria));
   }
 
+  // 2. Se o usuário digitou algo, tenta resolver o ID da região
+  const regiaoId = resolveRegiaoId(textoLocal, regioes);
+
+  let lista = [];
+
+  if (regiaoId) {
+    // Filtra eventos pelo ID da região encontrada
+    lista = eventos.filter((e) => e.regiao === regiaoId);
+  } else {
+    // Busca por correspondência de texto no nome do local ou nome da região
+    lista = eventos.filter((e) => {
+      const regiao = regioes.find((r) => r.id === e.regiao);
+      const nomeRegiao = regiao ? regiao.nome.toLowerCase() : "";
+
+      return (
+        e.localizacao.toLowerCase().includes(t) ||
+        nomeRegiao.includes(t)
+      );
+    });
+  }
+
+  // 3. Aplica os filtros secundários (como categoria) e devolve a lista
   return lista.filter((e) => passaFiltroEvento(e.categoria));
 }
 
@@ -386,7 +392,7 @@ function initPanelIcons() {
 }
 
 function init() {
-  setLocal("Urca", "init");
+  setLocal("", "init");
 
   renderHeader(document.getElementById("header-root"), {
     showSearch: true,

@@ -768,29 +768,128 @@ td, tr {
 }
 
 /* rodape */
-.hub-footer-note {
-  text-align: center;
-  font-size: 0.625rem;
-  color: #6b7280;
-  margin-top: 1rem;
-  max-width: 20rem;
-  margin-left: auto;
-  margin-right: auto;
-}
+/* --- ESTILOS DO RODAPÉ (Fundo Azul + Letras Brancas) --- */
 
 .hub-footer {
+  background-color: #044272; /* Seu azul escuro */
+  color: #FFFFFF; /* Letras brancas por padrão */
+  padding: 40px 0 20px 0;
+  margin-top: auto;
+}
+
+/* Grid das 3 colunas principais */
+.hub-footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .hub-footer-grid {
+    grid-template-columns: 1fr; /* Empilha no celular */
+  }
+}
+
+/* Títulos das colunas */
+.hub-footer-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Coluna 1: Lista de Links */
+.hub-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hub-footer-links a {
+  color: #D6DDE5; /* Branco suave para os links */
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.hub-footer-links a:hover {
+  color: #22B8E6; /* Azul claro ao passar o mouse */
+}
+
+/* Coluna 2: Informações de Contato */
+.hub-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #D6DDE5;
+}
+
+.hub-footer-contact p {
+  margin: 0;
+}
+
+.hub-footer-socials {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #FFFFFF;
+}
+
+/* Coluna 3: Ajuste da Logo/Imagem da Direita */
+.hub-footer-logo-col {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  padding: 45px;
-  background-color: #044272;
 }
 
 .hub-footer-logo img {
-  width: 240px;
+  max-width: 240px;
   height: auto;
-  margin-right: 20px;
-  margin-top: -25px;
+  object-fit: contain;
+}
+
+/* Linha Divisória Fina */
+.hub-footer-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 30px 0 20px 0;
+}
+
+/* Rodapé Inferior (Copyright e Termos) */
+.hub-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 0.75rem;
+  color: #A0AEC0;
+}
+
+.hub-footer-copy {
+  margin: 0;
+}
+
+.hub-footer-legal {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hub-footer-legal a {
+  color: #A0AEC0;
+  text-decoration: none;
+}
+
+.hub-footer-legal a:hover {
+  color: #FFFFFF;
 }
 
 .logo-saude-texto {

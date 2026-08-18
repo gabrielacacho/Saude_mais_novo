@@ -5,8 +5,8 @@ export async function listarEventos() {
   //teste
   console.log("Buscando:", new URL(API_URL, import.meta.url).href);
 
-
   const resposta = await fetch(API_URL);
+  console.log(resposta)
 
   if (!resposta.ok) {
     throw new Error("Erro ao carregar os eventos");
