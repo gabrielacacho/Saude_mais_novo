@@ -152,6 +152,127 @@ async function init() {
   /*comentario*/
   configurarComentarios(ev.id);
   
+  configurarSistemaAvaliacao();
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// 1. Lista de comentários falsos para a página iniciar preenchida
+let avaliacoes = [
+  { id: 1, nome: 'Maria Silva', iniciais: 'M', nota: 5, texto: 'Evento maravilhoso! Os professores são super atenciosos com os idosos.', data: '2026-04-10T14:30:00' },
+  { id: 2, nome: 'João Pedro', iniciais: 'J', nota: 4, texto: 'Muito bom, mas achei o espaço um pouco apertado para a quantidade de pessoas.', data: '2026-04-12T09:15:00' },
+  { id: 3, nome: 'Ana Costa', iniciais: 'A', nota: 5, texto: 'Minha mãe adorou. Com certeza voltaremos na próxima edição!', data: '2026-04-15T16:45:00' }
+];
+
+// 2. Função que desenha as estrelas de acordo com a nota
+function renderizarEstrelas(nota) {
+  let estrelasHtml = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= nota) {
+      estrelasHtml += `<span class="estrela cheia">★</span>`;
+    } else {
+      estrelasHtml += `<span class="estrela">★</span>`;
+    }
+  }
+  return estrelasHtml;
+}
+
+// 3. Função para formatar a data (ex: 10/04/2026)
+function formatarData(dataString) {
+  const data = new Date(dataString);
+  return data.toLocaleDateString('pt-BR');
+}
+
+// 4. Função que pega a lista e "pinta" os comentários na tela
+function renderizarComentarios(lista) {
+  const container = document.getElementById('lista-comentarios');
+  if (!container) return;
+
+  if (lista.length === 0) {
+    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 2rem 0;">Nenhuma avaliação ainda. Seja o primeiro!</p>';
+    return;
+  }
+
+  // Transforma cada item da lista em um card de comentário HTML
+  container.innerHTML = lista.map(av => `
+    <div class="comentario-item">
+      <div class="comentario-item__header">
+        <div class="comentario-item__usuario">
+          <div class="comentario-avatar">${av.iniciais}</div>
+          <div class="comentario-nome-data">
+            <span class="comentario-nome">${av.nome}</span>
+            <span class="comentario-data">${formatarData(av.data)}</span>
+          </div>
+        </div>
+        <div class="comentario-nota">
+          ${renderizarEstrelas(av.nota)}
+        </div>
+      </div>
+      <p class="comentario-texto">${av.texto}</p>
+    </div>
+  `).join('');
+}
+
+// 5. Função principal que liga as ações na tela
+function configurarSistemaAvaliacao() {
+  const btnComentar = document.getElementById('btn-comentar');
+  const filtroSelect = document.getElementById('filtro-avaliacoes');
+
+  // Desenha os comentários logo que a página abre (do mais recente pro mais antigo)
+  renderizarComentarios(avaliacoes.sort((a, b) => new Date(b.data) - new Date(a.data)));
+
+  // Faz o filtro funcionar
+  if (filtroSelect) {
+    filtroSelect.addEventListener('change', (e) => {
+      let filtrados = [...avaliacoes];
+      if (e.target.value === 'maior-nota') {
+        filtrados.sort((a, b) => b.nota - a.nota); 
+      } else if (e.target.value === 'menor-nota') {
+        filtrados.sort((a, b) => a.nota - b.nota); 
+      } else {
+        filtrados.sort((a, b) => new Date(b.data) - new Date(a.data)); 
+      }
+      renderizarComentarios(filtrados);
+    });
+  }
+
+  // Faz o botão de publicar funcionar
+  if (btnComentar) {
+    btnComentar.addEventListener('click', () => {
+      const texto = document.getElementById('comentario-texto').value;
+      const notaSelecionada = document.querySelector('input[name="rating"]:checked');
+
+      // Trava de segurança: impede de enviar vazio
+      if (!notaSelecionada) {
+        alert('Por favor, selecione uma nota nas estrelas antes de avaliar.');
+        return;
+      }
+      if (!texto.trim()) {
+        alert('Por favor, escreva um comentário.');
+        return;
+      }
+
+      // Cria a avaliação nova
+      const novaAvaliacao = {
+        id: Date.now(),
+        nome: 'Você (Usuário Logado)',
+        iniciais: 'V',
+        nota: parseInt(notaSelecionada.value),
+        texto: texto,
+        data: new Date().toISOString()
+      };
+
+      // Coloca no topo da lista
+      avaliacoes.unshift(novaAvaliacao);
+      
+      // Limpa os campos depois que enviou
+      document.getElementById('comentario-texto').value = '';
+      notaSelecionada.checked = false;
+      
+      // Reseta o filtro e atualiza a tela
+      filtroSelect.value = 'recentes';
+      renderizarComentarios(avaliacoes);
+    });
+  }
+}
+
