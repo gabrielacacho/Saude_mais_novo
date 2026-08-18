@@ -3,7 +3,7 @@ import { getEventoById } from '../services/evento-api.js';
 
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
-import { iconCalendar, iconPin } from '../utils/icons.js';
+import { iconCalendar } from '../utils/icons.js';
 
 function renderMiniEvento(ev) {
   return `
@@ -24,7 +24,7 @@ async function init() {
   renderHeader(document.getElementById('header-root'), { showSearch: false, activePage: 'perfil' });
   renderFooter(document.getElementById('footer-root'));
 
-  document.title = `${usuario.nome} — Saúde Aqui`;
+  document.title = `${usuario.nome} — Hub Saúde`;
   
   const avatarEl = document.getElementById('perfil-avatar');
   if (avatarEl) avatarEl.textContent = usuario.avatarInicial || 'M';
@@ -58,10 +58,10 @@ async function init() {
   const secaoAdmin = document.getElementById('perfil-secao-admin');
   const secaoAvaliador = document.getElementById('avaliador-instituicao');
 
-  if (secaoInscricoes) secaoInscricoes.classList.add('is-hidden');
-  if (secaoGerenciados) secaoGerenciados.classList.add('is-hidden');
-  if (secaoAdmin) secaoAdmin.classList.add('is-hidden');
-  if (secaoAvaliador) secaoAvaliador.classList.add('is-hidden');
+  secaoInscricoes?.classList.add('is-hidden');
+  secaoGerenciados?.classList.add('is-hidden');
+  secaoAdmin?.classList.add('is-hidden');
+  secaoAvaliador?.classList.add('is-hidden');
 
   if (perfilAtual === 'comum' && usuario.inscricoes?.length) {
     secaoInscricoes?.classList.remove('is-hidden');
@@ -71,10 +71,7 @@ async function init() {
       const eventos = await Promise.all(
         usuario.inscricoes.map((id) => getEventoById(id))
       );
-      el.innerHTML = eventos
-        .filter(Boolean)
-        .map(renderMiniEvento)
-        .join('');
+      el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
     }
   }
 
@@ -86,162 +83,30 @@ async function init() {
       const eventos = await Promise.all(
         usuario.eventosGerenciados.map((id) => getEventoById(id))
       );
-      el.innerHTML = eventos
-        .filter(Boolean)
-        .map(renderMiniEvento)
-        .join('');
+      el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
     }
   }
 
-  if (perfilAtual === 'administrador' && usuario.permissoes?.length) {
-    secaoAdmin?.classList.remove('is-hidden');
-    const ul = document.getElementById('perfil-permissoes');
+  if (perfilAtual === 'administrador') {
+    if (usuario.permissoes?.length) {
+      secaoAdmin?.classList.remove('is-hidden');
+      const ul = document.getElementById('perfil-permissoes');
 
-    if (ul) {
-      ul.innerHTML = usuario.permissoes
-        .map((p) => `<li>${p.replace(/_/g, ' ')}</li>`)
-        .join('');
+      if (ul) {
+        ul.innerHTML = usuario.permissoes
+          .map((p) => `<li>${p.replace(/_/g, ' ')}</li>`)
+          .join('');
+      }
     }
-
     secaoAvaliador?.classList.remove('is-hidden');
   }
 }
 
-  document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', init);
 
 
 // ==========================================================
-// DASHBOARD DO ADMINISTRADOR
-// Filtros: Pendentes, Ativas e Bloqueadas
-// ==========================================================
-
-// ==========================================================
-// DASHBOARD DO ADMINISTRADOR
-// Filtros: Pendentes, Ativas e Bloqueadas
-// ==========================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  // Encontra o dashboard do administrador
-  const avaliador = document.getElementById('avaliador-instituicao');
-
-  if (!avaliador) return;
-
-  // Pega os três botões de filtro
-  const botoesFiltro = avaliador.querySelectorAll('.avaliador-filtro');
-
-  // Pega as linhas reais da tabela
-  const linhas = avaliador.querySelectorAll(
-    '#avaliador-instituicoes-lista tr[data-status]'
-  );
-
-  // Mostra o status escolhido
-  function aplicarFiltro(status, botaoSelecionado) {
-
-    linhas.forEach((linha) => {
-
-      // Mostra a linha se o status for igual ao filtro
-      if (linha.dataset.status === status) {
-        linha.style.display = '';
-      } else {
-        linha.style.display = 'none';
-      }
-
-    });
-
-    // Remove o destaque dos botões
-    botoesFiltro.forEach((botao) => {
-      botao.classList.remove('avaliador-filtro--ativo');
-    });
-
-    // Destaca o botão escolhido
-    botaoSelecionado?.classList.add('avaliador-filtro--ativo');
-
-    // Verifica se existem instituições nesse status
-    const existeInstituicao = Array.from(linhas).some(
-      (linha) => linha.dataset.status === status
-    );
-
-    mostrarMensagemVazia(status, !existeInstituicao);
-  }
-
-
-  // Mostra mensagem quando não houver instituições
-  function mostrarMensagemVazia(status, vazio) {
-
-    const tbody = document.getElementById(
-      'avaliador-instituicoes-lista'
-    );
-
-    if (!tbody) return;
-
-    // Remove mensagem anterior
-    tbody.querySelector('.avaliador-mensagem-vazia')?.remove();
-
-    if (!vazio) return;
-
-    let mensagem = '';
-
-    if (status === 'ativa') {
-      mensagem = 'Nenhuma instituição ativa no momento.';
-    }
-
-    if (status === 'bloqueada') {
-      mensagem = 'Nenhuma instituição bloqueada no momento.';
-    }
-
-    // Cria a mensagem apenas para categorias vazias
-    if (mensagem) {
-      const linhaMensagem = document.createElement('tr');
-
-      linhaMensagem.className = 'avaliador-mensagem-vazia';
-
-      linhaMensagem.innerHTML = `
-        <td colspan="4">
-          ${mensagem}
-        </td>
-      `;
-
-      tbody.appendChild(linhaMensagem);
-    }
-  }
-
-
-  // Configura os cliques dos filtros
-  botoesFiltro.forEach((botao) => {
-
-    botao.addEventListener('click', () => {
-
-      const filtro = botao.dataset.filtro;
-
-      // Converte o nome do botão para o status usado nas linhas
-      const status = filtro === 'pendentes'
-        ? 'pendente'
-        : filtro === 'ativas'
-          ? 'ativa'
-          : 'bloqueada';
-
-      aplicarFiltro(status, botao);
-    });
-
-  });
-
-
-  // Começa mostrando os pendentes
-  const botaoPendentes = avaliador.querySelector(
-    '[data-filtro="pendentes"]'
-  );
-
-  if (botaoPendentes) {
-    aplicarFiltro('pendente', botaoPendentes);
-  }
-
-});
-
-
-// ==========================================================
-// MODAL "VER FICHA"
-// Código que você já tinha
+// FILTROS COM MENSAGEM VAZIA E MODAL
 // ==========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -249,33 +114,75 @@ document.addEventListener('DOMContentLoaded', () => {
   const fecharModalFicha = document.querySelector('.modal-ficha__fechar');
   const nomeInstituicao = document.getElementById('modal-nome-instituicao');
 
-  const botoesVerFicha = document.querySelectorAll('.avaliador-ver-ficha');
+  // Função para aplicar filtro e controlar mensagem de tabela vazia
+  function aplicarFiltroAvaliador(filtroTipo, botaoClicado) {
+    const avaliador = document.getElementById('avaliador-instituicao');
+    if (!avaliador) return;
 
-  botoesVerFicha.forEach((botao) => {
-    botao.addEventListener('click', () => {
-      const linha = botao.closest('tr');
+    const tbody = avaliador.querySelector('#avaliador-instituicoes-lista');
+    if (!tbody) return;
 
-      if (!linha || !modalFicha || !nomeInstituicao) {
-        return;
+    const statusAlvo = filtroTipo === 'pendentes' ? 'pendente' : filtroTipo === 'ativas' ? 'ativa' : 'bloqueada';
+    const linhas = tbody.querySelectorAll('tr[data-status]');
+    const botoesFiltro = avaliador.querySelectorAll('.avaliador-filtro');
+
+    let totalVisiveis = 0;
+
+    linhas.forEach((linha) => {
+      if (linha.dataset.status === statusAlvo) {
+        linha.style.display = '';
+        totalVisiveis++;
+      } else {
+        linha.style.display = 'none';
       }
-
-      const nome = linha.querySelector('td')?.textContent.trim();
-
-      if (nome) {
-        nomeInstituicao.textContent = nome;
-      }
-
-      modalFicha.style.display = 'flex';
     });
-  });
 
-  fecharModalFicha?.addEventListener('click', () => {
-    if (modalFicha) modalFicha.style.display = 'none';
-  });
+    // Atualiza botões
+    botoesFiltro.forEach((b) => b.classList.remove('avaliador-filtro--ativo'));
+    botaoClicado?.classList.add('avaliador-filtro--ativo');
 
-  modalFicha?.addEventListener('click', (evento) => {
-    if (evento.target === modalFicha) {
-      modalFicha.style.display = 'none';
+    // Gerencia a mensagem vazia
+    tbody.querySelector('.avaliador-mensagem-vazia')?.remove();
+
+    if (totalVisiveis === 0) {
+      const mensagens = {
+        pendente: 'Nenhuma instituição pendente no momento.',
+        ativa: 'Nenhuma instituição ativa no momento.',
+        bloqueada: 'Nenhuma instituição bloqueada no momento.'
+      };
+
+      const trVazia = document.createElement('tr');
+      trVazia.className = 'avaliador-mensagem-vazia';
+      trVazia.innerHTML = `<td colspan="4" style="text-align: center; color: #64748b; padding: 1.5rem;">${mensagens[statusAlvo]}</td>`;
+      tbody.appendChild(trVazia);
     }
+  }
+
+  // Escuta os cliques no documento
+  document.addEventListener('click', (evento) => {
+    
+    // Clique nos botões de filtro
+    const botaoFiltro = evento.target.closest('.avaliador-filtro');
+    if (botaoFiltro) {
+      const filtro = botaoFiltro.dataset.filtro;
+      aplicarFiltroAvaliador(filtro, botaoFiltro);
+    }
+
+    // Clique no botão "Ver Ficha"
+    const botaoVerFicha = evento.target.closest('.avaliador-ver-ficha');
+    if (botaoVerFicha) {
+      const linha = botaoVerFicha.closest('tr');
+      if (linha && modalFicha && nomeInstituicao) {
+        const nome = linha.querySelector('td')?.textContent.trim();
+        if (nome) nomeInstituicao.textContent = nome;
+        modalFicha.classList.remove('is-hidden');
+      }
+    }
+  });
+
+  // Fechar Modal
+  fecharModalFicha?.addEventListener('click', () => modalFicha?.classList.add('is-hidden'));
+  modalFicha?.addEventListener('click', (evento) => {
+    if (evento.target === modalFicha) modalFicha.classList.add('is-hidden');
   });
 });
