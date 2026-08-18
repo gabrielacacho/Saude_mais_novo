@@ -1,9 +1,9 @@
-/* Página de detalhes do evento*/
+/* css/evento.css */
 
 .page-evento main {
-  max-width: 56rem;
+  max-width: 72rem;
   margin: 0 auto;
-  padding: 1rem 1rem 3rem;
+  padding: 2rem 1rem 4rem;
 }
 
 .evento-erro {
@@ -14,266 +14,370 @@
 }
 
 .evento-erro p {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--cor-destaque);
+  color: var(--cor-destaque, #003B8E);
   margin-bottom: 1rem;
+}
+
+.evento-header {
+  margin-bottom: 2rem;
 }
 
 .evento-banner-wrap {
   position: relative;
-  margin-top: 1rem;
-  border-radius: 1rem;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
 }
 
 .evento-banner__img {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 21 / 9;
   object-fit: cover;
   display: block;
 }
 
 .evento-banner__tag {
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  background-color: var(--cor-destaque);
+  top: 1.5rem;
+  left: 1.5rem;
+  background-color: var(--cor-destaque, #003B8E);
   color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.evento-info {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.evento-titulo-wrap h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
 }
 
-@media (min-width: 768px) {
-  .evento-info {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
+.evento-estrelas-geral {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1.5rem;
 }
 
-.evento-info__detalhes {
+.estrela { color: #e5e7eb; }
+.estrela.cheia { color: #fbbf24; }
+.estrela.meia { color: #fbbf24; opacity: 0.5; }
+
+.estrelas-nota {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #374151;
+  margin-left: 0.75rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.estrelas-total {
   font-size: 0.875rem;
+  font-weight: 400;
+  color: #6b7280;
 }
 
-.evento-acoes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 100%;
+.evento-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
 }
 
-@media (min-width: 640px) {
-  .evento-acoes {
-    flex-direction: row;
+@media (min-width: 1024px) {
+  .evento-layout-grid {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
   }
 }
 
-@media (min-width: 768px) {
-  .evento-acoes {
-    width: auto;
-  }
-}
-
-.evento-acoes .hub-btn {
-  flex: 1;
-  min-width: 10rem;
-}
-
-.evento-acoes .hub-btn--inscrito {
-  background-color: var(--cor-botao-inscrito) !important;
-}
-
-.evento-descricao {
-  margin-top: 2rem;
-  border: 4px solid var(--cor-borda);
-  border-radius: 1rem;
-  padding: 1.5rem 2rem;
-  background: var(--cor-fundo-claro);
+.evento-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 2rem;
 }
 
 .evento-descricao h2 {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin: 0 0 1rem;
-  line-height: 1.4;
-}
-
-@media (min-width: 768px) {
-  .evento-descricao h2 {
-    font-size: 1.125rem;
-  }
+  color: #111827;
+  margin: 0 0 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .evento-descricao p {
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: #1f2937;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #374151;
   margin: 0;
 }
 
+.evento-info-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.75rem;
+}
+
+.evento-info__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.evento-info__item .evento-meta-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  background: #f3f4f6;
+  padding: 0.75rem;
+  border-radius: 12px;
+}
+
+.evento-info__item div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.evento-info__item strong {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.evento-info__item span, 
+.evento-info__item a {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.evento-link-mapa {
+  color: var(--cor-destaque, #003B8E) !important;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.evento-link-mapa:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.barra-progresso {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progresso-fill {
+  height: 100%;
+  background: var(--cor-destaque, #003B8E);
+  border-radius: 999px;
+}
+
+.evento-acoes-box {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.hub-btn--full {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
 .evento-voltar {
-  margin-top: 1.5rem;
   text-align: center;
+  margin-top: 1.25rem;
 }
 
 .evento-voltar a {
-  font-size: 0.875rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.evento-meta-icon {
-  display: inline-flex;
-  flex-shrink: 0;
+.evento-voltar a:hover {
+  color: #111827;
 }
 
-.hub-btn--disabled {
-  opacity: 0.65;
-  pointer-events: none;
-  cursor: default;
+.secao-comentarios {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
-/*comentario*/
-.evento-comentarios{
-    margin-top:32px;
+.comentarios-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-#lista-comentarios{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    margin-bottom:16px;
-}
-
-.evento-comentario{
-    padding:16px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    background:#fff;
-}
-
-.evento-comentario__usuario{
-    font-weight:600;
-    margin-bottom:6px;
-}
-
-.evento-comentario__data{
-    font-size:.85rem;
-    color:#777;
-    margin-bottom:8px;
-}
-
-#comentario-texto{
-    width:100%;
-    min-height:90px;
-    margin-bottom:12px;
-}
-
-/* ==========================================================================
-   ESTILIZAÇÃO DOS DESTAQUES E ACESSIBILIDADE (AJUSTE DE COR E ESPAÇAMENTO)
-   ========================================================================== */
-
-/* Ajusta o container geral aumentando o espaçamento entre as linhas */
-.page-evento .evento-info__detalhes {
-    font-size: 1.1rem; 
-    gap: 1.25rem;      /* Aumentou o espaçamento vertical entre cada item */
-}
-
-/* Garante o alinhamento perfeito à esquerda e remove recuos */
-.page-evento .evento-info__detalhes .hub-meta-row,
-.page-evento .evento-info__detalhes #evento-categoria,
-.page-evento .evento-info__detalhes #evento-status {
-    display: flex;
+@media (min-width: 640px) {
+  .comentarios-header {
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+  }
 }
 
-/* --- DATA E LOCAL (COR PRETA E MAIOR) --- */
-.page-evento .evento-info__detalhes #evento-data,
-.page-evento .evento-info__detalhes #evento-local {
-    font-size: 1.25rem;       /* Fonte ligeiramente maior */
-    font-weight: 600;       
-    color: #000000;           /* Preto Puro */
+.comentarios-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
 }
 
-
-/* --- CATEGORIA (CAMPANHA) --- */
-.page-evento .evento-info__detalhes #evento-categoria {
-    background: transparent;
-    border: none;
-    text-transform: none;
-}
-.page-evento .evento-info__detalhes #evento-categoria::before { 
-    content: "Categoria: "; 
-    color: #000000;           /* Preto Puro */
-    font-weight: 700;         /* Negrito para destacar o rótulo */
-    margin-right: 0.5rem; 
-}
-.page-evento .evento-info__detalhes #evento-categoria::after {
-    content: "Campanha";                  
-    color: var(--cor-destaque); /* Mantém o azul escuro padrão para a palavra Campanha */
-    font-weight: 700;           
-}
-.page-evento .evento-info__detalhes #evento-categoria { font-size: 0; }
-.page-evento .evento-info__detalhes #evento-categoria::before { font-size: 1.25rem; }
-.page-evento .evento-info__detalhes #evento-categoria::after { font-size: 1.25rem; }
-
-
-/* --- STATUS (ATIVO) --- */
-.page-evento .evento-info__detalhes #evento-status {
-    background: transparent;
-    border: none;
-    text-transform: none;
-}
-.page-evento .evento-info__detalhes #evento-status::before { 
-    content: "Status: "; 
-    color: #000000;           /* Preto Puro */
-    font-weight: 700;         
-    margin-right: 0.5rem; 
-}
-.page-evento .evento-info__detalhes #evento-status::after {
-    content: "Ativo";
-    background-color: #dcfce7; /* Fundo verde claro */
-    color: #15803d;            /* Texto verde escuro de dentro */
-    border: 1px solid #bbf7d0;
-    font-size: 0.95rem;        /* Ajuste fino na elipse */
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 0.35rem 1.1rem;
-    border-radius: 9999px;     
-    box-shadow: 0 2px 4px rgba(21, 128, 61, 0.08);
-}
-.page-evento .evento-info__detalhes #evento-status { font-size: 0; }
-.page-evento .evento-info__detalhes #evento-status::before { font-size: 1.25rem; }
-.page-evento .evento-info__detalhes #evento-status::after { font-size: 0.95rem; }
-
-
-/* --- NÚMERO MÁXIMO DE INSCRITOS / CAPACIDADE --- */
-.page-evento .evento-info__detalhes #evento-capacidade {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #000000;           /* Número do contador em Preto */
+.comentario-form {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Cria a palavra "Inscritos: " em preto antes do número */
-.page-evento .evento-info__detalhes #evento-capacidade::before {
-    content: "Inscritos: ";
-    color: #000000;           /* Preto Puro */
-    font-weight: 700;
-    margin-right: 0.4rem;
+.comentario-form h3 {
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.avaliacao-input {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.avaliacao-input input {
+  display: none;
+}
+
+.avaliacao-input label {
+  font-size: 2rem;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.avaliacao-input label:hover,
+.avaliacao-input label:hover ~ label,
+.avaliacao-input input:checked ~ label {
+  color: #fbbf24;
+}
+
+#comentario-texto {
+  width: 100%;
+  min-height: 100px;
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s;
+}
+
+#comentario-texto:focus {
+  outline: none;
+  border-color: var(--cor-destaque, #003B8E);
+  box-shadow: 0 0 0 3px rgba(0, 59, 142, 0.1);
+}
+
+.comentario-form-acoes {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comentarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comentario-item {
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.comentario-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.comentario-item__usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.comentario-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--cor-destaque, #003B8E);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.comentario-nome-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.comentario-nome {
+  font-weight: 700;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+.comentario-data {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.comentario-nota {
+  color: #fbbf24;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+.comentario-texto {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
 }

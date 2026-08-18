@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vem Zumbar 60+ — Hub Saúde</title>
+  <title>Vem Zumbar 60+ — Saúde Aqui</title>
   <link rel="icon" type="image/png" href="./imagem/favicon.png" />
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/evento.css" />
@@ -17,66 +17,135 @@
   </div>
 
   <main id="evento-conteudo">
-    <div class="evento-banner-wrap">
-      <img
-        id="evento-banner"
-        class="evento-banner__img"
-        src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&q=80"
-        alt="Vem Zumbar 60+"
-      />
-      <div id="evento-tag" class="evento-banner__tag">Vem Zumbar 60+</div>
+    <div class="evento-header">
+      <div class="evento-banner-wrap">
+        <img
+          id="evento-banner"
+          class="evento-banner__img"
+          src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&q=80"
+          alt="Vem Zumbar 60+"
+        />
+        <div id="evento-tag" class="evento-banner__tag">Campanha</div>
+      </div>
+      
+      <div class="evento-titulo-wrap">
+        <h1 id="evento-descricao-titulo">💃 Vem Zumbar 60+: Energia, Saúde e Diversão!</h1>
+        <div class="evento-estrelas-geral" aria-label="Avaliação de 4.5 estrelas">
+          <span class="estrela cheia">★</span>
+          <span class="estrela cheia">★</span>
+          <span class="estrela cheia">★</span>
+          <span class="estrela cheia">★</span>
+          <span class="estrela meia">★</span>
+          <span class="estrelas-nota">4.5 <span class="estrelas-total">(12 avaliações)</span></span>
+        </div>
+      </div>
     </div>
 
-    <section class="evento-info">
-      <div class="evento-info__detalhes">
-        <p class="hub-meta-row">
-          <span class="evento-meta-icon evento-meta-icon--cal" aria-hidden="true"></span>
-          <span id="evento-data">18/05/2026</span>
-        </p>
-        <p class="hub-meta-row">
-          <span class="evento-meta-icon evento-meta-icon--pin" aria-hidden="true"></span>
-          <span id="evento-local">Pérola Negra</span>
-        </p>
-        <span id="evento-categoria" class="hub-tag">Campanha</span>
-        <span id="evento-status" class="hub-tag">Ativo</span>
-        <p class="hub-meta-row">
-          <span class="evento-meta-icon evento-meta-icon--users" aria-hidden="true"></span>
-          <span id="evento-capacidade">10 / 15</span>
-        </p>
+    <div class="evento-layout-grid">
+      <div class="evento-coluna-principal">
+        <section class="evento-card evento-descricao">
+          <h2>Sobre a Ação</h2>
+          <p id="evento-descricao">
+            Quem disse que o ritmo tem idade? Está chegando o Vem Zumbar 60+, um evento pensado exclusivamente para quem quer celebrar a vida com movimento, música e muita alegria! Oportunidade perfeita para exercitar o corpo de forma leve, ao som de ritmos latinos e internacionais, em um ambiente totalmente festivo e seguro.
+          </p>
+        </section>
+
+        <section class="evento-card secao-comentarios">
+          <div class="comentarios-header">
+            <h2>Avaliações e Comentários</h2>
+            <div class="comentarios-filtro">
+              <label for="filtro-avaliacoes" class="sr-only">Filtrar por</label>
+              <select id="filtro-avaliacoes" class="hub-select">
+                <option value="recentes">Mais recentes</option>
+                <option value="maior-nota">Maior nota</option>
+                <option value="menor-nota">Menor nota</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="comentario-form">
+            <h3>Deixe sua avaliação</h3>
+            <div class="avaliacao-input">
+              <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 estrelas">★</label>
+              <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 estrelas">★</label>
+              <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 estrelas">★</label>
+              <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 estrelas">★</label>
+              <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 estrela">★</label>
+            </div>
+            <textarea
+              id="comentario-texto"
+              class="hub-input"
+              placeholder="Conte como foi sua experiência..."
+            ></textarea>
+            <div class="comentario-form-acoes">
+              <button id="btn-comentar" class="hub-btn hub-btn--primary">Publicar Avaliação</button>
+            </div>
+          </div>
+
+          <div id="lista-comentarios" class="comentarios-lista"></div>
+        </section>
       </div>
 
-      <div class="evento-acoes">
-        <button type="button" id="btn-inscrever" class="hub-btn hub-btn--primary">Inscrever-se</button>
-        <a href="#" class="hub-btn hub-btn--primary hub-btn--disabled" aria-disabled="true">Página do Evento</a>
-      </div>
-    </section>
+      <aside class="evento-coluna-lateral">
+        <div class="evento-card evento-info-lateral">
+          <div class="evento-info__item">
+            <span class="evento-meta-icon">📅</span>
+            <div>
+              <strong>Início</strong>
+              <span id="evento-data-inicio">18/05/2026 às 09:00</span>
+            </div>
+          </div>
+          
+          <div class="evento-info__item">
+            <span class="evento-meta-icon">🏁</span>
+            <div>
+              <strong>Fim</strong>
+              <span id="evento-data-fim">18/05/2026 às 12:00</span>
+            </div>
+          </div>
+          
+          <div class="evento-info__item">
+            <span class="evento-meta-icon">📍</span>
+            <div>
+              <strong>Local</strong>
+              <a href="https://maps.google.com/?q=Pérola+Negra+Urca+Rio+de+Janeiro" target="_blank" id="evento-local" class="evento-link-mapa">Pérola Negra, Urca</a>
+            </div>
+          </div>
 
-    <section class="evento-descricao">
-      <h2 id="evento-descricao-titulo">💃 Vem Zumbar 60+: Energia, Saúde e Diversão!</h2>
-      <p id="evento-descricao">
-        Quem disse que o ritmo tem idade? Está chegando o Vem Zumbar 60+, um evento pensado exclusivamente para quem quer celebrar a vida com movimento, música e muita alegria!
-      </p>
-    </section>
+          <div class="evento-info__item">
+            <span class="evento-meta-icon">🏥</span>
+            <div>
+              <strong>Unidade de Referência</strong>
+              <span id="evento-unidade">UBS Praia Vermelha</span>
+            </div>
+          </div>
 
-    <!--comentarios-->
-    <section class="evento-comentarios">
-      <h2>Comentários</h2>
-      <div id="lista-comentarios"></div>
-      <input
-        type="text"
-        id="comentario-texto"
-        class="hub-input"
-        placeholder="Escreva um comentário...">
-      <button
-        id="btn-comentar"
-        class="hub-btn hub-btn--primary">
-        Comentar
-      </button>
-    </section>
+          <div class="evento-info__item">
+            <span class="evento-meta-icon">🏛️</span>
+            <div>
+              <strong>Instituição</strong>
+              <span id="evento-instituicao">Secretaria Municipal de Saúde</span>
+            </div>
+          </div>
 
-    <p class="evento-voltar">
-      <a href="index.html" class="hub-link">← Voltar para eventos</a>
-    </p>
+          <div class="evento-info__item">
+            <span class="evento-meta-icon">👥</span>
+            <div>
+              <strong>Vagas Preenchidas</strong>
+              <span id="evento-capacidade">10 / 15</span>
+              <div class="barra-progresso"><div class="progresso-fill" style="width: 66%;"></div></div>
+            </div>
+          </div>
+
+          <div class="evento-acoes-box">
+            <button type="button" id="btn-inscrever" class="hub-btn hub-btn--primary hub-btn--full">Garantir Minha Vaga</button>
+            <p class="evento-voltar">
+              <a href="index.html" class="hub-link">← Voltar para a agenda</a>
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
   </main>
 
   <footer id="footer-root"></footer>

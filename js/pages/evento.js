@@ -151,6 +151,7 @@ async function init() {
   renderEvento(ev);
   /*comentario*/
   configurarComentarios(ev.id);
+  
 }
 
 document.addEventListener('DOMContentLoaded', init);
