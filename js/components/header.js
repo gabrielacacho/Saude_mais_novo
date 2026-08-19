@@ -17,7 +17,7 @@ export function renderHeader(container, options = {}) {
             <img src="./imagem/Logo-PrefeituraSUS.png" alt="Prefeitura do Rio" class="logo-prefeitura">
         </div>
 
-<div class="hub-brand-center">
+        <div class="hub-brand-center">
             <div class="logo-saude-texto">
                 <a href="./index.html" style="display: flex; align-items: center;">
                     Saúde<span>Aqui</span>
@@ -26,10 +26,6 @@ export function renderHeader(container, options = {}) {
             </div>
         </div>
         
-        <!-- =====================================================
-        SINO DE NOTIFICAÇÕES
-        Fica no lado direito da logo, na barra azul escura.
-        ===================================================== -->
     <div class="notificacoes-wrapper">
 
       <button
@@ -80,7 +76,7 @@ export function renderHeader(container, options = {}) {
             <span class="notificacao-ponto"></span>
 
             <span class="notificacao-conteudo">
-              <strong>Lembrete de Evento!!!</strong>
+              <strong>Lembrete de Evento.</strong>
               <span>Amanhã você tem "Vêm Zumbar 60+".</span>
               <small>Há 10 minutos</small>
             </span>
@@ -106,7 +102,7 @@ export function renderHeader(container, options = {}) {
             <span class="notificacao-ponto"></span>
 
             <span class="notificacao-conteudo">
-              <strong>Bem-vindo ao Hub Saúde</strong>
+              <strong>Bem-vindo(a) ao Saúde Aqui!</strong>
               <span>Seu perfil foi criado com sucesso.</span>
               <small>Hoje</small>
             </span>
@@ -118,8 +114,6 @@ export function renderHeader(container, options = {}) {
     </div>
 
 
-
-        <!-- tiramos o avatar daqui -->
       </div>
 
       <!-- barra azul clara mais fininha -->
@@ -127,6 +121,11 @@ export function renderHeader(container, options = {}) {
         <div class="hub-container nav-links">
           ${activePage !== 'home' ? '<a href="index.html" class="nav-item">Início</a>' : ''}
           <a href="sobre.html" class="nav-item">Sobre Nós</a>
+          
+          <!-- NOVO BOTÃO AQUI (Nasce invisível e ganha cor destaque) -->
+          <a href="como-cadastrar.html" id="nav-btn-cadastrar-evento" class="nav-item is-hidden" style="color: var(--cor-destaque, #003B8E); font-weight: 700;">
+            Como cadastrar evento
+          </a>
           
           <!-- wrapper do meu perfil pra ancorar o menu -->
           <div class="nav-dropdown-wrapper">
@@ -308,4 +307,27 @@ function bindHeaderEvents(container, showSearch) {
       window.location.href = 'perfil.html';
     });
   });
+
+  // ==========================================
+  // CONTROLE DO BOTÃO "COMO CADASTRAR EVENTO"
+  // ==========================================
+  const btnCadastrarEvento = container.querySelector('#nav-btn-cadastrar-evento');
+
+  const atualizarMenuInstitucional = () => {
+    const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
+    
+    if (btnCadastrarEvento) {
+      if (perfilAtual === 'institucional') {
+        btnCadastrarEvento.classList.remove('is-hidden');
+      } else {
+        btnCadastrarEvento.classList.add('is-hidden');
+      }
+    }
+  };
+
+  // Roda uma vez assim que a barra carrega para checar se o usuário já é Institucional
+  atualizarMenuInstitucional();
+
+  // Fica escutando caso a pessoa troque de perfil no sistema
+  window.addEventListener('perfil-alterado', atualizarMenuInstitucional);
 }

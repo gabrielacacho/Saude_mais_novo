@@ -69,9 +69,18 @@
   font-size: 1.5rem;
 }
 
-.estrela { color: #e5e7eb; }
-.estrela.cheia { color: #fbbf24; }
-.estrela.meia { color: #fbbf24; opacity: 0.5; }
+.estrela {
+  color: #e5e7eb;
+}
+
+.estrela.cheia {
+  color: #fbbf24;
+}
+
+.estrela.meia {
+  color: #fbbf24;
+  opacity: 0.5;
+}
 
 .estrelas-nota {
   font-size: 1.125rem;
@@ -141,21 +150,21 @@
 }
 
 .evento-info__item .evento-meta-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f3f4f6;
-    padding: 0.75rem;
-    border-radius: 12px;
-    color: var(--cor-destaque, #003B8E); /* Pinta o ícone da cor azul padrão do sistema */
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  padding: 0.75rem;
+  border-radius: 12px;
+  color: var(--cor-destaque, #003B8E);
+  /* Pinta o ícone da cor azul padrão do sistema */
+}
 
-  /* Define a espessura e tamanho dos vetores */
-  .evento-info__item .evento-meta-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 1.5;
-  }
+/* Define a espessura e tamanho dos vetores */
+.evento-info__item .evento-meta-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.5;
 }
 
 .evento-info__item div {
@@ -171,7 +180,7 @@
   color: #6b7280;
 }
 
-.evento-info__item span, 
+.evento-info__item span,
 .evento-info__item a {
   font-size: 1rem;
   font-weight: 600;
@@ -295,8 +304,8 @@
 }
 
 .avaliacao-input label:hover,
-.avaliacao-input label:hover ~ label,
-.avaliacao-input input:checked ~ label {
+.avaliacao-input label:hover~label,
+.avaliacao-input input:checked~label {
   color: #fbbf24;
 }
 
@@ -334,7 +343,7 @@
   border: 1px solid #f3f4f6;
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .comentario-item__header {

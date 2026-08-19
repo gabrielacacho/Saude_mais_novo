@@ -1,4 +1,3 @@
-//import { getEventoById } from '../mock-data.js';
 import { getEventoById } from '../services/evento-api.js';
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
@@ -18,30 +17,56 @@ function getQueryId() {
 }
 
 function renderEvento(ev) {
-  document.title = `${ev.titulo} — Hub Saúde`;
+  document.title = `${ev.titulo} — Saúde Aqui`;
 
   const banner = document.getElementById('evento-banner');
   const tag = document.getElementById('evento-tag');
-  const data = document.getElementById('evento-data');
+  const dataInicio = document.getElementById('evento-data-inicio');
+  const dataFim = document.getElementById('evento-data-fim');
   const local = document.getElementById('evento-local');
-  const categoria = document.getElementById('evento-categoria');
+  const unidade = document.getElementById('evento-unidade');
+  const instituicao = document.getElementById('evento-instituicao');
   const capacidade = document.getElementById('evento-capacidade');
+  const barraFill = document.getElementById('barra-fill');
   const descricao = document.getElementById('evento-descricao');
   const tituloDesc = document.getElementById('evento-descricao-titulo');
-  const status = document.getElementById('evento-status');
 
   if (banner) {
     banner.src = ev.foto_capa;
     banner.alt = ev.titulo;
   }
-  if (tag) tag.textContent = ev.titulo;
-  if (data) data.textContent = ev.dataExibicao;
-  if (local) local.textContent = ev.localizacao;
-  if (categoria) categoria.textContent = ev.categoria;
-  if (status) status.textContent = ev.status;
-  if (capacidade) capacidade.textContent = `${ev.numero_participantes} / ${ev.capacidade_maxima}`;
+  if (tag) tag.textContent = ev.categoria || 'Evento';
+  if (tituloDesc) tituloDesc.textContent = ev.titulo;
   if (descricao) descricao.textContent = ev.descricao;
-  if (tituloDesc) tituloDesc.textContent = `💃 ${ev.titulo}: Energia, Saúde e Diversão!`;
+
+  if (dataInicio) dataInicio.textContent = ev.dataExibicao ? `${ev.dataExibicao} às 09:00` : 'A definir';
+  if (dataFim) dataFim.textContent = ev.dataExibicao ? `${ev.dataExibicao} às 12:00` : 'A definir';
+  
+  if (local) {
+    // Atualiza o nome do local
+    local.textContent = ev.localizacao;
+    // Força a atualização do link do mapa (agora sem falhas)
+    const buscaMapa = encodeURIComponent(`${ev.localizacao}, Rio de Janeiro`);
+    local.setAttribute('href', `https://maps.google.com/?q=${buscaMapa}`);
+  }
+
+  if (unidade) unidade.textContent = ev.unidade || 'UBS / Clínica da Família local';
+  if (instituicao) instituicao.textContent = ev.instituicao || 'Secretaria Municipal de Saúde';
+
+  if (capacidade) {
+    const inscritos = ev.numero_participantes || 0;
+    const max = ev.capacidade_maxima || 15;
+    
+    capacidade.textContent = `${inscritos} / ${max}`;
+    
+    if (barraFill) {
+      const porcentagem = Math.min((inscritos / max) * 100, 100);
+      barraFill.style.width = `${porcentagem}%`;
+      if (porcentagem >= 100) {
+        barraFill.style.backgroundColor = '#E63946';
+      }
+    }
+  }
 
   const btnInscrever = document.getElementById('btn-inscrever');
   const inscritoKey = `inscrito_${ev.id}`;
@@ -49,12 +74,22 @@ function renderEvento(ev) {
 
   const atualizarBotao = (inscrito) => {
     if (!btnInscrever) return;
+    const lotado = (ev.numero_participantes >= ev.capacidade_maxima);
+
     if (inscrito) {
       btnInscrever.textContent = 'Inscrito ✅';
       btnInscrever.classList.add('hub-btn--inscrito');
-    } else {
-      btnInscrever.textContent = 'Inscrever-se';
+      btnInscrever.disabled = false;
+    } else if (lotado) {
+      btnInscrever.textContent = 'Vagas Esgotadas';
       btnInscrever.classList.remove('hub-btn--inscrito');
+      btnInscrever.style.opacity = '0.5';
+      btnInscrever.style.pointerEvents = 'none';
+    } else {
+      btnInscrever.textContent = 'Garantir Minha Vaga';
+      btnInscrever.classList.remove('hub-btn--inscrito');
+      btnInscrever.style.opacity = '1';
+      btnInscrever.style.pointerEvents = 'auto';
     }
   };
 
@@ -67,123 +102,28 @@ function renderEvento(ev) {
   });
 }
 
-/*comentarios*/
-function renderComentarios(eventoId) {
-
-  const lista = document.getElementById('lista-comentarios');
-
-  if (!lista) return;
-
-  const comentarios = JSON.parse(
-    localStorage.getItem(`comentarios_${eventoId}`) || '[]'
-  );
-
-  lista.innerHTML = '';
-
-  comentarios.forEach(c => {
-
-    lista.innerHTML += `
-      <div class="evento-comentario">
-        <div class="evento-comentario__usuario">${c.usuario}</div>
-        <div class="evento-comentario__data">${c.data}</div>
-        <p>${c.texto}</p>
-      </div>
-    `;
-
-  });
-
-}
-
-function configurarComentarios(eventoId){
-
-  const botao = document.getElementById('btn-comentar');
-  const textarea = document.getElementById('comentario-texto');
-
-  if(!botao || !textarea) return;
-
-  renderComentarios(eventoId);
-
-  botao.addEventListener('click',()=>{
-
-    const texto = textarea.value.trim();
-
-    if(!texto) return;
-
-    const comentarios = JSON.parse(
-      localStorage.getItem(`comentarios_${eventoId}`) || '[]'
-    );
-
-    comentarios.push({
-      usuario:'Usuário',
-      texto,
-      data:new Date().toLocaleString('pt-BR')
-    });
-
-    localStorage.setItem(
-      `comentarios_${eventoId}`,
-      JSON.stringify(comentarios)
-    );
-
-    textarea.value='';
-
-    renderComentarios(eventoId);
-
-  });
-
-}
-
-//function init() 
-async function init() {
-  renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'evento' });
-  renderFooter(document.getElementById('footer-root'));
-  injectEventoIcons();
-
-  const id = getQueryId() || 'evt-1';
-  //const ev = getEventoById(id);
-  const ev = await getEventoById(id);
-
-  if (!ev) {
-    document.getElementById('evento-conteudo')?.classList.add('is-hidden');
-    document.getElementById('evento-erro')?.classList.remove('is-hidden');
-    return;
-  }
-
-  renderEvento(ev);
-  /*comentario*/
-  configurarComentarios(ev.id);
-  
-  configurarSistemaAvaliacao();
-}
-
-document.addEventListener('DOMContentLoaded', init);
-
-// 1. Lista de comentários falsos para a página iniciar preenchida
+// ==========================================
+// SISTEMA DE AVALIAÇÕES 
+// ==========================================
 let avaliacoes = [
   { id: 1, nome: 'Maria Silva', iniciais: 'M', nota: 5, texto: 'Evento maravilhoso! Os professores são super atenciosos com os idosos.', data: '2026-04-10T14:30:00' },
   { id: 2, nome: 'João Pedro', iniciais: 'J', nota: 4, texto: 'Muito bom, mas achei o espaço um pouco apertado para a quantidade de pessoas.', data: '2026-04-12T09:15:00' },
   { id: 3, nome: 'Ana Costa', iniciais: 'A', nota: 5, texto: 'Minha mãe adorou. Com certeza voltaremos na próxima edição!', data: '2026-04-15T16:45:00' }
 ];
 
-// 2. Função que desenha as estrelas de acordo com a nota
 function renderizarEstrelas(nota) {
   let estrelasHtml = '';
   for (let i = 1; i <= 5; i++) {
-    if (i <= nota) {
-      estrelasHtml += `<span class="estrela cheia">★</span>`;
-    } else {
-      estrelasHtml += `<span class="estrela">★</span>`;
-    }
+    estrelasHtml += `<span class="estrela ${i <= nota ? 'cheia' : ''}">★</span>`;
   }
   return estrelasHtml;
 }
 
-// 3. Função para formatar a data (ex: 10/04/2026)
 function formatarData(dataString) {
   const data = new Date(dataString);
   return data.toLocaleDateString('pt-BR');
 }
 
-// 4. Função que pega a lista e "pinta" os comentários na tela
 function renderizarComentarios(lista) {
   const container = document.getElementById('lista-comentarios');
   if (!container) return;
@@ -193,7 +133,6 @@ function renderizarComentarios(lista) {
     return;
   }
 
-  // Transforma cada item da lista em um card de comentário HTML
   container.innerHTML = lista.map(av => `
     <div class="comentario-item">
       <div class="comentario-item__header">
@@ -204,24 +143,19 @@ function renderizarComentarios(lista) {
             <span class="comentario-data">${formatarData(av.data)}</span>
           </div>
         </div>
-        <div class="comentario-nota">
-          ${renderizarEstrelas(av.nota)}
-        </div>
+        <div class="comentario-nota">${renderizarEstrelas(av.nota)}</div>
       </div>
       <p class="comentario-texto">${av.texto}</p>
     </div>
   `).join('');
 }
 
-// 5. Função principal que liga as ações na tela
 function configurarSistemaAvaliacao() {
   const btnComentar = document.getElementById('btn-comentar');
   const filtroSelect = document.getElementById('filtro-avaliacoes');
 
-  // Desenha os comentários logo que a página abre (do mais recente pro mais antigo)
   renderizarComentarios(avaliacoes.sort((a, b) => new Date(b.data) - new Date(a.data)));
 
-  // Faz o filtro funcionar
   if (filtroSelect) {
     filtroSelect.addEventListener('change', (e) => {
       let filtrados = [...avaliacoes];
@@ -236,13 +170,15 @@ function configurarSistemaAvaliacao() {
     });
   }
 
-  // Faz o botão de publicar funcionar
   if (btnComentar) {
-    btnComentar.addEventListener('click', () => {
-      const texto = document.getElementById('comentario-texto').value;
+    const novoBtn = btnComentar.cloneNode(true);
+    btnComentar.parentNode.replaceChild(novoBtn, btnComentar);
+
+    novoBtn.addEventListener('click', () => {
+      const textarea = document.getElementById('comentario-texto');
+      const texto = textarea.value;
       const notaSelecionada = document.querySelector('input[name="rating"]:checked');
 
-      // Trava de segurança: impede de enviar vazio
       if (!notaSelecionada) {
         alert('Por favor, selecione uma nota nas estrelas antes de avaliar.');
         return;
@@ -252,7 +188,6 @@ function configurarSistemaAvaliacao() {
         return;
       }
 
-      // Cria a avaliação nova
       const novaAvaliacao = {
         id: Date.now(),
         nome: 'Você (Usuário Logado)',
@@ -262,17 +197,48 @@ function configurarSistemaAvaliacao() {
         data: new Date().toISOString()
       };
 
-      // Coloca no topo da lista
       avaliacoes.unshift(novaAvaliacao);
-      
-      // Limpa os campos depois que enviou
-      document.getElementById('comentario-texto').value = '';
+      textarea.value = '';
       notaSelecionada.checked = false;
       
-      // Reseta o filtro e atualiza a tela
-      filtroSelect.value = 'recentes';
+      if(filtroSelect) filtroSelect.value = 'recentes';
       renderizarComentarios(avaliacoes);
     });
   }
 }
 
+async function init() {
+  const conteudo = document.getElementById('evento-conteudo');
+  
+  // 1. Esconde a página IMEDIATAMENTE para não piscar o evento errado
+  if (conteudo) {
+    conteudo.style.opacity = '0';
+    conteudo.style.pointerEvents = 'none'; // Evita clicar em links antigos antes de carregar
+  }
+
+  renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'evento' });
+  renderFooter(document.getElementById('footer-root'));
+  injectEventoIcons();
+
+  const id = getQueryId() || 'evt-1';
+  const ev = await getEventoById(id);
+
+  if (!ev) {
+    if (conteudo) conteudo.classList.add('is-hidden');
+    document.getElementById('evento-erro')?.classList.remove('is-hidden');
+    return;
+  }
+
+  // 2. Preenche os dados corretos invisivelmente
+  renderEvento(ev);
+  configurarSistemaAvaliacao();
+
+  // 3. Revela a página já arrumada e com o mapa certinho
+  if (conteudo) {
+    conteudo.style.transition = 'opacity 0.3s ease-in';
+    conteudo.style.opacity = '1';
+    conteudo.style.pointerEvents = 'auto'; // Libera o clique nos links novamente
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
