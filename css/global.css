@@ -531,7 +531,7 @@ a:hover {
   border-radius: var(--raio-pill);
   padding: 0.375rem 0.5rem;
   color: #374151;
-  margin-right: -100px;
+  
 }
 
 .hub-icon-btn {

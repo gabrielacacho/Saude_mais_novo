@@ -143,7 +143,6 @@ export function renderHeader(container, options = {}) {
           </div>
 
           <a href="login.html" class="nav-item">Entrar</a>
-          <a href="cadastro.html" class="nav-item">Cadastrar</a>
         </div>
       </nav>
     </header>
@@ -153,7 +152,7 @@ export function renderHeader(container, options = {}) {
 }
 
 function bindHeaderEvents(container, showSearch) {
-    // =====================================================
+  // =====================================================
   // NOTIFICAÇÕES
   // =====================================================
 
