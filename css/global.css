@@ -94,32 +94,55 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 100px;
-  width: 70%;
-  min-height: 130px; /* manteve o 130px pra nao encolher bruscamente */
-  position: sticky;
-  top: 0;
+  width: 90%; /* Ajustado para melhor fluidez */
+  max-width: 1200px;
+  margin: 0 auto; /* Centraliza a barra sem precisar de margens negativas */
+  min-height: 100px; /* Reduzido um pouco para ficar mais elegante */
+  position: relative; /* CRÍTICO: Prende a logo centralizada dentro desta barra */
 }
 
 .hub-brand-left {
   display: flex;
   align-items: center;
-  margin-left: -170px;
+  /* Retirada a gambiarra do margin-left: -170px que quebrava o layout */
 }
 
-/* centraliza a logo perfeitamente */
+/* Centraliza a logo perfeitamente na vertical e horizontal */
 .hub-brand-center {
   position: absolute;
   left: 50%; 
-  transform: translateX(-50%); 
+  top: 50%;
+  transform: translate(-50%, -50%); 
+}
+
+/* Define o tamanho e a fonte da logo Saúde Aqui */
+.logo-saude-texto a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.logo-saude-texto span {
+  color: #29B5E8; /* Deixa o "Aqui" em azul claro */
+}
+
+.pin-titulo {
+  height: 65px;
+  width: auto;
+  object-fit: contain;
 }
 
 .logo-prefeitura {
   color: white;
-  width: 250px;
+  width: 220px;
   height: auto;
   object-fit: contain;
 }
+
 
 .logo-minhasaude {
   height: 60px;
