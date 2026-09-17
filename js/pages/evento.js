@@ -3,6 +3,7 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar, iconPin, iconUsers } from '../utils/icons.js';
 
+// Injeta os icones SVG nos elementos de metadados da página do evento
 function injectEventoIcons() {
   const cal = document.querySelector('.evento-meta-icon--cal');
   const pin = document.querySelector('.evento-meta-icon--pin');
@@ -12,13 +13,17 @@ function injectEventoIcons() {
   if (users) users.innerHTML = iconUsers().replace('hub-icon', 'hub-icon hub-icon--lg');
 }
 
+// Captura o ID do evento passado via parâmetro de busca na URL
 function getQueryId() {
   return new URLSearchParams(window.location.search).get('id');
 }
 
+// Preenche a página HTML com os dados retornados do evento
 function renderEvento(ev) {
+  // Atualiza o título da aba no navegador
   document.title = `${ev.titulo} — Saúde Aqui`;
 
+  // Mapeia os elementos do DOM da página de detalhes
   const banner = document.getElementById('evento-banner');
   const tag = document.getElementById('evento-tag');
   const dataInicio = document.getElementById('evento-data-inicio');
@@ -31,6 +36,7 @@ function renderEvento(ev) {
   const descricao = document.getElementById('evento-descricao');
   const tituloDesc = document.getElementById('evento-descricao-titulo');
 
+  // Preenche imagem de capa, categoria, títulos e descrições
   if (banner) {
     banner.src = ev.foto_capa;
     banner.alt = ev.titulo;
@@ -39,20 +45,24 @@ function renderEvento(ev) {
   if (tituloDesc) tituloDesc.textContent = ev.titulo;
   if (descricao) descricao.textContent = ev.descricao;
 
+  // Formata os horários de início e término do evento
   if (dataInicio) dataInicio.textContent = ev.dataExibicao ? `${ev.dataExibicao} às 09:00` : 'A definir';
   if (dataFim) dataFim.textContent = ev.dataExibicao ? `${ev.dataExibicao} às 12:00` : 'A definir';
   
+  // Define o nome da localização e gera o link externo para o Google Maps
   if (local) {
     // Atualiza o nome do local
     local.textContent = ev.localizacao;
-    // Força a atualização do link do mapa (agora sem falhas)
+    // Força a atualização do link do mapa
     const buscaMapa = encodeURIComponent(`${ev.localizacao}, Rio de Janeiro`);
     local.setAttribute('href', `https://maps.google.com/?q=${buscaMapa}`);
   }
 
+  //Preenche as informações da unidade e instituição organizadora
   if (unidade) unidade.textContent = ev.unidade || 'UBS / Clínica da Família local';
   if (instituicao) instituicao.textContent = ev.instituicao || 'Secretaria Municipal de Saúde';
 
+  //Atualiza os dados da barra de progresso da lotação e número de inscritos
   if (capacidade) {
     const inscritos = ev.numero_participantes || 0;
     const max = ev.capacidade_maxima || 15;
@@ -62,16 +72,19 @@ function renderEvento(ev) {
     if (barraFill) {
       const porcentagem = Math.min((inscritos / max) * 100, 100);
       barraFill.style.width = `${porcentagem}%`;
+      // Destaca a barra em vermelho caso a capacidade atinja 100%
       if (porcentagem >= 100) {
         barraFill.style.backgroundColor = '#E63946';
       }
     }
   }
 
+  // Controle do estado do botão de inscrição
   const btnInscrever = document.getElementById('btn-inscrever');
   const inscritoKey = `inscrito_${ev.id}`;
   const jaInscrito = sessionStorage.getItem(inscritoKey) === 'true';
 
+  //interatividade do botão de inscrição
   const atualizarBotao = (inscrito) => {
     if (!btnInscrever) return;
     const lotado = (ev.numero_participantes >= ev.capacidade_maxima);
@@ -95,6 +108,7 @@ function renderEvento(ev) {
 
   atualizarBotao(jaInscrito);
 
+  // Manipulador de clique no botão de inscrição
   btnInscrever?.addEventListener('click', () => {
     const agora = sessionStorage.getItem(inscritoKey) === 'true';
     sessionStorage.setItem(inscritoKey, (!agora).toString());
@@ -102,9 +116,8 @@ function renderEvento(ev) {
   });
 }
 
-// ==========================================
+
 // SISTEMA DE AVALIAÇÕES 
-// ==========================================
 let avaliacoes = [
   { id: 1, nome: 'Maria Silva', iniciais: 'M', nota: 5, texto: 'Evento maravilhoso! Os professores são super atenciosos com os idosos.', data: '2026-04-10T14:30:00' },
   { id: 2, nome: 'João Pedro', iniciais: 'J', nota: 4, texto: 'Muito bom, mas achei o espaço um pouco apertado para a quantidade de pessoas.', data: '2026-04-12T09:15:00' },
@@ -210,10 +223,10 @@ function configurarSistemaAvaliacao() {
 async function init() {
   const conteudo = document.getElementById('evento-conteudo');
   
-  // 1. Esconde a página IMEDIATAMENTE para não piscar o evento errado
+  //Esconde a página imediatamente para não piscar o evento errado
   if (conteudo) {
     conteudo.style.opacity = '0';
-    conteudo.style.pointerEvents = 'none'; // Evita clicar em links antigos antes de carregar
+    conteudo.style.pointerEvents = 'none'; //Evita clicar em links antigos antes de carregar
   }
 
   renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'evento' });
@@ -229,11 +242,11 @@ async function init() {
     return;
   }
 
-  // 2. Preenche os dados corretos invisivelmente
+  //Preenche os dados corretos invisivelmente
   renderEvento(ev);
   configurarSistemaAvaliacao();
 
-  // 3. Revela a página já arrumada e com o mapa certinho
+  //Revela a página já arrumada e com o mapa certinho
   if (conteudo) {
     conteudo.style.transition = 'opacity 0.3s ease-in';
     conteudo.style.opacity = '1';

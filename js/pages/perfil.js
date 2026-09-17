@@ -5,6 +5,7 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar } from '../utils/icons.js';
 
+// Retorna a estrutura HTML do card simplificado de um evento
 function renderMiniEvento(ev) {
   return `
     <a href="evento.html?id=${ev.id}" class="perfil-mini-card">
@@ -15,6 +16,7 @@ function renderMiniEvento(ev) {
   `;
 }
 
+// Inicializa o perfil do usuário
 async function init() {
   const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
   const usuario = getUsuarioPerfil(perfilAtual);
@@ -105,16 +107,13 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 
-// ==========================================================
-// FILTROS COM MENSAGEM VAZIA E MODAL
-// ==========================================================
-
+//FILTROS COM MENSAGEM VAZIA E MODAL
 document.addEventListener('DOMContentLoaded', () => {
   const modalFicha = document.getElementById('modal-ficha-instituicao');
   const fecharModalFicha = document.querySelector('.modal-ficha__fechar');
   const nomeInstituicao = document.getElementById('modal-nome-instituicao');
 
-  // Função para aplicar filtro e controlar mensagem de tabela vazia
+  //Função para aplicar filtro e controlar mensagem de tabela vazia
   function aplicarFiltroAvaliador(filtroTipo, botaoClicado) {
     const avaliador = document.getElementById('avaliador-instituicao');
     if (!avaliador) return;
@@ -137,11 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Atualiza botões
+    //Atualiza botões
     botoesFiltro.forEach((b) => b.classList.remove('avaliador-filtro--ativo'));
     botaoClicado?.classList.add('avaliador-filtro--ativo');
 
-    // Gerencia a mensagem vazia
+    //Gerencia a mensagem vazia
     tbody.querySelector('.avaliador-mensagem-vazia')?.remove();
 
     if (totalVisiveis === 0) {
@@ -158,17 +157,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Escuta os cliques no documento
+  //Escuta os cliques no documento
   document.addEventListener('click', (evento) => {
     
-    // Clique nos botões de filtro
+    //Clique nos botões de filtro
     const botaoFiltro = evento.target.closest('.avaliador-filtro');
     if (botaoFiltro) {
       const filtro = botaoFiltro.dataset.filtro;
       aplicarFiltroAvaliador(filtro, botaoFiltro);
     }
 
-    // Clique no botão "Ver Ficha"
+    //Clique no botão "Ver Ficha"
     const botaoVerFicha = evento.target.closest('.avaliador-ver-ficha');
     if (botaoVerFicha) {
       const linha = botaoVerFicha.closest('tr');
@@ -180,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Fechar Modal
+  //Fechar Modal
   fecharModalFicha?.addEventListener('click', () => modalFicha?.classList.add('is-hidden'));
   modalFicha?.addEventListener('click', (evento) => {
     if (evento.target === modalFicha) modalFicha.classList.add('is-hidden');

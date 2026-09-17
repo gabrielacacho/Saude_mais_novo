@@ -1,13 +1,4 @@
-import {
-  //EVENTOS,
-  //REGIOES,
-  //USUARIOS,
-  PINS_MAPA,
-  //getEventosPorRegiao,
-  getRegiaoById,
-  getEventoById,
-  getPostoById,
-} from "../mock-data.js";
+
 import { getUsuarioByPerfil } from "../services/usuarios-api.js";
 import { listarRegioes } from "../services/regiao-api.js";
 import { listarEventos } from "../services/evento-api.js"; //api de brinquedo
@@ -42,12 +33,14 @@ let mesAtual = 4;
 let filtroEvento = { termo: "", categoria: "", data: "" };
 let filtroLocalCategoria = "";
 
+// Busca as inscrições em eventos do perfil do usuário atual
 async function getInscricoes() {
   const perfil = sessionStorage.getItem("perfilMock") || "comum";
   const usuario = await getUsuarioByPerfil(perfil);
   return usuario?.inscricoes || [];
 }
 
+// Mapeia um texto digitado para o ID correspondente de uma região
 function resolveRegiaoId(texto, regioes) {
   const t = texto.trim().toLowerCase();
   if (!t) return "urca";
@@ -61,52 +54,31 @@ function resolveRegiaoId(texto, regioes) {
   return parcial?.id || null;
 }
 
+// Verifica se a categoria do item atende ao filtro de eventos selecionado
 function passaFiltroEvento(categoriaItem) {
   if (!filtroEvento.categoria) return true;
   return categoriaItem === filtroEvento.categoria;
 }
 
+// O mesmo que o de cima só que filtro de posto
 function passaFiltroLocalPosto(servicos) {
   if (!filtroLocalCategoria) return true;
   return servicos.some((s) => s === filtroLocalCategoria);
 }
-/*
-async function eventosFiltradosPorLocal(textoLocal) {
-  const eventos = await listarEventos();
-  const regiaoId = resolveRegiaoId(textoLocal);
-  let lista;
 
-  if (regiaoId) {
-    // Filtra os eventos da região usando os dados da API
-    lista = eventos.filter((e) => e.regiao === regiaoId);
-    // Se não encontrar nenhum, mostra todos
-    if (!lista.length) lista = [...eventos];
-  } else {
-    const t = textoLocal.trim().toLowerCase();
-
-    lista = !t
-      ? [...eventos]
-      : eventos.filter(
-          (e) =>
-            e.localizacao.toLowerCase().includes(t) ||
-            getRegiaoById(e.regiao).nome.toLowerCase().includes(t)
-        );
-  }
-  return lista.filter((e) => passaFiltroEvento(e.categoria));
-}*/
-
+//Retarna lista só que filtrando por localiddade
 async function eventosFiltradosPorLocal(textoLocal = "") {
   const eventos = await listarEventos();
   const regioes = await listarRegioes();
 
   const t = textoLocal.trim().toLowerCase();
 
-  // 1. Se a busca estiver vazia (carregamento inicial), retorna TODOS os eventos da API
+  //Se a busca estiver vazia (carregamento inicial), retorna TODOS os eventos da API
   if (!t) {
     return eventos.filter((e) => passaFiltroEvento(e.categoria));
   }
 
-  // 2. Se o usuário digitou algo, tenta resolver o ID da região
+  //Se o usuário digitou algo, tenta resolver o ID da região
   const regiaoId = resolveRegiaoId(textoLocal, regioes);
 
   let lista = [];
@@ -127,10 +99,11 @@ async function eventosFiltradosPorLocal(textoLocal = "") {
     });
   }
 
-  // 3. Aplica os filtros secundários (como categoria) e devolve a lista
+  //Aplica os filtros secundários (como categoria) e devolve a lista
   return lista.filter((e) => passaFiltroEvento(e.categoria));
 }
 
+// Filtra uma lista de eventos por termo de busca, categoria e data
 function aplicarFiltrosEvento(lista) {
   let result = [...lista];
   const { termo, categoria, data } = filtroEvento;
@@ -147,6 +120,7 @@ function aplicarFiltrosEvento(lista) {
   return result;
 }
 
+// Atualiza o texto do rótulo do local exibido no mapa
 function atualizarLabelMapa(texto) {
   const label = document.getElementById("mapa-local-label");
   if (label) {
@@ -154,6 +128,7 @@ function atualizarLabelMapa(texto) {
   }
 }
 
+// Retorna o HTML do popover informativo de um posto de saúde
 function htmlPopoverPosto(posto) {
   return `
     <div class="hub-popover hub-popover--posto">
@@ -165,15 +140,16 @@ function htmlPopoverPosto(posto) {
   `;
 }
 
-// COLOQUE ISSO NO LUGAR DA RENDERMAPAPINS ANTIGA:
+// Limpa os marcadores exibidos no contêiner do mapa
 function renderMapaPins() {
   const container = document.getElementById("mapa-pins");
   if (!container) return;
   container.innerHTML = "";
 }
 
+// Retorna o HTML do botão e do popover de um evento dentro do calendário
 function htmlCalEvento(ev) {
-  // Tratamento preventivo caso a categoria venha vazia ou com erro
+  //Tratamento preventivo caso a categoria venha vazia ou com erro
   const categoriaClasse = ev.categoria ? ev.categoria.toLowerCase() : "padrao";
   const categoriaTexto = ev.categoria || "Evento";
 
@@ -190,6 +166,7 @@ function htmlCalEvento(ev) {
   `;
 }
 
+//renderiza a grade de dias e eventos do calendário do mês atual
 async function renderCalendario() {
   const grid = document.getElementById("calendario-grid");
   if (!grid) {
@@ -207,7 +184,7 @@ async function renderCalendario() {
   const diasNoMes = new Date(ano, mes + 1, 0).getDate();
   const diasMesAnterior = new Date(ano, mes, 0).getDate();
 
-  // Filtra garantindo que o evento tenha uma data válida antes de dar split
+  //Filtra garantindo que o evento tenha uma data válida antes de dar split
 const eventosNoMes = eventos.filter((e) => {
     if (!e.data) return false;
     const [y, m] = e.data.split("-").map(Number);
@@ -234,7 +211,7 @@ const eventosNoMes = eventos.filter((e) => {
     const todosNoDia = eventosNoMes.filter((e) => e.data === dataStr);
     const selecionado = diaHoje !== null && dia === diaHoje;
 
-    // Try-catch preventivo para o loop não morrer se um evento estiver quebrado
+    //Try-catch preventivo para o loop não morrer se um evento estiver quebrado
     let eventosHtml = "";
     try {
       eventosHtml = todosNoDia
@@ -259,12 +236,13 @@ const eventosNoMes = eventos.filter((e) => {
     html += `<div class="cal-dia cal-dia--muted"><span class="cal-numero">${i}</span></div>`;
   }
 
-  // Alimenta o DOM de forma segura
+  //Alimenta o DOM de forma segura
   grid.innerHTML = html;
 
   bindCalendarioPopovers(grid);
 }
 
+// Configura os eventos de hover e clique do calendario
 function bindCalendarioPopovers(grid) {
   grid.querySelectorAll(".cal-evento-mini-wrap").forEach((wrap) => {
     const btn = wrap.querySelector(".cal-evento-mini");
@@ -302,9 +280,9 @@ async function renderEventos() {
   }
 
   try {
-    // Agora usa a função que aplica o filtro de local
+    //Agora usa a função que aplica o filtro de local
     const lista = await eventosFiltradosPorLocal(textoLocal);
-    // Depois aplica os demais filtros (texto, categoria e data)
+    //Depois aplica os demais filtros (texto, categoria e data)
     const eventos = aplicarFiltrosEvento(lista);
 
     grid.innerHTML = eventos
@@ -329,6 +307,7 @@ async function renderEventos() {
   }
 }
 
+// Preenche o campo de seleção de mês do calendário e adiciona o evento de troca
 function initSeletorCalendario() {
   const selectMes = document.getElementById("cal-mes");
   if (!selectMes) return;
@@ -344,6 +323,7 @@ function initSeletorCalendario() {
   });
 }
 
+// Sincroniza os campos de entrada de localidade e configura os eventos de mudançaa
 function initCamposLocal() {
   const mapaInput = document.getElementById("mapa-busca-local");
   const regiaoInput = document.getElementById("regiao-nome");
@@ -372,6 +352,7 @@ function initCamposLocal() {
   atualizarLabelMapa(getLocal());
 }
 
+// Insere os ícones de pin e calendário nos cabeçalhos dos painéis
 function initPanelIcons() {
   const pinEl = document.querySelector(
     ".hub-panel-header--input .hub-panel-header__icon",
@@ -391,7 +372,8 @@ function initPanelIcons() {
   }
 }
 
-function init() {
+// INICIALIZADOR página principal
+async function init() {
   setLocal("", "init");
 
   renderHeader(document.getElementById("header-root"), {
@@ -405,21 +387,28 @@ function init() {
   initSeletorCalendario();
   initCamposLocal();
   renderMapaPins();
-  renderCalendario();
-  renderEventos();
+
+  // Aguarda o carregamento dos eventos e do calendário
+  await Promise.all([
+    renderCalendario(),
+    renderEventos(),
+  ]);
 
   // CORREÇÃO DO EVENTO GLOBAL DE FECHAMENTO
   document.addEventListener("click", (e) => {
-    // Se o clique veio de dentro de um quadradinho de evento, não faz nada (deixa o bindCalendarioPopovers cuidar)
+    // Se o clique veio de dentro de um quadradinho de evento,
+    // não faz nada (deixa o bindCalendarioPopovers cuidar).
     if (e.target.closest(".cal-evento-mini-wrap")) {
       return;
     }
 
-    // Se clicou em qualquer outro lugar da página fora do evento, aí sim fecha todos
+    // Se clicou em qualquer outro lugar da página fora do evento,
+    // fecha todos os popovers.
     document
       .querySelectorAll(".cal-evento-mini-wrap.is-popover-open")
       .forEach((w) => {
         w.classList.remove("is-popover-open");
+
         w.querySelector(".cal-evento-mini")?.setAttribute(
           "aria-expanded",
           "false",
@@ -427,49 +416,79 @@ function init() {
       });
   });
 
-  window.addEventListener("perfil-alterado", () => {
-    renderCalendario();
+  // Atualiza o calendário quando o perfil for alterado
+  window.addEventListener("perfil-alterado", async () => {
+    await renderCalendario();
   });
 
-  window.addEventListener("filtro-eventos", (e) => {
+  // Atualiza eventos e calendário quando o filtro de eventos mudar
+  window.addEventListener("filtro-eventos", async (e) => {
     filtroEvento = e.detail;
-    renderEventos();
-    renderCalendario();
+
+    await Promise.all([
+      renderEventos(),
+      renderCalendario(),
+    ]);
+
     renderMapaPins();
   });
 
-  window.addEventListener("filtro-local", (e) => {
+  // Atualiza eventos e calendário quando o filtro de local mudar
+  window.addEventListener("filtro-local", async (e) => {
     filtroLocalCategoria = e.detail.categoria || "";
-    renderEventos();
+
+    await Promise.all([
+      renderEventos(),
+      renderCalendario(),
+    ]);
+
     renderMapaPins();
-    renderCalendario();
   });
 
   const adminBadge = document.getElementById("admin-badge");
+
   const updateAdmin = () => {
     const perfil = sessionStorage.getItem("perfilMock") || "comum";
+
     if (adminBadge) {
-      adminBadge.classList.toggle("is-hidden", perfil !== "administrador");
+      adminBadge.classList.toggle(
+        "is-hidden",
+        perfil !== "administrador",
+      );
     }
   };
+
   updateAdmin();
+
   window.addEventListener("perfil-alterado", updateAdmin);
-  
-  //CONTROLE DO BADGE INSTITUCIONAL
-  const institucionalBadge = document.getElementById("institucional-badge");
+
+  // CONTROLE DO BADGE INSTITUCIONAL
+  const institucionalBadge = document.getElementById(
+    "institucional-badge",
+  );
+
   const updateInstitucional = () => {
     const perfil = sessionStorage.getItem("perfilMock") || "comum";
+
     if (institucionalBadge) {
-      // Se o perfil NÃO for "institucional", adiciona 'is-hidden' (esconde). Se for, remove (mostra).
-      institucionalBadge.classList.toggle("is-hidden", perfil !== "institucional");
+      // Se o perfil NÃO for "institucional", adiciona 'is-hidden'.
+      // Se for institucional, remove e mostra o badge.
+      institucionalBadge.classList.toggle(
+        "is-hidden",
+        perfil !== "institucional",
+      );
     }
   };
-  
+
   // Executa uma vez na inicialização da página
   updateInstitucional();
-  
-  // Escuta o mesmo evento global de mudança de perfil para atualizar em tempo real
-  window.addEventListener("perfil-alterado", updateInstitucional);
+
+  // Escuta o mesmo evento global de mudança de perfil
+  // para atualizar em tempo real
+  window.addEventListener(
+    "perfil-alterado",
+    updateInstitucional,
+  );
 }
 
 document.addEventListener("DOMContentLoaded", init);
@@ -653,12 +672,12 @@ function renderizarBuscador() {
     container.innerHTML = '<div class="hub-search-wrap"></div>';
   }
 }
-// 4. Inicialização do Buscador e seus Respectivos Eventos
+//Inicialização do Buscador e seus Respectivos Eventos
 document.addEventListener("DOMContentLoaded", () => {
   // Executa a renderização primeiro
   renderizarBuscador();
 
-  // CORREÇÃO: Captura dos elementos e escuta de cliques movidos para dentro do DOMContentLoaded
+  // CORREÇÃO Captura dos elementos e escuta de cliques movidos para dentro do DOMContentLoaded
   // Garantindo que rodem APENAS após os elementos existirem fisicamente na árvore do DOM.
   const btnFiltroLocal = document.getElementById("btn-filtros-local");
   const painelFiltroLocal = document.getElementById("painel-filtros-local");

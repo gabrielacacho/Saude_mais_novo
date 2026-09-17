@@ -6,6 +6,7 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconPin, iconCalendar, iconBuilding } from '../utils/icons.js';
 
+// Inicializa a pagina e as coisas nela
 async function init() {
   renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'posto' });
   renderFooter(document.getElementById('footer-root'));
@@ -34,7 +35,6 @@ async function init() {
     servicos.innerHTML = posto.servicos.map((s) => `<li>${s}</li>`).join('');
   }
 
-  //const eventos = EVENTOS.filter((e) => e.regiao === posto.regiao);
   const eventos = await getEventosPorRegiao(posto.regiao);
   const regioes = await listarRegioes();
   const lista = document.getElementById('posto-eventos-lista');

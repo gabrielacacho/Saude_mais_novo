@@ -13,7 +13,7 @@ function init() {
     form.addEventListener('submit', function (event) {
       event.preventDefault(); // Impede a página de recarregar
 
-      // 1. CAPTURA DOS DADOS DO FORMULÁRIO
+      //CAPTURA DOS DADOS DO FORMULÁRIO
       const nome = document.getElementById('evt-nome').value.trim();
       const descricao = document.getElementById('evt-descricao').value.trim();
       const local = document.getElementById('evt-local').value.trim();
@@ -22,17 +22,17 @@ function init() {
       const dataInicio = document.getElementById('evt-data-inicio').value;
       const dataFim = document.getElementById('evt-data-fim').value;
 
-      // Captura a categoria selecionada nos botões de rádio
+      //Captura a categoria selecionada nos botões de rádio
       const categoriaSelecionada = document.querySelector('input[name="evt-categoria"]:checked');
       const categoria = categoriaSelecionada ? categoriaSelecionada.value : '';
 
-      // 2. VALIDAÇÕES DE CAMPOS OBRIGATÓRIOS
+      //VALIDAÇÕES DE CAMPOS OBRIGATÓRIOS
       if (!nome || !descricao || !local || !dataInicio || !dataFim || !vagas) {
         alert('Por favor, preencha todos os campos obrigatórios do formulário.');
         return;
       }
 
-      // 3. VALIDAÇÃO DE REGRA DE NEGÓCIO (Datas)
+      //VALIDAÇÃO DE REGRA DE NEGÓCIO (Datas)
       const dataInicioObj = new Date(dataInicio);
       const dataFimObj = new Date(dataFim);
 
@@ -41,7 +41,7 @@ function init() {
         return;
       }
 
-      // 4. ESTRUTURAÇÃO DO OBJETO PARA A API REAL
+      //ESTRUTURAÇÃO DO OBJETO PARA A API REAL
       const novoEvento = {
         titulo: nome,
         descricao: descricao,
@@ -55,12 +55,12 @@ function init() {
         dataCriacao: new Date().toISOString()
       };
 
-      // Exibe no console para conferência do grupo e futura integração
+      //Exibe no console para conferência do grupo e futura integração
       console.log('Objeto estruturado pronto para envio à API:', novoEvento);
       
       alert('Evento submetido com sucesso! Ele foi enviado para a fila de avaliação.');
       
-      // Retorna o usuário ao perfil de forma nativa
+      //Retorna o usuário ao perfil de forma nativa
       window.location.href = 'perfil.html';
     });
   }
