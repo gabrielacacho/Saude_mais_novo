@@ -108,11 +108,32 @@ function renderEvento(ev) {
 
   atualizarBotao(jaInscrito);
 
-  // Manipulador de clique no botão de inscrição
-  btnInscrever?.addEventListener('click', () => {
-    const agora = sessionStorage.getItem(inscritoKey) === 'true';
-    sessionStorage.setItem(inscritoKey, (!agora).toString());
-    atualizarBotao(!agora);
+// Manipulador de clique no botão de inscrição assíncrono
+  btnInscrever?.addEventListener('click', async () => {
+    // 1. Trava o botão e avisa o usuário que está processando
+    btnInscrever.disabled = true;
+    const textoOriginal = btnInscrever.textContent;
+    btnInscrever.textContent = 'Processando...';
+
+    try {
+      // 2. Simula o tempo de uma requisição para uma API externa (ex: 1 segundo de espera)
+      // Futuramente, você trocará essa linha por algo como: await api.inscreverUsuario(ev.id);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 3. Conclui a operação (atualizando o mock local)
+      const agora = sessionStorage.getItem(inscritoKey) === 'true';
+      sessionStorage.setItem(inscritoKey, (!agora).toString());
+      
+      // 4. Atualiza a tela com o resultado
+      atualizarBotao(!agora);
+
+    } catch (error) {
+      // Em caso de erro na rede, volta o botão ao normal
+      console.error("Erro ao processar a inscrição:", error);
+      btnInscrever.textContent = textoOriginal;
+      btnInscrever.disabled = false;
+      alert("Houve uma falha de comunicação com o servidor. Tente novamente.");
+    }
   });
 }
 

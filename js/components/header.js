@@ -26,94 +26,38 @@ export function renderHeader(container, options = {}) {
             </div>
         </div>
         
-    <div class="notificacoes-wrapper">
-
-      <button
-        type="button"
-        id="btn-notificacoes"
-        class="notificacoes-btn"
-        aria-label="Notificações"
-        aria-expanded="false"
-      >
-        ${iconBell()}
-
-        <!-- Número de notificações não lidas -->
-        <span
-          id="notificacoes-contador"
-          class="notificacoes-contador"
-        >
-          3
-        </span>
-      </button>
-
-      <!-- Painel que aparece ao clicar no sino -->
-      <div
-        id="notificacoes-painel"
-        class="notificacoes-painel is-hidden"
-      >
-
-        <div class="notificacoes-cabecalho">
-          <h3>Notificações</h3>
-
-          <button
-            type="button"
-            id="btn-marcar-lidas"
-            class="notificacoes-marcar"
-          >
-            Marcar como lidas
+        <div class="notificacoes-wrapper is-hidden" id="nav-notificacoes-wrapper">
+          <button type="button" id="btn-notificacoes" class="notificacoes-btn" aria-label="Notificações" aria-expanded="false">
+            ${iconBell()}
+            <span id="notificacoes-contador" class="notificacoes-contador">3</span>
           </button>
+
+          <div id="notificacoes-painel" class="notificacoes-painel is-hidden">
+            <div class="notificacoes-cabecalho">
+              <h3>Notificações</h3>
+              <button type="button" id="btn-marcar-lidas" class="notificacoes-marcar">Marcar como lidas</button>
+            </div>
+
+            <div id="lista-notificacoes" class="notificacoes-lista">
+              <button type="button" class="notificacao-item notificacao-item--nova">
+                <span class="notificacao-ponto"></span>
+                <span class="notificacao-conteudo">
+                  <strong>Lembrete de Evento.</strong>
+                  <span>Amanhã você tem "Vem Zumbar 60+".</span>
+                  <small>Há 10 minutos</small>
+                </span>
+              </button>
+              <button type="button" class="notificacao-item notificacao-item--nova">
+                <span class="notificacao-ponto"></span>
+                <span class="notificacao-conteudo">
+                  <strong>Bem-vindo(a) ao Saúde Aqui!</strong>
+                  <span>Seu perfil foi criado com sucesso.</span>
+                  <small>Hoje</small>
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div
-          id="lista-notificacoes"
-          class="notificacoes-lista"
-        >
-
-          <button
-            type="button"
-            class="notificacao-item notificacao-item--nova"
-          >
-            <span class="notificacao-ponto"></span>
-
-            <span class="notificacao-conteudo">
-              <strong>Lembrete de Evento.</strong>
-              <span>Amanhã você tem "Vêm Zumbar 60+".</span>
-              <small>Há 10 minutos</small>
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="notificacao-item notificacao-item--nova"
-          >
-            <span class="notificacao-ponto"></span>
-
-            <span class="notificacao-conteudo">
-              <strong>Talvez esse evento te enteresse...</strong>
-              <span>Palestra: Hipertensão e Você.</span>
-              <small>Há 1 hora</small>
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="notificacao-item notificacao-item--nova"
-          >
-            <span class="notificacao-ponto"></span>
-
-            <span class="notificacao-conteudo">
-              <strong>Bem-vindo(a) ao Saúde Aqui!</strong>
-              <span>Seu perfil foi criado com sucesso.</span>
-              <small>Hoje</small>
-            </span>
-          </button>
-
-        </div>
-      </div>
-
-    </div>
-
-
       </div>
 
       <!-- barra azul clara mais fininha -->
@@ -122,27 +66,16 @@ export function renderHeader(container, options = {}) {
           ${activePage !== 'home' ? '<a href="index.html" class="nav-item">Início</a>' : ''}
           <a href="sobre.html" class="nav-item">Sobre Nós</a>
           
-          <!-- NOVO BOTÃO AQUI (Nasce invisível e ganha cor destaque) -->
-          <a href="como-cadastrar.html" id="nav-btn-cadastrar-evento" class="nav-item is-hidden" style="color: var(--cor-destaque, #003B8E); font-weight: 700;">
+          <!-- BOTÕES DINÂMICOS (Controlados pelo JS) -->
+          <a href="como-cadastrar.html" id="nav-btn-cadastrar-evento" class="nav-item is-hidden" style="color: var(--cor-destaque, #003B8E); font-weight: 800;">
             Como cadastrar evento
           </a>
           
-          <!-- wrapper do meu perfil pra ancorar o menu -->
-          <div class="nav-dropdown-wrapper">
-            <button type="button" id="btn-meu-perfil" class="nav-item nav-dropdown-btn" aria-expanded="false">
-              Meu perfil <span class="setinha">▼</span>
-            </button>
-            
-            <!-- menu que abre quando clica em meu perfil -->
-            <div id="perfil-dropdown" class="hub-dropdown is-hidden">
-              <p class="hub-dropdown-label">Alternar perfil (mock)</p>
-              <button type="button" data-perfil="comum" class="hub-dropdown-item">Usuário Comum</button>
-              <button type="button" data-perfil="institucional" class="hub-dropdown-item">Institucional</button>
-              <button type="button" data-perfil="administrador" class="hub-dropdown-item">Administrador</button>
-            </div>
-          </div>
+          <a href="perfil.html" id="nav-btn-meu-perfil" class="nav-item is-hidden">Meu Perfil</a>
+          <button type="button" id="nav-btn-sair" class="nav-item is-hidden" style="border: none; background: transparent; cursor: pointer; color: #D32F2F;">Sair</button>
+          
+          <a href="login.html" id="nav-btn-entrar" class="nav-item">Entrar</a>
 
-          <a href="login.html" class="nav-item">Entrar</a>
         </div>
       </nav>
     </header>
@@ -152,70 +85,83 @@ export function renderHeader(container, options = {}) {
 }
 
 function bindHeaderEvents(container, showSearch) {
-  // =====================================================
-  // NOTIFICAÇÕES
-  // =====================================================
+  // ==========================================
+  // CONTROLE DE AUTENTICAÇÃO REAL (SESSÃO)
+  // ==========================================
+  const btnEntrar = container.querySelector('#nav-btn-entrar');
+  const btnCadastrar = container.querySelector('#nav-btn-cadastrar');
+  const btnMeuPerfil = container.querySelector('#nav-btn-meu-perfil');
+  const btnSair = container.querySelector('#nav-btn-sair');
+  const btnCadastrarEvento = container.querySelector('#nav-btn-cadastrar-evento');
+  const notificacoesWrapper = container.querySelector('#nav-notificacoes-wrapper');
 
+  const atualizarMenuAuth = () => {
+    // Busca os dados do usuário no banco local
+    const usuarioJSON = localStorage.getItem('usuarioLogado');
+    
+    if (usuarioJSON) {
+      // USUÁRIO ESTÁ LOGADO
+      const usuario = JSON.parse(usuarioJSON);
+      
+      btnEntrar?.classList.add('is-hidden');
+      btnCadastrar?.classList.add('is-hidden');
+      btnMeuPerfil?.classList.remove('is-hidden');
+      btnSair?.classList.remove('is-hidden');
+      notificacoesWrapper?.classList.remove('is-hidden');
+
+      // Checa se é Institucional para liberar o cadastro de eventos
+      if (usuario.perfil === 'institucional') {
+        btnCadastrarEvento?.classList.remove('is-hidden');
+      } else {
+        btnCadastrarEvento?.classList.add('is-hidden');
+      }
+    } else {
+      // USUÁRIO NÃO ESTÁ LOGADO
+      btnEntrar?.classList.remove('is-hidden');
+      btnCadastrar?.classList.remove('is-hidden');
+      btnMeuPerfil?.classList.add('is-hidden');
+      btnSair?.classList.add('is-hidden');
+      btnCadastrarEvento?.classList.add('is-hidden');
+      notificacoesWrapper?.classList.add('is-hidden');
+    }
+  };
+
+  // Executa assim que a barra carrega
+  atualizarMenuAuth();
+
+  // Função do botão de Sair (Logout)
+  btnSair?.addEventListener('click', () => {
+    localStorage.removeItem('usuarioLogado'); // Apaga a sessão
+    window.location.href = 'index.html'; // Chuta para a home deslogada
+  });
+
+  // ==========================================
+  // NOTIFICAÇÕES E FILTROS (MANTIDOS)
+  // ==========================================
   const btnNotificacoes = container.querySelector('#btn-notificacoes');
   const painelNotificacoes = container.querySelector('#notificacoes-painel');
 
   btnNotificacoes?.addEventListener('click', (e) => {
     e.stopPropagation();
-
     const estaAberto = !painelNotificacoes.classList.contains('is-hidden');
-
     painelNotificacoes.classList.toggle('is-hidden');
-
-    btnNotificacoes.setAttribute(
-      'aria-expanded',
-      String(!estaAberto)
-    );
+    btnNotificacoes.setAttribute('aria-expanded', String(!estaAberto));
   });
 
-  // Não fecha quando clicar dentro do painel
-  painelNotificacoes?.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
+  painelNotificacoes?.addEventListener('click', (e) => e.stopPropagation());
 
-  // Fecha quando clicar fora
   document.addEventListener('click', (e) => {
     if (!container.querySelector('.notificacoes-wrapper')?.contains(e.target)) {
       painelNotificacoes?.classList.add('is-hidden');
       btnNotificacoes?.setAttribute('aria-expanded', 'false');
     }
   });
-  //fim da notificação
 
-
-  // abre e fecha o menu do meu perfil
-  const menuPerfil = container.querySelector('#perfil-dropdown');
-  const btnMeuPerfil = container.querySelector('#btn-meu-perfil');
-
-  const toggleMenu = (e) => {
-    e.stopPropagation();
-    menuPerfil?.classList.toggle('is-hidden');
-    const taAberto = !menuPerfil?.classList.contains('is-hidden');
-    btnMeuPerfil?.setAttribute('aria-expanded', taAberto);
-  };
-
-  btnMeuPerfil?.addEventListener('click', toggleMenu);
-
-  // esconde o menu se clicar fora dele
-  document.addEventListener('click', (e) => {
-    if (!container.querySelector('.nav-dropdown-wrapper')?.contains(e.target)) {
-      menuPerfil?.classList.add('is-hidden');
-      btnMeuPerfil?.setAttribute('aria-expanded', 'false');
-    }
-  });
-
-  // tudo dos filtros continua igual
   if (showSearch) {
     const inputLocal = container.querySelector('#search-local');
     bindLocalInputs([inputLocal], 'header');
 
-    onLocalChange(() => {
-      refreshLocalInputs([inputLocal]);
-    });
+    onLocalChange(() => refreshLocalInputs([inputLocal]));
 
     const painelLocal = container.querySelector('#painel-filtros-local');
     const painelEvento = container.querySelector('#painel-filtros-evento');
@@ -254,9 +200,8 @@ function bindHeaderEvents(container, showSearch) {
     });
 
     container.querySelector('#filtro-regiao-header')?.addEventListener('change', (e) => {
-      const select = e.target;
-      if (select.value) {
-        inputLocal.value = select.value;
+      if (e.target.value) {
+        inputLocal.value = e.target.value;
         inputLocal.dispatchEvent(new Event('input', { bubbles: true }));
       }
     });
@@ -291,42 +236,4 @@ function bindHeaderEvents(container, showSearch) {
     filtroData?.addEventListener('change', aplicarFiltroEventos);
     filtroCatLocal?.addEventListener('change', aplicarFiltroLocal);
   }
-
-  // logica de mudar o mock e mandar pra pagina
-  container.querySelectorAll('[data-perfil]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const perfil = btn.getAttribute('data-perfil');
-      
-      // salva no mock e fecha
-      sessionStorage.setItem('perfilMock', perfil);
-      menuPerfil?.classList.add('is-hidden');
-      window.dispatchEvent(new CustomEvent('perfil-alterado', { detail: { perfil } }));
-      
-      // manda direto pro perfil
-      window.location.href = 'perfil.html';
-    });
-  });
-
-  // ==========================================
-  // CONTROLE DO BOTÃO "COMO CADASTRAR EVENTO"
-  // ==========================================
-  const btnCadastrarEvento = container.querySelector('#nav-btn-cadastrar-evento');
-
-  const atualizarMenuInstitucional = () => {
-    const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
-    
-    if (btnCadastrarEvento) {
-      if (perfilAtual === 'institucional') {
-        btnCadastrarEvento.classList.remove('is-hidden');
-      } else {
-        btnCadastrarEvento.classList.add('is-hidden');
-      }
-    }
-  };
-
-  // Roda uma vez assim que a barra carrega para checar se o usuário já é Institucional
-  atualizarMenuInstitucional();
-
-  // Fica escutando caso a pessoa troque de perfil no sistema
-  window.addEventListener('perfil-alterado', atualizarMenuInstitucional);
 }
