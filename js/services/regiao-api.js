@@ -1,4 +1,4 @@
-/* const API_URL = "/api/regiao.json";
+ const API_URL = "/api/regiao.json";
 
 export async function listarRegioes() {
   const resposta = await fetch(API_URL);
@@ -13,4 +13,4 @@ export async function listarRegioes() {
 export async function getRegiaoById(id) {
   const regioes = await listarRegioes();
   return regioes.find((r) => r.id === id) || regioes[0];
-} */
+} 
