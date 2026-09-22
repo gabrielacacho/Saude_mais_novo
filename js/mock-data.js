@@ -208,9 +208,9 @@ export function getEventoById(id) {
   return EVENTOS.find((e) => e.id === id);
 }
 //Retorna todos os eventos pertencentes a uma região
-export function getEventosPorRegiao(regiaoId) {
-  return EVENTOS.filter((e) => e.regiao === regiaoId);
-}
+// export function getEventosPorRegiao(regiaoId) {
+//   return EVENTOS.filter((e) => e.regiao === regiaoId);
+// }
 //Retorna uma região pelo id
 export function getRegiaoById(id) {
   return REGIOES.find((r) => r.id === id) || REGIOES[0];

@@ -1,11 +1,11 @@
-const API_URL = "/api/eventos.json";
+const API_URL = "http://127.0.0.1:8000/";
 
 //listando
 export async function listarEventos() {
   //teste
   console.log("Buscando:", new URL(API_URL, import.meta.url).href);
 
-  const resposta = await fetch(API_URL);
+  const resposta = await fetch(API_URL+"eventos/");
   console.log(resposta)
 
   if (!resposta.ok) {
@@ -24,7 +24,26 @@ export async function getEventoById(id) {
 
 //função que vai retornar apenas eventos daquela região
 export async function getEventosPorRegiao(regiaoId) {
-  const eventos = await listarEventos();
 
-  return eventos.filter((e) => e.regiao === regiaoId);
+  const reposta = await fetch(API_URL+"eventos/regiao/"+regiaoId);
+
+  console.log(reposta)
+
+  if (!reposta.ok) {
+    throw new Error("Erro ao carregar os eventos por região");
+  }
+
+  return await reposta.json();
+}
+
+export async function getEventoPesquisaRegiao(regiao){
+  const reposta = await fetch(API_URL+"eventos/regiao/"+regiaoId);
+
+  console.log(reposta)
+
+  if (!reposta.ok) {
+    throw new Error("Erro ao carregar os eventos por região");
+  }
+
+  return await reposta.json();
 }
