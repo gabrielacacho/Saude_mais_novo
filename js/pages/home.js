@@ -1,7 +1,6 @@
-
 import { getUsuarioByPerfil } from "../services/usuarios-api.js";
 import { listarRegioes } from "../services/regiao-api.js";
-import { listarEventos } from "../services/evento-api.js"; //api de brinquedo
+import { listarEventos } from "../services/apiService.js";
 import { renderHeader } from "../components/header.js";
 import { renderFooter } from "../components/footer.js";
 import {
@@ -13,18 +12,8 @@ import {
 import { iconPin, iconCalendar, iconBuilding } from "../utils/icons.js";
 
 const MESES = [
-  "JANEIRO",
-  "FEVEREIRO",
-  "MARÇO",
-  "ABRIL",
-  "MAIO",
-  "JUNHO",
-  "JULHO",
-  "AGOSTO",
-  "SETEMBRO",
-  "OUTUBRO",
-  "NOVEMBRO",
-  "DEZEMBRO",
+  "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
+  "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO",
 ];
 const DIAS_SEMANA = ["DOM.", "SEG.", "TER.", "QUA.", "QUI.", "SEX.", "SÁB."];
 const ANO_FIXO = 2026;
@@ -33,18 +22,25 @@ let mesAtual = 4;
 let filtroEvento = { termo: "", categoria: "", data: "" };
 let filtroLocalCategoria = "";
 
+// ==========================================
+// FUNÇÃO CENTRAL PARA LER A SESSÃO REAL
+// ==========================================
+function obterPerfilAtual() {
+  const auth = localStorage.getItem("usuarioLogado");
+  return auth ? JSON.parse(auth).perfil : "comum";
+}
+
 // Busca as inscrições em eventos do perfil do usuário atual
 async function getInscricoes() {
-  const perfil = sessionStorage.getItem("perfilMock") || "comum";
+  const perfil = obterPerfilAtual();
   const usuario = await getUsuarioByPerfil(perfil);
   return usuario?.inscricoes || [];
 }
 
-// Mapeia um texto digitado para o ID correspondente de uma região
 function resolveRegiaoId(texto, regioes) {
   const t = texto.trim().toLowerCase();
   if (!t) return "urca";
-  const porId =regioes.find((r) => r.id === t.replace(/\s+/g, "-"));
+  const porId = regioes.find((r) => r.id === t.replace(/\s+/g, "-"));
   if (porId) return porId.id;
   const porNome = regioes.find((r) => r.nome.toLowerCase() === t);
   if (porNome) return porNome.id;
@@ -54,56 +50,43 @@ function resolveRegiaoId(texto, regioes) {
   return parcial?.id || null;
 }
 
-// Verifica se a categoria do item atende ao filtro de eventos selecionado
 function passaFiltroEvento(categoriaItem) {
   if (!filtroEvento.categoria) return true;
   return categoriaItem === filtroEvento.categoria;
 }
 
-// O mesmo que o de cima só que filtro de posto
 function passaFiltroLocalPosto(servicos) {
   if (!filtroLocalCategoria) return true;
   return servicos.some((s) => s === filtroLocalCategoria);
 }
 
-//Retarna lista só que filtrando por localiddade
 async function eventosFiltradosPorLocal(textoLocal = "") {
   const eventos = await listarEventos();
   const regioes = await listarRegioes();
-
   const t = textoLocal.trim().toLowerCase();
 
-  //Se a busca estiver vazia (carregamento inicial), retorna TODOS os eventos da API
   if (!t) {
     return eventos.filter((e) => passaFiltroEvento(e.categoria));
   }
 
-  //Se o usuário digitou algo, tenta resolver o ID da região
   const regiaoId = resolveRegiaoId(textoLocal, regioes);
-
   let lista = [];
 
   if (regiaoId) {
-    // Filtra eventos pelo ID da região encontrada
     lista = eventos.filter((e) => e.regiao === regiaoId);
   } else {
-    // Busca por correspondência de texto no nome do local ou nome da região
     lista = eventos.filter((e) => {
       const regiao = regioes.find((r) => r.id === e.regiao);
       const nomeRegiao = regiao ? regiao.nome.toLowerCase() : "";
-
       return (
         e.localizacao.toLowerCase().includes(t) ||
         nomeRegiao.includes(t)
       );
     });
   }
-
-  //Aplica os filtros secundários (como categoria) e devolve a lista
   return lista.filter((e) => passaFiltroEvento(e.categoria));
 }
 
-// Filtra uma lista de eventos por termo de busca, categoria e data
 function aplicarFiltrosEvento(lista) {
   let result = [...lista];
   const { termo, categoria, data } = filtroEvento;
@@ -120,7 +103,6 @@ function aplicarFiltrosEvento(lista) {
   return result;
 }
 
-// Atualiza o texto do rótulo do local exibido no mapa
 function atualizarLabelMapa(texto) {
   const label = document.getElementById("mapa-local-label");
   if (label) {
@@ -128,7 +110,6 @@ function atualizarLabelMapa(texto) {
   }
 }
 
-// Retorna o HTML do popover informativo de um posto de saúde
 function htmlPopoverPosto(posto) {
   return `
     <div class="hub-popover hub-popover--posto">
@@ -140,16 +121,13 @@ function htmlPopoverPosto(posto) {
   `;
 }
 
-// Limpa os marcadores exibidos no contêiner do mapa
 function renderMapaPins() {
   const container = document.getElementById("mapa-pins");
   if (!container) return;
   container.innerHTML = "";
 }
 
-// Retorna o HTML do botão e do popover de um evento dentro do calendário
 function htmlCalEvento(ev) {
-  //Tratamento preventivo caso a categoria venha vazia ou com erro
   const categoriaClasse = ev.categoria ? ev.categoria.toLowerCase() : "padrao";
   const categoriaTexto = ev.categoria || "Evento";
 
@@ -166,15 +144,9 @@ function htmlCalEvento(ev) {
   `;
 }
 
-//renderiza a grade de dias e eventos do calendário do mês atual
 async function renderCalendario() {
   const grid = document.getElementById("calendario-grid");
-  if (!grid) {
-    console.error(
-      "ERRO: O elemento #calendario-grid não foi encontrado na página!",
-    );
-    return;
-  }
+  if (!grid) return;
 
   const mes = mesAtual;
   const ano = ANO_FIXO;
@@ -184,16 +156,13 @@ async function renderCalendario() {
   const diasNoMes = new Date(ano, mes + 1, 0).getDate();
   const diasMesAnterior = new Date(ano, mes, 0).getDate();
 
-  //Filtra garantindo que o evento tenha uma data válida antes de dar split
-const eventosNoMes = eventos.filter((e) => {
+  const eventosNoMes = eventos.filter((e) => {
     if (!e.data) return false;
     const [y, m] = e.data.split("-").map(Number);
     return y === ano && m === mes + 1 && passaFiltroEvento(e.categoria);
   });
 
-  let html = DIAS_SEMANA.map(
-    (d) => `<div class="cal-header-dia">${d}</div>`,
-  ).join("");
+  let html = DIAS_SEMANA.map((d) => `<div class="cal-header-dia">${d}</div>`).join("");
 
   for (let i = 0; i < primeiroDia; i++) {
     const dia = diasMesAnterior - primeiroDia + i + 1;
@@ -201,23 +170,16 @@ const eventosNoMes = eventos.filter((e) => {
   }
 
   const hoje = new Date();
-  const diaHoje =
-    hoje.getFullYear() === ano && hoje.getMonth() === mes
-      ? hoje.getDate()
-      : null;
+  const diaHoje = hoje.getFullYear() === ano && hoje.getMonth() === mes ? hoje.getDate() : null;
 
   for (let dia = 1; dia <= diasNoMes; dia++) {
     const dataStr = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
     const todosNoDia = eventosNoMes.filter((e) => e.data === dataStr);
     const selecionado = diaHoje !== null && dia === diaHoje;
 
-    //Try-catch preventivo para o loop não morrer se um evento estiver quebrado
     let eventosHtml = "";
     try {
-      eventosHtml = todosNoDia
-        .slice(0, 2)
-        .map((ev) => htmlCalEvento(ev))
-        .join("");
+      eventosHtml = todosNoDia.slice(0, 2).map((ev) => htmlCalEvento(ev)).join("");
     } catch (err) {
       console.error("Erro ao renderizar evento do dia " + dia, err);
     }
@@ -236,13 +198,10 @@ const eventosNoMes = eventos.filter((e) => {
     html += `<div class="cal-dia cal-dia--muted"><span class="cal-numero">${i}</span></div>`;
   }
 
-  //Alimenta o DOM de forma segura
   grid.innerHTML = html;
-
   bindCalendarioPopovers(grid);
 }
 
-// Configura os eventos de hover e clique do calendario
 function bindCalendarioPopovers(grid) {
   grid.querySelectorAll(".cal-evento-mini-wrap").forEach((wrap) => {
     const btn = wrap.querySelector(".cal-evento-mini");
@@ -266,7 +225,7 @@ function bindCalendarioPopovers(grid) {
     });
   });
 }
-//api de brinquedo9adicionei os fgiltros
+
 async function renderEventos() {
   const grid = document.getElementById("eventos-grid");
   const inputRegiao = document.getElementById("regiao-nome");
@@ -280,9 +239,7 @@ async function renderEventos() {
   }
 
   try {
-    //Agora usa a função que aplica o filtro de local
     const lista = await eventosFiltradosPorLocal(textoLocal);
-    //Depois aplica os demais filtros (texto, categoria e data)
     const eventos = aplicarFiltrosEvento(lista);
 
     grid.innerHTML = eventos
@@ -301,20 +258,16 @@ async function renderEventos() {
     `
       )
       .join("");
-
   } catch (erro) {
     console.error("Erro ao carregar os eventos:", erro);
   }
 }
 
-// Preenche o campo de seleção de mês do calendário e adiciona o evento de troca
 function initSeletorCalendario() {
   const selectMes = document.getElementById("cal-mes");
   if (!selectMes) return;
 
-  selectMes.innerHTML = MESES.map(
-    (nome, i) => `<option value="${i}">${nome}</option>`,
-  ).join("");
+  selectMes.innerHTML = MESES.map((nome, i) => `<option value="${i}">${nome}</option>`).join("");
   selectMes.value = String(mesAtual);
 
   selectMes.addEventListener("change", () => {
@@ -323,7 +276,6 @@ function initSeletorCalendario() {
   });
 }
 
-// Sincroniza os campos de entrada de localidade e configura os eventos de mudançaa
 function initCamposLocal() {
   const mapaInput = document.getElementById("mapa-busca-local");
   const regiaoInput = document.getElementById("regiao-nome");
@@ -352,30 +304,20 @@ function initCamposLocal() {
   atualizarLabelMapa(getLocal());
 }
 
-// Insere os ícones de pin e calendário nos cabeçalhos dos painéis
 function initPanelIcons() {
-  const pinEl = document.querySelector(
-    ".hub-panel-header--input .hub-panel-header__icon",
-  );
+  const pinEl = document.querySelector(".hub-panel-header--input .hub-panel-header__icon");
   const calEl = document.querySelector(".hub-panel-header__icon--cal");
-  if (pinEl) {
-    pinEl.innerHTML = iconPin().replace(
-      'class="hub-icon"',
-      'class="hub-icon hub-icon--lg"',
-    );
-  }
-  if (calEl) {
-    calEl.innerHTML = iconCalendar().replace(
-      'class="hub-icon"',
-      'class="hub-icon hub-icon--lg"',
-    );
-  }
+  if (pinEl) pinEl.innerHTML = iconPin().replace('class="hub-icon"', 'class="hub-icon hub-icon--lg"');
+  if (calEl) calEl.innerHTML = iconCalendar().replace('class="hub-icon"', 'class="hub-icon hub-icon--lg"');
 }
 
-// INICIALIZADOR página principal
+// ==========================================
+// INICIALIZAÇÃO DA PÁGINA
+// ==========================================
 async function init() {
   setLocal("", "init");
 
+  // Renderiza o cabeçalho (agora ele vai ler a sessão corretamente!)
   renderHeader(document.getElementById("header-root"), {
     showSearch: true,
     activePage: "home",
@@ -388,229 +330,77 @@ async function init() {
   initCamposLocal();
   renderMapaPins();
 
-  // Aguarda o carregamento dos eventos e do calendário
   await Promise.all([
     renderCalendario(),
     renderEventos(),
   ]);
 
-  // CORREÇÃO DO EVENTO GLOBAL DE FECHAMENTO
   document.addEventListener("click", (e) => {
-    // Se o clique veio de dentro de um quadradinho de evento,
-    // não faz nada (deixa o bindCalendarioPopovers cuidar).
-    if (e.target.closest(".cal-evento-mini-wrap")) {
-      return;
-    }
-
-    // Se clicou em qualquer outro lugar da página fora do evento,
-    // fecha todos os popovers.
-    document
-      .querySelectorAll(".cal-evento-mini-wrap.is-popover-open")
-      .forEach((w) => {
-        w.classList.remove("is-popover-open");
-
-        w.querySelector(".cal-evento-mini")?.setAttribute(
-          "aria-expanded",
-          "false",
-        );
-      });
+    if (e.target.closest(".cal-evento-mini-wrap")) return;
+    document.querySelectorAll(".cal-evento-mini-wrap.is-popover-open").forEach((w) => {
+      w.classList.remove("is-popover-open");
+      w.querySelector(".cal-evento-mini")?.setAttribute("aria-expanded", "false");
+    });
   });
 
-  // Atualiza o calendário quando o perfil for alterado
-  window.addEventListener("perfil-alterado", async () => {
-    await renderCalendario();
-  });
-
-  // Atualiza eventos e calendário quando o filtro de eventos mudar
   window.addEventListener("filtro-eventos", async (e) => {
     filtroEvento = e.detail;
-
-    await Promise.all([
-      renderEventos(),
-      renderCalendario(),
-    ]);
-
+    await Promise.all([renderEventos(), renderCalendario()]);
     renderMapaPins();
   });
 
-  // Atualiza eventos e calendário quando o filtro de local mudar
   window.addEventListener("filtro-local", async (e) => {
     filtroLocalCategoria = e.detail.categoria || "";
-
-    await Promise.all([
-      renderEventos(),
-      renderCalendario(),
-    ]);
-
+    await Promise.all([renderEventos(), renderCalendario()]);
     renderMapaPins();
   });
 
   const adminBadge = document.getElementById("admin-badge");
-
   const updateAdmin = () => {
-    const perfil = sessionStorage.getItem("perfilMock") || "comum";
-
-    if (adminBadge) {
-      adminBadge.classList.toggle(
-        "is-hidden",
-        perfil !== "administrador",
-      );
-    }
+    const perfil = obterPerfilAtual();
+    if (adminBadge) adminBadge.classList.toggle("is-hidden", perfil !== "administrador");
   };
-
   updateAdmin();
 
-  window.addEventListener("perfil-alterado", updateAdmin);
-
-  // CONTROLE DO BADGE INSTITUCIONAL
-  const institucionalBadge = document.getElementById(
-    "institucional-badge",
-  );
-
+  const institucionalBadge = document.getElementById("institucional-badge");
   const updateInstitucional = () => {
-    const perfil = sessionStorage.getItem("perfilMock") || "comum";
-
+    const perfil = obterPerfilAtual();
     if (institucionalBadge) {
-      // Se o perfil NÃO for "institucional", adiciona 'is-hidden'.
-      // Se for institucional, remove e mostra o badge.
-      institucionalBadge.classList.toggle(
-        "is-hidden",
-        perfil !== "institucional",
-      );
+      institucionalBadge.classList.toggle("is-hidden", perfil !== "institucional");
     }
   };
-
-  // Executa uma vez na inicialização da página
   updateInstitucional();
-
-  // Escuta o mesmo evento global de mudança de perfil
-  // para atualizar em tempo real
-  window.addEventListener(
-    "perfil-alterado",
-    updateInstitucional,
-  );
 }
 
 document.addEventListener("DOMContentLoaded", init);
 
-// Aguarda o DOM carregar completamente antes de chamar o mapa
 document.addEventListener("DOMContentLoaded", () => {
-  // Verifica se a div do mapa existe na página para não dar erro
   const mapContainer = document.getElementById("mapa-container");
-
   if (mapContainer) {
-    // Inicializa o mapa com as coordenadas da Urca, RJ (-22.9519, -43.1658) e zoom 14
     const mapa = L.map("mapa-container").setView([-22.9519, -43.1658], 14);
-
-    // Adiciona a camada visual do OpenStreetMap
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap",
-    }).addTo(mapa);
-
-    // MARCADORES DOS EVENTOS (MOCK-DATA)
-
-    // 1. Vem Zumbar 60+ (Localização: Pérola Negra, Urca)
-    L.marker([-22.9548, -43.1672]).addTo(mapa).bindPopup(`
-      <b>Vem Zumbar 60+</b><br>
-      <small>Categoria: Campanha · Local: Pérola Negra (Urca)</small><br>
-      <p>A Zumba Gold é uma modalidade adaptada, focada no equilíbrio e coordenação motora.</p>
-      <a href="evento.html?id=evt-1" style="color: #003B8E; font-weight: bold; text-decoration: underline;">Ver detalhes</a>
-    `);
-
-    // 2. Palestra: Hipertensão e Você (Localização: UBS Santa Teresa)
-    L.marker([-22.9328, -43.1952]).addTo(mapa).bindPopup(`
-      <b>Palestra: Hipertensão e Você</b><br>
-      <small>Categoria: Palestra · Local: UBS Santa Teresa</small><br>
-      <p>Encontro educativo com cardiologista da rede municipal. Orientações sobre hábitos saudáveis.</p>
-      <a href="evento.html?id=evt-2" style="color: #003B8E; font-weight: bold; text-decoration: underline;">Ver detalhes</a>
-    `);
-
-    // 3. Dia D da Vacinação Influenza (Localização: Posto Saúde Copacabana)
-    L.marker([-22.9754, -43.1918]).addTo(mapa).bindPopup(`
-      <b>Dia D da Vacinação Influenza</b><br>
-      <small>Categoria: Vacinação · Local: Posto Saúde Copacabana</small><br>
-      <p>Mutirão de vacinação contra gripe. Traga documento com foto e cartão de vacinas.</p>
-      <a href="evento.html?id=evt-3" style="color: #003B8E; font-weight: bold; text-decoration: underline;">Ver detalhes</a>
-    `);
-
-    // 4. Consulta Odontológica Gratuita (Localização: Clínica da Família Tijuca)
-    L.marker([-22.9345, -43.2355]).addTo(mapa).bindPopup(`
-      <b>Consulta Odontológica Gratuita</b><br>
-      <small>Categoria: Consulta · Local: Clínica da Família Tijuca</small><br>
-      <p>Atendimento odontológico preventivo e orientação de higiene bucal por ordem de chegada.</p>
-      <a href="evento.html?id=evt-4" style="color: #003B8E; font-weight: bold; text-decoration: underline;">Ver detalhes</a>
-    `);
-
-    // 5. Mutirão de Prevenção ao Câncer (Localização: Centro de Saúde Urca)
-    L.marker([-22.9555, -43.1662]).addTo(mapa).bindPopup(`
-      <b>Mutirão de Prevenção ao Câncer</b><br>
-      <small>Categoria: Mutirão · Local: Centro de Saúde Urca</small><br>
-      <p>Rastreamento orientado e encaminhamentos com equipe multiprofissional presente.</p>
-      <a href="evento.html?id=evt-5" style="color: #003B8E; font-weight: bold; text-decoration: underline;">Ver detalhes</a>
-    `);
-
-    // 6. Exame de Glicemia e Pressão (Localização: UBS Praia Vermelha, Urca)
-    L.marker([-22.9558, -43.1648])
-      .addTo(mapa)
-      .bindPopup(
-        `
-      <b>Exame de Glicemia e Pressão</b><br>
-      <small>Categoria: Exame · Local: UBS Praia Vermelha (Urca)</small><br>
-      <p>Triagem rápida com enfermagem e resultados na hora com orientação nutricional básica.</p>
-      <a href="evento.html?id=evt-6" style="color: #003B8E; font-weight: bold; text-decoration: underline;">Ver detalhes</a>
-    `,
-      )
-      .openPopup(); // Deixa o último balão aberto por padrão na inicialização
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap" }).addTo(mapa);
+    L.marker([-22.9548, -43.1672]).addTo(mapa).bindPopup(`<b>Vem Zumbar 60+</b><br><small>Categoria: Campanha · Local: Pérola Negra (Urca)</small><br><a href="evento.html?id=evt-1">Ver detalhes</a>`);
+    L.marker([-22.9328, -43.1952]).addTo(mapa).bindPopup(`<b>Palestra: Hipertensão e Você</b><br><small>Categoria: Palestra · Local: UBS Santa Teresa</small><br><a href="evento.html?id=evt-2">Ver detalhes</a>`);
+    L.marker([-22.9754, -43.1918]).addTo(mapa).bindPopup(`<b>Dia D da Vacinação Influenza</b><br><small>Categoria: Vacinação · Local: Posto Saúde Copacabana</small><br><a href="evento.html?id=evt-3">Ver detalhes</a>`);
+    L.marker([-22.9345, -43.2355]).addTo(mapa).bindPopup(`<b>Consulta Odontológica Gratuita</b><br><small>Categoria: Consulta · Local: Clínica da Família Tijuca</small><br><a href="evento.html?id=evt-4">Ver detalhes</a>`);
+    L.marker([-22.9555, -43.1662]).addTo(mapa).bindPopup(`<b>Mutirão de Prevenção ao Câncer</b><br><small>Categoria: Mutirão · Local: Centro de Saúde Urca</small><br><a href="evento.html?id=evt-5">Ver detalhes</a>`);
+    L.marker([-22.9558, -43.1648]).addTo(mapa).bindPopup(`<b>Exame de Glicemia e Pressão</b><br><small>Categoria: Exame · Local: UBS Praia Vermelha (Urca)</small><br><a href="evento.html?id=evt-6">Ver detalhes</a>`).openPopup();
   }
 });
 
-// 3. Função para renderizar o componente de busca (Versão À Prova de Falhas)
-// renderiza a barra de busca com foco em eventos e acoes de saude
 function renderizarBuscador() {
   const container = document.getElementById("container-busca");
-
   if (!container) return;
 
   const deveMostrarBusca = typeof showSearch !== "undefined" ? showSearch : true;
   const valorLocal = typeof getLocal === "function" ? getLocal() : "";
   
-  // opcoes de regioes reais do rio
-  const regiaoOptions = typeof opcoesRegiao !== "undefined"
-      ? opcoesRegiao
-      : `
-        <option value="">Todas as regiões</option>
-        <option>Centro</option>
-        <option>Zona Sul</option>
-        <option>Zona Norte</option>
-        <option>Zona Oeste</option>
-      `;
-      
-  // categorias focadas 100% em eventos, campanhas e acoes
-  const categoriaOptions = typeof opcoesCategoria !== "undefined"
-      ? opcoesCategoria
-      : `
-        <option value="">Todas as ações</option>
-        <option>Campanha de Vacinação</option>
-        <option>Mutirão de Saúde</option>
-        <option>Feira de Saúde</option>
-        <option>Palestra / Roda de Conversa</option>
-        <option>Oficina Educativa</option>
-        <option>Ação Comunitária</option>
-        <option>Atividade Física / Caminhada</option>
-        <option>Grupo de Apoio</option>
-      `;
+  const regiaoOptions = typeof opcoesRegiao !== "undefined" ? opcoesRegiao : `<option value="">Todas as regiões</option><option>Centro</option><option>Zona Sul</option><option>Zona Norte</option><option>Zona Oeste</option>`;
+  const categoriaOptions = typeof opcoesCategoria !== "undefined" ? opcoesCategoria : `<option value="">Todas as ações</option><option>Campanha de Vacinação</option><option>Mutirão de Saúde</option><option>Feira de Saúde</option><option>Palestra / Roda de Conversa</option><option>Oficina Educativa</option><option>Ação Comunitária</option><option>Atividade Física / Caminhada</option><option>Grupo de Apoio</option>`;
 
-  const pinoSvg = typeof iconPin === "function"
-      ? iconPin()
-      : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
-
-  const calendarioSvg = typeof iconCalendar === "function"
-      ? iconCalendar()
-      : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
-
-  const filtroSvg = typeof iconFilter === "function"
-      ? iconFilter()
-      : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>`;
+  const pinoSvg = typeof iconPin === "function" ? iconPin() : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
+  const calendarioSvg = typeof iconCalendar === "function" ? iconCalendar() : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
+  const filtroSvg = typeof iconFilter === "function" ? iconFilter() : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>`;
 
   if (deveMostrarBusca) {
     container.innerHTML = `
@@ -672,32 +462,24 @@ function renderizarBuscador() {
     container.innerHTML = '<div class="hub-search-wrap"></div>';
   }
 }
-//Inicialização do Buscador e seus Respectivos Eventos
-document.addEventListener("DOMContentLoaded", () => {
-  // Executa a renderização primeiro
-  renderizarBuscador();
 
-  // CORREÇÃO Captura dos elementos e escuta de cliques movidos para dentro do DOMContentLoaded
-  // Garantindo que rodem APENAS após os elementos existirem fisicamente na árvore do DOM.
+document.addEventListener("DOMContentLoaded", () => {
+  renderizarBuscador();
   const btnFiltroLocal = document.getElementById("btn-filtros-local");
   const painelFiltroLocal = document.getElementById("painel-filtros-local");
   const btnFiltroEvento = document.getElementById("btn-filtros-evento");
   const painelFiltroEvento = document.getElementById("painel-filtros-evento");
 
-  // Evento para o painel de Local
   if (btnFiltroLocal && painelFiltroLocal) {
     btnFiltroLocal.addEventListener("click", () => {
       painelFiltroLocal.classList.toggle("is-hidden");
-      // Opcional: fecha o outro painel se abrir este
       if (painelFiltroEvento) painelFiltroEvento.classList.add("is-hidden");
     });
   }
 
-  // Evento para o painel de Eventos
   if (btnFiltroEvento && painelFiltroEvento) {
     btnFiltroEvento.addEventListener("click", () => {
       painelFiltroEvento.classList.toggle("is-hidden");
-      // Opcional, mas vou manterr: fecha o outro painel se abrir este
       if (painelFiltroLocal) painelFiltroLocal.classList.add("is-hidden");
     });
   }
