@@ -1,4 +1,4 @@
-const API_URL = "/api/postos.json";
+/*const API_URL = "/api/postos.json";
 
 export async function listarPostos() {
   const resposta = await fetch(API_URL);
@@ -13,4 +13,4 @@ export async function listarPostos() {
 export async function getPostoById(id) {
   const postos = await listarPostos();
   return postos.find((posto) => posto.id === id);
-}
+} */

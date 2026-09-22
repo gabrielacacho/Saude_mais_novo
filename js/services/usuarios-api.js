@@ -1,4 +1,4 @@
-const API_URL = "/api/usuarios.json";
+/* const API_URL = "/api/usuarios.json";
 
 export async function listarUsuarios() {
   const response = await fetch(API_URL);
@@ -43,4 +43,4 @@ export async function cadastrarUsuario(formData) {
   }
 
   return await response.json();
-}
+} */

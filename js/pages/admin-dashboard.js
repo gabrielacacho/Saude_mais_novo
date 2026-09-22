@@ -1,6 +1,7 @@
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 
+
 async function init() {
   // pega quem ta logado no momento
   const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';

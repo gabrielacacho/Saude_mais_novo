@@ -1,4 +1,4 @@
-const API_URL = "/api/eventos.json";
+/* const API_URL = "/api/eventos.json";
 
 //listando
 export async function listarEventos() {
@@ -28,3 +28,4 @@ export async function getEventosPorRegiao(regiaoId) {
 
   return eventos.filter((e) => e.regiao === regiaoId);
 }
+*/
