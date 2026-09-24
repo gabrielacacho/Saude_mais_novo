@@ -11,9 +11,11 @@ export async function listarEventos() {
   if (!resposta.ok) {
     throw new Error("Erro ao carregar os eventos");
   }
-//cconvertendo o json em obj js e devolve os dados
+//convertendo o json em obj js e devolve os dados
   return await resposta.json();
 }
+
+//listar eventos por região
 
 //função de buscar um unico id
 export async function getEventoById(id) {

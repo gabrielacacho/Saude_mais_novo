@@ -1,8 +1,8 @@
 import { getUsuarioByPerfil } from "../services/usuarios-api.js";
 import { listarRegioes } from "../services/regiao-api.js";
-import { listarEventos } from "../services/apiService.js";
+import { listarEventos } from "../services/evento-api.js";
 import { renderHeader } from "../components/header.js";
-import { renderFooter } from "../components/footer.js";
+import { renderFooter } from "../components/footer.js";                                 
 import {
   bindLocalInputs,
   getLocal,
