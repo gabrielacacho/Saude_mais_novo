@@ -1,6 +1,6 @@
 import { getUsuarioByPerfil } from "../services/usuarios-api.js";
 import { listarRegioes } from "../services/regiao-api.js";
-import { listarEventos } from "../services/evento-api.js";
+import { listarEventos, getEventosPorRegiao,} from "../services/evento-api.js";
 import { renderHeader } from "../components/header.js";
 import { renderFooter } from "../components/footer.js";                                 
 import {
@@ -22,9 +22,8 @@ let mesAtual = 4;
 let filtroEvento = { termo: "", categoria: "", data: "" };
 let filtroLocalCategoria = "";
 
-// ==========================================
+
 // FUNÇÃO CENTRAL PARA LER A SESSÃO REAL
-// ==========================================
 function obterPerfilAtual() {
   const auth = localStorage.getItem("usuarioLogado");
   return auth ? JSON.parse(auth).perfil : "comum";
@@ -36,7 +35,7 @@ async function getInscricoes() {
   const usuario = await getUsuarioByPerfil(perfil);
   return usuario?.inscricoes || [];
 }
-
+/* não preciso mais, id regiao codigo zumbi
 function resolveRegiaoId(texto, regioes) {
   const t = texto.trim().toLowerCase();
   if (!t) return "urca";
@@ -49,7 +48,7 @@ function resolveRegiaoId(texto, regioes) {
   );
   return parcial?.id || null;
 }
-
+*/
 function passaFiltroEvento(categoriaItem) {
   if (!filtroEvento.categoria) return true;
   return categoriaItem === filtroEvento.categoria;
@@ -60,31 +59,17 @@ function passaFiltroLocalPosto(servicos) {
   return servicos.some((s) => s === filtroLocalCategoria);
 }
 
+//filtro sem id agora
 async function eventosFiltradosPorLocal(textoLocal = "") {
-  const eventos = await listarEventos();
-  const regioes = await listarRegioes();
-  const t = textoLocal.trim().toLowerCase();
-
+  const t = textoLocal.trim();
   if (!t) {
+    const eventos = await listarEventos();
+
     return eventos.filter((e) => passaFiltroEvento(e.categoria));
   }
+  const eventos = await getEventosPorRegiao(t);
 
-  const regiaoId = resolveRegiaoId(textoLocal, regioes);
-  let lista = [];
-
-  if (regiaoId) {
-    lista = eventos.filter((e) => e.regiao === regiaoId);
-  } else {
-    lista = eventos.filter((e) => {
-      const regiao = regioes.find((r) => r.id === e.regiao);
-      const nomeRegiao = regiao ? regiao.nome.toLowerCase() : "";
-      return (
-        e.localizacao.toLowerCase().includes(t) ||
-        nomeRegiao.includes(t)
-      );
-    });
-  }
-  return lista.filter((e) => passaFiltroEvento(e.categoria));
+  return eventos.filter((e) => passaFiltroEvento(e.categoria));
 }
 
 function aplicarFiltrosEvento(lista) {

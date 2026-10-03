@@ -17,25 +17,26 @@ export async function listarEventos() {
 
 //listar eventos por região
 
-//função de buscar um unico id
+//função de buscar um unico id (consertada)
 export async function getEventoById(id) {
   const eventos = await listarEventos();
 
-  return eventos.find((e) => e.id === id);
+  return eventos.find((e) => e.id === Number(id));
 }
 
 //função que vai retornar apenas eventos daquela região
-export async function getEventosPorRegiao(regiaoId) {
+export async function getEventosPorRegiao(regiaoNome) {
+  const resposta = await fetch(
+    API_URL + "eventos/regiao/" + encodeURIComponent(regiaoNome)
+  );
 
-  const reposta = await fetch(API_URL+"eventos/regiao/"+regiaoId);
+  console.log(resposta);
 
-  console.log(reposta)
-
-  if (!reposta.ok) {
+  if (!resposta.ok) {
     throw new Error("Erro ao carregar os eventos por região");
   }
 
-  return await reposta.json();
+  return await resposta.json();
 }
 
 export async function getEventoPesquisaRegiao(regiao){
