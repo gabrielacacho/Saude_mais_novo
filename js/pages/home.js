@@ -1,4 +1,4 @@
-import { getUsuarioByPerfil } from "../services/usuarios-api.js";
+//import { getUsuarioByPerfil } from "../services/usuarios-api.js";
 import { listarRegioes } from "../services/regiao-api.js";
 import { listarEventos, getEventosPorRegiao,} from "../services/evento-api.js";
 import { renderHeader } from "../components/header.js";
@@ -30,11 +30,11 @@ function obterPerfilAtual() {
 }
 
 // Busca as inscrições em eventos do perfil do usuário atual
-async function getInscricoes() {
-  const perfil = obterPerfilAtual();
-  const usuario = await getUsuarioByPerfil(perfil);
-  return usuario?.inscricoes || [];
-}
+//async function getInscricoes() {
+  //const perfil = obterPerfilAtual();
+  //const usuario = await getUsuarioByPerfil(perfil);
+  //return usuario?.inscricoes || [];
+//}
 /* não preciso mais, id regiao codigo zumbi
 function resolveRegiaoId(texto, regioes) {
   const t = texto.trim().toLowerCase();

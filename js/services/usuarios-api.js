@@ -1,46 +1,41 @@
-const API_URL = "/api/usuarios.json";
+const BASE_URL = "http://127.0.0.1:8000";
 
-export async function listarUsuarios() {
-  const response = await fetch(API_URL);
-  return await response.json();
-}
-
-export async function getUsuarioByPerfil(perfil) {
-  const usuarios = await listarUsuarios();
-  return usuarios[perfil];
-}
-
-
-   //CADASTRAR USUÁRIO
 export async function cadastrarUsuario(formData) {
-
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    body: formData
+  const perfil = formData.get('tipoUsuario') || 'comum';
+  
+  // Transforma o FormData em um Objeto JavaScript padrão (JSON)
+  const dadosObjeto = {};
+  formData.forEach((value, key) => {
+    // Ignora campos de controle internos que o backend não conhece
+    if (key !== 'tipoUsuario' && key !== 'confirmarSenha') {
+      dadosObjeto[key] = value;
+    }
   });
 
+  const url = perfil === 'comum' 
+    ? `${BASE_URL}/usuarios/comum/criar_usuario/` 
+    : `${BASE_URL}/usuarios/institucional/criar_usuario/`;
 
-     //TRATAMENTO DE ERRO DA API
+  const response = await fetch(url, { 
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json' // Avisa o FastAPI que estamos mandando um JSON
+    },
+    body: JSON.stringify(dadosObjeto) // Envia como string JSON
+  });
+  
   if (!response.ok) {
-
-    let mensagem =
-      'Não foi possível realizar o cadastro.';
-
-    try {
-
-      const erro = await response.json();
-
-      mensagem =
-        erro.mensagem ||
-        erro.message ||
-        mensagem;
-
-    } catch {
-      // Caso a API não retorne JSON
-    }
-
+    let mensagem = "Erro ao cadastrar no servidor.";
+    try { 
+      const erro = await response.json(); 
+      if (Array.isArray(erro.detail)) {
+        mensagem = erro.detail.map(e => `${e.loc.join('->')}: ${e.msg}`).join(' | ');
+      } else {
+        mensagem = erro.detail || erro.mensagem || erro.message || mensagem;
+      }
+    } catch(e) {}
     throw new Error(mensagem);
   }
-
-  return await response.json();
-} 
+  
+  return { sucesso: true, dados: await response.json() };
+}

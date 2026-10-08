@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PAINEL ADMINISTRATIVO (PADRÃO HUB SAÚDE)
+   PAINEL ADMINISTRATIVO (PADRÃO HUB SAÚDE - MODERNIZADO)
    ========================================================================== */
 
 .admin-layout {
@@ -44,13 +44,14 @@
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 /* Efeito ao passar o mouse */
 .admin-side-btn:hover {
   background-color: #f1f5f9;
   color: var(--cor-destaque);
+  transform: translateX(2px);
 }
 
 /* Estilo para quando a classe .active for aplicada no elemento */
@@ -77,6 +78,18 @@
   border-radius: 1rem;
   padding: 1.25rem 1.5rem;
   box-shadow: var(--sombra-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-welcome-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--cor-destaque);
 }
 
 .admin-welcome-box h2 {
@@ -95,7 +108,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   3. CARDS DE MÉTRICAS
+   3. CARDS DE MÉTRICAS (E FILTROS INTERATIVOS)
    -------------------------------------------------------------------------- */
 .admin-cards-container {
   display: grid;
@@ -114,29 +127,130 @@
   align-items: center;
   justify-content: center;
   box-shadow: var(--sombra-card);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer; /* Torna evidente que são interativos para os filtros */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .admin-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  border-color: var(--cor-destaque);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .admin-card-num {
   display: block;
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   color: var(--cor-destaque);
   line-height: 1.2;
   margin-bottom: 0.25rem;
 }
 
 .admin-card-label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: #4b5563;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   4. SEÇÃO DE LISTAGEM DE INSTITUIÇÕES E FILTROS (NOVO)
+   -------------------------------------------------------------------------- */
+.admin-content-section {
+  background: #fff;
+  border: 2px solid var(--cor-borda);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--sombra-card);
+  margin-top: 0.5rem;
+}
+
+.admin-content-section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+#tabela-unidades-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hub-admin-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid var(--cor-borda);
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.hub-admin-card-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateX(4px);
+}
+
+.hub-admin-info h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.2rem 0;
+}
+
+.hub-admin-info p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Badges de Status Modernos */
+.hub-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hub-badge--ativo {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.hub-badge--pendente {
+  background-color: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.hub-badge--bloqueado {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Estados de Loading e Vazio */
+.hub-loading-msg,
+.hub-empty-msg {
+  text-align: center;
+  padding: 2.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-style: italic;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  border: 2px dashed var(--cor-borda);
 }
 
 /* --------------------------------------------------------------------------
@@ -155,5 +269,11 @@
 @media (max-width: 520px) {
   .admin-cards-container {
     grid-template-columns: 1fr;
+  }
+  
+  .hub-admin-card-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
 }

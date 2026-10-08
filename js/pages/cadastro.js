@@ -129,7 +129,7 @@ function renderCampos() {
 
       campoHtml(
         'Data de nascimento *',
-        'nascimento',
+        'data_nascimento',
         'date'
       ),
 
@@ -368,7 +368,58 @@ function renderCampos() {
   }
 
   initEventosDinamicos();
+
+  initEventosDinamicos();
+
+  // ATRELAR O EVENTO DE SUBMIT AQUI GARANTE QUE O FORMULÁRIO JÁ EXISTE NO DOM!
+  const formCadastro = document.getElementById('form-cadastro');
+  
+  if (formCadastro && !formCadastro.dataset.listenerAtivo) {
+    formCadastro.dataset.listenerAtivo = "true"; // Evita duplicar o evento se re-renderizar
+    
+    formCadastro.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // VALIDAÇÃO SÍNCRONA
+      if (!validarFormulario()) {
+        return;
+      }
+
+      const form = e.currentTarget;
+      const submitBtn = form.querySelector('button[type="submit"]');
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+      }
+
+      try {
+      const formData = new FormData(form);
+      formData.append('tipoUsuario', tipoUsuario);
+
+      // Envia para a API real do Python
+      await cadastrarUsuario(formData);
+      
+      // Sucesso! Vai para a tela 3
+      showStep(3);
+
+    } catch (erro) {
+      console.error('Erro no cadastro:', erro);
+      
+      // Verifica se o erro indica que o usuário já existe (ex: e-mail duplicado)
+      const mensagemErro = erro.message || '';
+      if (mensagemErro.toLowerCase().includes('já') || mensagemErro.toLowerCase().includes('cadastrado') || mensagemErro.toLowerCase().includes('existente')) {
+        if (confirm("Este e-mail já está cadastrado no sistema! Deseja ir para a página de login?")) {
+          window.location.href = 'login.html';
+        }
+      } else {
+        alert(mensagemErro || 'Ocorreu um erro ao realizar o cadastro.');
+      }
+    }
+    });
+  }
 }
+  
 
 
    //EVENTOS DINÂMICOS
@@ -611,12 +662,12 @@ function validarDataNascimento(data) {
     return 'Informe sua data de nascimento.';
   }
 
-  const nascimento =
+  const data_nascimento =
     new Date(`${data}T00:00:00`);
 
   const hoje = new Date();
 
-  if (nascimento > hoje) {
+  if (data_nascimento > hoje) {
     return 'A data de nascimento não pode ser futura.';
   }
 
@@ -677,7 +728,7 @@ function validarFormulario() {
       document.getElementById('cpf')?.value;
 
     const nascimento =
-      document.getElementById('nascimento')?.value;
+      document.getElementById('data_nascimento')?.value;
 
     const email =
       document.getElementById('email')?.value;
@@ -705,11 +756,11 @@ function validarFormulario() {
 
 
     const erroNascimento =
-      validarDataNascimento(nascimento);
+      validarDataNascimento(data_nascimento);
 
     if (erroNascimento) {
       mostrarErro(
-        'nascimento',
+        'data_nascimento',
         erroNascimento
       );
 
@@ -1067,84 +1118,49 @@ function init() {
     );
 
 
-
-     //ENVIO DO CADASTRO
+//ENVIO DO CADASTRO
   document
     .getElementById('form-cadastro')
     ?.addEventListener(
       'submit',
       async (e) => {
-
         e.preventDefault();
-
 
            //VALIDAÇÃO SÍNCRONA
         if (!validarFormulario()) {
           return;
         }
 
-
            // ENVIO ASSÍNCRONO PARA API
-        const form =
-          e.currentTarget;
-
-        const submitBtn =
-          form.querySelector(
-            'button[type="submit"]'
-          );
-
+        const form = e.currentTarget;
+        const submitBtn = form.querySelector('button[type="submit"]');
 
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.textContent =
-            'Enviando...';
+          submitBtn.textContent = 'Enviando...';
         }
 
         try {
-          const formData =
-            new FormData(form);
-            
-          formData.append(
-            'tipoUsuario',
-            tipoUsuario
-          );
+          const formData = new FormData(form);
+           
+          formData.append('tipoUsuario', tipoUsuario);
 
+          // Envia diretamente para a API real do Python
+          await cadastrarUsuario(formData);
+          
+          // Se passou daqui sem erro, avança para a tela de sucesso (Passo 3)
+          showStep(3);
 
-
-//await aquiiiiiii
-          const resposta =
-            await cadastrarUsuario(formData);
-          if (resposta?.sucesso) {
-            sessionStorage.setItem(
-              'perfilMock',
-              tipoUsuario === 'institucional'
-                ? 'institucional'
-                : 'comum'
-            );
-            showStep(3);
-
-          } else {
-            alert(
-              resposta?.mensagem ||
-              'Não foi possível realizar o cadastro.'
-            );
-          }
         } catch (erro) {
-          console.error(
-            'Erro no cadastro:',
-            erro
-          );
+          console.error('Erro no cadastro:', erro);
           alert(
             erro.message ||
             'Ocorreu um erro ao realizar o cadastro.'
           );
-
-
         } finally {
           if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.textContent =
-              'Finalizar';
+            submitBtn.textContent = 'Cadastrar';
           }
         }
       }
@@ -1162,6 +1178,47 @@ function init() {
           'login.html';
       }
     );
+
+    // ESCUTA DIRETA NO CLIQUE DO BOTÃO DE CADASTRO
+  document.addEventListener('click', async (e) => {
+    // Procura se o elemento clicado é um botão de submit/cadastro
+    const btnSubmit = e.target.closest('button[type="submit"]');
+    if (!btnSubmit) return;
+
+    // Se o botão não estiver dentro da página de cadastro, ignora
+    const form = btnSubmit.closest('#form-cadastro');
+    if (!form) return;
+
+    e.preventDefault();
+
+    // VALIDAÇÃO SÍNCRONA
+    if (!validarFormulario()) {
+      return;
+    }
+
+    btnSubmit.disabled = true;
+    const textoOriginal = btnSubmit.textContent;
+    btnSubmit.textContent = 'Enviando...';
+
+    try {
+      const formData = new FormData(form);
+      formData.append('tipoUsuario', tipoUsuario);
+
+      // Envia diretamente para a API real do Python na porta 8000
+      await cadastrarUsuario(formData);
+      
+      // Se passou sem erro, vai para a tela de sucesso (Passo 3)
+      showStep(3);
+
+    } catch (erro) {
+      console.error('Erro no cadastro:', erro);
+      alert(erro.message || 'Ocorreu um erro ao realizar o cadastro.');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = textoOriginal || 'Cadastrar';
+    }
+  });
+
 }
 
 

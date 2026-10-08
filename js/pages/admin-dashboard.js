@@ -1,65 +1,122 @@
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
+import { listarUnidades } from '../services/unidades-api.js';
 
+let todasAsUnidades = [];
+let statusFiltroAtual = 'todas'; // 'todas', 'pendente', 'ativo', 'bloqueado'
 
-async function init() {
-  // pega quem ta logado no momento
-  const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
-
-  // barreira de seguranca: se nao for admin, manda pra home e para o codigo
-  if (perfilAtual !== 'administrador') {
-    window.location.href = 'index.html';
-    return;
-  }
-
+document.addEventListener('DOMContentLoaded', async () => {
   const headerRoot = document.getElementById('header-root');
   const footerRoot = document.getElementById('footer-root');
 
-  // renderiza o cabecalho sem barra de busca
-  if (headerRoot) {
-    renderHeader(headerRoot, { showSearch: false, activePage: 'admin' });
+  if (headerRoot) renderHeader(headerRoot, { showSearch: false, activePage: 'admin' });
+  if (footerRoot) renderFooter(footerRoot);
+
+  const welcome = document.getElementById('admin-welcome-nome');
+  if (welcome) welcome.textContent = "BEM-VINDO, ADMINISTRADOR!";
+
+  // Inicializa os filtros na tela e carrega os dados
+  configurarFiltrosUI();
+  await carregarDadosDashboardComLoading();
+});
+
+// Controla o estado de Loading, Erro e Sucesso
+async function carregarDadosDashboardComLoading() {
+  const containerTabela = document.getElementById('tabela-unidades-corpo') || document.getElementById('unidades-grid');
+  
+  if (containerTabela) {
+    containerTabela.innerHTML = `<p class="hub-loading-msg">A carregar instituições...</p>`;
   }
 
-  // renderiza o rodape
-  if (footerRoot) {
-    renderFooter(footerRoot);
+  try {
+    // Busca dados reais da API
+    todasAsUnidades = await listarUnidades();
+    
+    // Normaliza os status caso venham diferentes da API (ex: garantindo propriedade status)
+    todasAsUnidades = todasAsUnidades.map(u => ({
+      ...u,
+      status: u.status ? u.status.toLowerCase() : 'ativo' // Assume ativo por padrão se não vier definido
+    }));
+
+    atualizarContadoresCards();
+    renderizarListaFiltrada();
+
+  } catch (erro) {
+    console.warn("Erro ao carregar da API, usando fallback de teste:", erro);
+    
+    // Estado de Erro / Fallback seguro para testes visuais
+    todasAsUnidades = [
+      { id: '1', nome: 'UBS Central (Exemplo)', endereco: 'Rua Principal, 100', status: 'ativo' },
+      { id: '2', nome: 'Clínica Saúde & Vida', endereco: 'Av. Brasil, 500', status: 'pendente' },
+      { id: '3', nome: 'Posto Avançado Norte', endereco: 'Rua das Flores, 12', status: 'bloqueado' }
+    ];
+
+    atualizarContadoresCards();
+    renderizarListaFiltrada();
   }
-
-  // carrega os numeros do painel
-  carregarDadosDashboard(perfilAtual);
-
-  // se ele tiver na pagina de admin e trocar pro comum no menu, expulsa pra home
-  window.addEventListener('perfil-alterado', (e) => {
-    if (e.detail.perfil !== 'administrador') {
-      window.location.href = 'index.html';
-    }
-  });
 }
 
-function carregarDadosDashboard(perfilChave) {
-  // pega os dados reais ou joga o padrao
-  const chave = perfilChave || sessionStorage.getItem('perfilMock') || 'administrador';
-  
-  // obs: garanta que a funcao getUsuarioPerfil ta sendo importada no topo do seu arquivo
-  const usuario = typeof getUsuarioPerfil === 'function' ? getUsuarioPerfil(chave) : null;
-
-  document.title = `Painel Administrativo — Saúde Aqui`;
-
-  // arruma o nome de boas vindas
-  const welcomeElement = document.getElementById('admin-welcome-nome');
-  if (welcomeElement) {
-    const nomeExibicao = usuario?.nome ? usuario.nome.toUpperCase() : 'ADMINISTRADOR';
-    welcomeElement.textContent = `BEM VINDO, ${nomeExibicao}!`;
-  }
-
-  // joga os numeros hardcoded por enquanto (mock)
+// Atualiza a contagem dinâmica nos 3 cards principais
+function atualizarContadoresCards() {
   const countPending = document.getElementById('count-pending');
   const countActive = document.getElementById('count-active');
   const countBlocked = document.getElementById('count-blocked');
 
-  if (countPending) countPending.textContent = '100';
-  if (countActive) countActive.textContent = '1.000.000';
-  if (countBlocked) countBlocked.textContent = '0';
+  const qtdPendentes = todasAsUnidades.filter(u => u.status === 'pendente').length;
+  const qtdAtivas = todasAsUnidades.filter(u => u.status === 'ativo').length;
+  const qtdBloqueadas = todasAsUnidades.filter(u => u.status === 'bloqueado').length;
+
+  if (countPending) countPending.textContent = qtdPendentes;
+  if (countActive) countActive.textContent = qtdAtivas;
+  if (countBlocked) countBlocked.textContent = qtdBloqueadas;
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// Renderiza a lista respeitando o filtro ativo e o estado vazio
+function renderizarListaFiltrada() {
+  const containerTabela = document.getElementById('tabela-unidades-corpo') || document.getElementById('unidades-grid');
+  if (!containerTabela) return;
+
+  const unidadesFiltradas = todasAsUnidades.filter(u => {
+    if (statusFiltroAtual === 'todas') return true;
+    return u.status === statusFiltroAtual;
+  });
+
+  // Estado Vazio
+  if (unidadesFiltradas.length === 0) {
+    containerTabela.innerHTML = `<p class="hub-empty-msg">Nenhuma instituição encontrada para este filtro.</p>`;
+    return;
+  }
+
+  containerTabela.innerHTML = unidadesFiltradas.map(unidade => `
+    <div class="hub-admin-card-item" data-id="${unidade.id}">
+      <div class="hub-admin-info">
+        <h4>${unidade.nome}</h4>
+        <p>${unidade.endereco}</p>
+      </div>
+      <div class="hub-admin-actions">
+        <span class="hub-badge hub-badge--${unidade.status}">${unidade.status.toUpperCase()}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Configura os cliques nos cards/filtros
+function configurarFiltrosUI() {
+  const cardPending = document.querySelector('.admin-card:has(#count-pending)') || document.getElementById('card-pending');
+  const cardActive = document.querySelector('.admin-card:has(#count-active)') || document.getElementById('card-active');
+  const cardBlocked = document.querySelector('.admin-card:has(#count-blocked)') || document.getElementById('card-blocked');
+
+  // Torna os cards clicáveis para filtrar a listagem abaixo
+  if (cardPending) {
+    cardPending.style.cursor = 'pointer';
+    cardPending.addEventListener('click', () => { statusFiltroAtual = 'pendente'; renderizarListaFiltrada(); });
+  }
+  if (cardActive) {
+    cardActive.style.cursor = 'pointer';
+    cardActive.addEventListener('click', () => { statusFiltroAtual = 'ativo'; renderizarListaFiltrada(); });
+  }
+  if (cardBlocked) {
+    cardBlocked.style.cursor = 'pointer';
+    cardBlocked.addEventListener('click', () => { statusFiltroAtual = 'bloqueado'; renderizarListaFiltrada(); });
+  }
+}
