@@ -26,10 +26,11 @@ function init() {
 
       if (resposta.sucesso) {
         // Cria a sessão oficial utilizando o tipo que veio do banco
-        const sessaoOficial = {
+       const sessaoOficial = {
+          id: resposta.dados.id,
           email: email,
           nome: 'Usuário',
-          perfil: resposta.dados.tipo // O banco devolve o perfil na propriedade 'tipo'
+          perfil: resposta.dados.tipo
         };
 
         // Salva no localStorage que o Header e a Home estão esperando
