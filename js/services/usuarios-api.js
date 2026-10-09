@@ -39,3 +39,24 @@ export async function cadastrarUsuario(formData) {
   
   return { sucesso: true, dados: await response.json() };
 }
+
+export async function validarLogin(email, senha) {
+  const resposta = await fetch(`${BASE_URL}/usuarios/validar`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, senha })
+  });
+
+  if (!resposta.ok) {
+    let mensagem = "E-mail ou senha incorretos.";
+    try {
+      const erro = await resposta.json();
+      mensagem = erro.detail || erro.mensagem || mensagem;
+    } catch(e) {}
+    throw new Error(mensagem);
+  }
+
+  return await resposta.json();
+}

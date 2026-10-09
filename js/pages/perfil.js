@@ -1,9 +1,7 @@
-import { getUsuarioPerfil, getRegiaoById } from '../mock-data.js';
-import { getEventoById } from '../services/evento-api.js';
-
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar } from '../utils/icons.js';
+import { getEventoById } from '../services/evento-api.js';
 
 // Retorna a estrutura HTML do card simplificado de um evento
 function renderMiniEvento(ev) {
@@ -16,38 +14,42 @@ function renderMiniEvento(ev) {
   `;
 }
 
-// Inicializa o perfil do usuário
+// Inicializa o perfil do usuário com base na sessão real do localStorage
 async function init() {
-  const perfilAtual = sessionStorage.getItem('perfilMock') || 'comum';
-  const usuario = getUsuarioPerfil(perfilAtual);
+  const authStorage = localStorage.getItem('usuarioLogado');
 
-  if (!usuario) return;
+  if (!authStorage) {
+    // Se não estiver logado, redireciona para a tela de login
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const usuario = JSON.parse(authStorage);
+  const perfilAtual = usuario.perfil || 'comum';
 
   renderHeader(document.getElementById('header-root'), { showSearch: false, activePage: 'perfil' });
   renderFooter(document.getElementById('footer-root'));
 
-  document.title = `${usuario.nome} — Hub Saúde`;
+  const nomeExibicao = usuario.nome || 'Thaís Leandro';
+  document.title = `${nomeExibicao} — Hub Saúde`;
   
   const avatarEl = document.getElementById('perfil-avatar');
-  if (avatarEl) avatarEl.textContent = usuario.avatarInicial || 'M';
+  if (avatarEl) avatarEl.textContent = nomeExibicao.charAt(0).toUpperCase();
   
   const tipoEl = document.getElementById('perfil-tipo');
-  if (tipoEl) tipoEl.textContent = usuario.tipo || '';
+  if (tipoEl) tipoEl.textContent = perfilAtual.toUpperCase();
   
   const nomeEl = document.getElementById('perfil-nome');
-  if (nomeEl) nomeEl.textContent = usuario.nome || '';
+  if (nomeEl) nomeEl.textContent = nomeExibicao;
 
   const dados = document.getElementById('perfil-dados-lista');
   const linhas = [
-    ['E-mail', usuario.email],
-    ['Telefone', usuario.telefone],
+    ['E-mail', usuario.email || 'Não informado'],
+    ['Telefone', usuario.telefone || 'Não informado'],
   ];
 
   if (usuario.cnpj) linhas.push(['CNPJ', usuario.cnpj]);
-
-  if (usuario.regiaoPreferida) {
-    linhas.push(['Região preferida', getRegiaoById(usuario.regiaoPreferida)?.nome || '']);
-  }
+  if (usuario.regiaoPreferida) linhas.push(['Região preferida', usuario.regiaoPreferida]);
 
   if (dados) {
     dados.innerHTML = linhas
@@ -90,16 +92,7 @@ async function init() {
   }
 
   if (perfilAtual === 'administrador') {
-    if (usuario.permissoes?.length) {
-      secaoAdmin?.classList.remove('is-hidden');
-      const ul = document.getElementById('perfil-permissoes');
-
-      if (ul) {
-        ul.innerHTML = usuario.permissoes
-          .map((p) => `<li>${p.replace(/_/g, ' ')}</li>`)
-          .join('');
-      }
-    }
+    secaoAdmin?.classList.remove('is-hidden');
     secaoAvaliador?.classList.remove('is-hidden');
   }
 }
@@ -107,13 +100,13 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 
-//FILTROS COM MENSAGEM VAZIA E MODAL
+// FILTROS COM MENSAGEM VAZIA E MODAL
 document.addEventListener('DOMContentLoaded', () => {
   const modalFicha = document.getElementById('modal-ficha-instituicao');
   const fecharModalFicha = document.querySelector('.modal-ficha__fechar');
   const nomeInstituicao = document.getElementById('modal-nome-instituicao');
 
-  //Função para aplicar filtro e controlar mensagem de tabela vazia
+  // Função para aplicar filtro e controlar mensagem de tabela vazia
   function aplicarFiltroAvaliador(filtroTipo, botaoClicado) {
     const avaliador = document.getElementById('avaliador-instituicao');
     if (!avaliador) return;
@@ -136,11 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    //Atualiza botões
+    // Atualiza botões
     botoesFiltro.forEach((b) => b.classList.remove('avaliador-filtro--ativo'));
     botaoClicado?.classList.add('avaliador-filtro--ativo');
 
-    //Gerencia a mensagem vazia
+    // Gerencia a mensagem vazia
     tbody.querySelector('.avaliador-mensagem-vazia')?.remove();
 
     if (totalVisiveis === 0) {
@@ -157,17 +150,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  //Escuta os cliques no documento
+  // Escuta os cliques no documento
   document.addEventListener('click', (evento) => {
-    
-    //Clique nos botões de filtro
+    // Clique nos botões de filtro
     const botaoFiltro = evento.target.closest('.avaliador-filtro');
     if (botaoFiltro) {
       const filtro = botaoFiltro.dataset.filtro;
       aplicarFiltroAvaliador(filtro, botaoFiltro);
     }
 
-    //Clique no botão "Ver Ficha"
+    // Clique no botão "Ver Ficha"
     const botaoVerFicha = evento.target.closest('.avaliador-ver-ficha');
     if (botaoVerFicha) {
       const linha = botaoVerFicha.closest('tr');
@@ -179,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  //Fechar Modal
+  // Fechar Modal
   fecharModalFicha?.addEventListener('click', () => modalFicha?.classList.add('is-hidden'));
   modalFicha?.addEventListener('click', (evento) => {
     if (evento.target === modalFicha) modalFicha.classList.add('is-hidden');

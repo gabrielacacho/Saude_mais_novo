@@ -148,6 +148,13 @@ function renderCampos() {
         'maxlength="15"'
       ),
 
+      // Adicione este campo junto com os outros do cadastro comum
+      campoHtml(
+        'Região Preferida (Opcional)',
+        'regiao_preferida',
+        'text'
+      ),
+
       campoHtml(
         'Senha *',
         'senha',

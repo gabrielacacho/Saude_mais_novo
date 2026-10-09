@@ -21,31 +21,24 @@ function init() {
     }
 
     try {
-      // Chama a API real do Python (/usuarios/validar)
-      const resposta = await validarLogin(email, senha);
+      // Chama a API real do Python através do serviço
+      const respostaDados = await validarLogin(email, senha);
 
-      if (resposta.sucesso) {
-        // Cria a sessão oficial utilizando o tipo que veio do banco
-       const sessaoOficial = {
-          id: resposta.dados.id,
-          email: email,
-          nome: 'Usuário',
-          perfil: resposta.dados.tipo
-        };
+      // Cria a sessão oficial utilizando o tipo que veio do banco
+      const sessaoOficial = {
+        id: respostaDados.id || 1,
+        email: email,
+        nome: respostaDados.nome || 'Usuário',
+        perfil: respostaDados.tipo || 'comum'
+      };
 
-        // Salva no localStorage que o Header e a Home estão esperando
-        localStorage.setItem('usuarioLogado', JSON.stringify(sessaoOficial));
-        window.location.href = 'index.html';
-      } else {
-        alert(resposta.mensagem || 'E-mail ou senha incorretos.');
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          btnSubmit.textContent = 'Entrar';
-        }
-      }
+      // Salva no localStorage que o Header e a Home estão esperando
+      localStorage.setItem('usuarioLogado', JSON.stringify(sessaoOficial));
+      window.location.href = 'index.html';
+
     } catch (erro) {
       console.error('Erro ao realizar login:', erro);
-      alert('Ocorreu um erro ao conectar com o servidor.');
+      alert(erro.message || 'Ocorreu um erro ao conectar com o servidor.');
       if (btnSubmit) {
         btnSubmit.disabled = false;
         btnSubmit.textContent = 'Entrar';
