@@ -16,9 +16,8 @@ const MESES = [
   "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO",
 ];
 const DIAS_SEMANA = ["DOM.", "SEG.", "TER.", "QUA.", "QUI.", "SEX.", "SÁB."];
-const ANO_FIXO = 2026;
-
-let mesAtual = 4;
+let mesAtual = new Date().getMonth();
+let anoAtual = new Date().getFullYear();
 let filtroEvento = { termo: "", categoria: "", data: "" };
 let filtroLocalCategoria = "";
 
@@ -64,6 +63,11 @@ async function eventosFiltradosPorLocal(textoLocal = "") {
   const t = textoLocal.trim();
   if (!t) {
     const eventos = await listarEventos();
+    console.log("EVENTOS DA API:", eventos);
+    console.table(eventos.map(e => ({
+      titulo: e.titulo,
+      data: e.data
+    })));
 
     return eventos.filter((e) => passaFiltroEvento(e.categoria));
   }
@@ -113,8 +117,12 @@ function renderMapaPins() {
 }
 
 function htmlCalEvento(ev) {
-  const categoriaClasse = ev.categoria ? ev.categoria.toLowerCase() : "padrao";
-  const categoriaTexto = ev.categoria || "Evento";
+  const categoriaTexto =
+    typeof ev.categoria === "string"
+      ? ev.categoria
+      : ev.categoria?.nome || ev.categoria?.descricao || "Evento";
+
+  const categoriaClasse = categoriaTexto.toLowerCase();
 
   return `
     <div class="cal-evento-mini-wrap">
@@ -134,18 +142,29 @@ async function renderCalendario() {
   if (!grid) return;
 
   const mes = mesAtual;
-  const ano = ANO_FIXO;
+  const ano = anoAtual;
   const eventos = await listarEventos();
 
   const primeiroDia = new Date(ano, mes, 1).getDay();
   const diasNoMes = new Date(ano, mes + 1, 0).getDate();
   const diasMesAnterior = new Date(ano, mes, 0).getDate();
 
+  
   const eventosNoMes = eventos.filter((e) => {
-    if (!e.data) return false;
-    const [y, m] = e.data.split("-").map(Number);
-    return y === ano && m === mes + 1 && passaFiltroEvento(e.categoria);
+    const dataEvento = e.data_hora_evento || e.data;
+
+    if (!dataEvento) return false;
+
+    const [data] = dataEvento.split("T");
+    const [y, m] = data.split("-").map(Number);
+
+    return (
+      y === ano &&
+      m === mes + 1 &&
+      passaFiltroEvento(e.categoria)
+    );
   });
+
 
   let html = DIAS_SEMANA.map((d) => `<div class="cal-header-dia">${d}</div>`).join("");
 
@@ -159,7 +178,10 @@ async function renderCalendario() {
 
   for (let dia = 1; dia <= diasNoMes; dia++) {
     const dataStr = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
-    const todosNoDia = eventosNoMes.filter((e) => e.data === dataStr);
+    const todosNoDia = eventosNoMes.filter((e) => {
+      const dataEvento = e.data_hora_evento || e.data;
+      return dataEvento && dataEvento.split("T")[0] === dataStr;
+    });
     const selecionado = diaHoje !== null && dia === diaHoje;
 
     let eventosHtml = "";
@@ -248,18 +270,49 @@ async function renderEventos() {
   }
 }
 
+
+
 function initSeletorCalendario() {
   const selectMes = document.getElementById("cal-mes");
-  if (!selectMes) return;
+  const selectAno = document.getElementById("cal-ano");
 
-  selectMes.innerHTML = MESES.map((nome, i) => `<option value="${i}">${nome}</option>`).join("");
+  if (!selectMes || !selectAno) return;
+
+  // Preenche os meses
+  selectMes.innerHTML = MESES.map(
+    (nome, i) => `<option value="${i}">${nome}</option>`
+  ).join("");
+
+  // Preenche os anos: de 2025 até 2031
+  const anoInicial = new Date().getFullYear();
+  const anos = [];
+
+  for (let ano = anoInicial - 1; ano <= anoInicial + 5; ano++) {
+    anos.push(ano);
+  }
+
+  selectAno.innerHTML = anos.map(
+    ano => `<option value="${ano}">${ano}</option>`
+  ).join("");
+
+  // Seleciona o mês e o ano atuais do calendário
   selectMes.value = String(mesAtual);
+  selectAno.value = String(anoAtual);
 
+  // Ao escolher outro mês
   selectMes.addEventListener("change", () => {
     mesAtual = Number(selectMes.value);
     renderCalendario();
   });
+
+  // Ao escolher outro ano
+  selectAno.addEventListener("change", () => {
+    anoAtual = Number(selectAno.value);
+    renderCalendario();
+  });
 }
+
+
 
 function initCamposLocal() {
   const mapaInput = document.getElementById("mapa-busca-local");
