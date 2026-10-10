@@ -29,12 +29,22 @@ function init() {
         id: respostaDados.id || 1,
         email: email,
         nome: respostaDados.nome || 'Usuário',
-        perfil: respostaDados.tipo || 'comum'
+        perfil: respostaDados.tipo?.toLowerCase() === 'usuario_administrador'
+        ? 'administrador'
+        : respostaDados.tipo?.toLowerCase() || 'comum'
       };
+
+      //tentando reconhecer tipo de usuariao
+      const acessoAdmin = new URLSearchParams(window.location.search)
+        .get('perfil') === 'administrador';
+
+      if (acessoAdmin && sessaoOficial.perfil !== 'administrador') {
+        throw new Error('Esta conta não é de administrador.');
+      }
 
       // Salva no localStorage que o Header e a Home estão esperando
       localStorage.setItem('usuarioLogado', JSON.stringify(sessaoOficial));
-      window.location.href = 'index.html';
+      window.location.href = acessoAdmin ? 'perfil.html' : 'index.html';
 
     } catch (erro) {
       console.error('Erro ao realizar login:', erro);
