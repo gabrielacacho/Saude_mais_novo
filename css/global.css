@@ -275,6 +275,7 @@ a:hover {
   border: 1px solid #dbe3ed;
   overflow: hidden;
   z-index: 1000;
+  color: #334155;
 }
 
 .notificacoes-btn .hub-icon {
@@ -328,6 +329,28 @@ a:hover {
 .notificacoes-lista {
   max-height: 360px;
   overflow-y: auto;
+  color: #334155;
+}
+
+.notificacao-login {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.notificacao-login p {
+  color: #334155;
+  margin: 0;
+  line-height: 1.8;
+  white-space: normal;
+}
+
+.btn-notificacao-login {
+  display: inline-block;
+  color: #003B8E;
+  margin: 0;
 }
 
 .notificacao-item {

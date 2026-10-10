@@ -2,6 +2,8 @@ import { REGIOES } from '../mock-data.js';
 import { bindLocalInputs, getLocal, onLocalChange, refreshLocalInputs } from '../utils/sync-local.js';
 import { htmlOpcoesCategoria } from '../utils/filtros.js';
 import { iconPin, iconCalendar, iconFilter, iconBell } from '../utils/icons.js'; 
+import {buscarNotificacoes, marcarNotificacaoComoLida, marcarTodasComoLidas } from '../services/notificacoes-api.js';
+
 
 const opcoesRegiao = REGIOES.map((r) => `<option value="${r.nome}">${r.nome}</option>`).join('');
 const opcoesCategoria = htmlOpcoesCategoria();
@@ -26,35 +28,22 @@ export function renderHeader(container, options = {}) {
             </div>
         </div>
         
-        <div class="notificacoes-wrapper is-hidden" id="nav-notificacoes-wrapper">
+        <div class="notificacoes-wrapper" id="nav-notificacoes-wrapper">
           <button type="button" id="btn-notificacoes" class="notificacoes-btn" aria-label="Notificações" aria-expanded="false">
             ${iconBell()}
-            <span id="notificacoes-contador" class="notificacoes-contador">3</span>
+            <span id="notificacoes-contador" class="notificacoes-contador is-hidden">0</span>
           </button>
+          
+              <div id="notificacoes-painel" class="notificacoes-painel is-hidden">
+                <div class="notificacoes-cabecalho">
+                  <h3>Notificações</h3>
+                  <button type="button" id="btn-marcar-lidas" class="notificacoes-marcar">
+                    Marcar como lidas
+                  </button>
+                </div>
 
-          <div id="notificacoes-painel" class="notificacoes-painel is-hidden">
-            <div class="notificacoes-cabecalho">
-              <h3>Notificações</h3>
-              <button type="button" id="btn-marcar-lidas" class="notificacoes-marcar">Marcar como lidas</button>
-            </div>
-
-            <div id="lista-notificacoes" class="notificacoes-lista">
-              <button type="button" class="notificacao-item notificacao-item--nova">
-                <span class="notificacao-ponto"></span>
-                <span class="notificacao-conteudo">
-                  <strong>Lembrete de Evento.</strong>
-                  <span>Amanhã você tem "Vem Zumbar 60+".</span>
-                  <small>Há 10 minutos</small>
-                </span>
-              </button>
-              <button type="button" class="notificacao-item notificacao-item--nova">
-                <span class="notificacao-ponto"></span>
-                <span class="notificacao-conteudo">
-                  <strong>Bem-vindo(a) ao Saúde Aqui!</strong>
-                  <span>Seu perfil foi criado com sucesso.</span>
-                  <small>Hoje</small>
-                </span>
-              </button>
+                <div id="lista-notificacoes" class="notificacoes-lista"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -107,7 +96,7 @@ function bindHeaderEvents(container, showSearch) {
       btnCadastrar?.classList.add('is-hidden');
       btnMeuPerfil?.classList.remove('is-hidden');
       btnSair?.classList.remove('is-hidden');
-      notificacoesWrapper?.classList.remove('is-hidden');
+      //notificacoesWrapper?.classList.remove('is-hidden');
 
       // Checa se é Institucional para liberar o cadastro de eventos
       if (usuario.perfil === 'institucional') {
@@ -122,7 +111,7 @@ function bindHeaderEvents(container, showSearch) {
       btnMeuPerfil?.classList.add('is-hidden');
       btnSair?.classList.add('is-hidden');
       btnCadastrarEvento?.classList.add('is-hidden');
-      notificacoesWrapper?.classList.add('is-hidden');
+      //notificacoesWrapper?.classList.add('is-hidden');
     }
   };
 
@@ -140,15 +129,80 @@ function bindHeaderEvents(container, showSearch) {
   // ==========================================
   const btnNotificacoes = container.querySelector('#btn-notificacoes');
   const painelNotificacoes = container.querySelector('#notificacoes-painel');
+  const listaNotificacoes = container.querySelector('#lista-notificacoes');
+  const notificacoesOriginais = listaNotificacoes?.innerHTML || '';
 
+  
   btnNotificacoes?.addEventListener('click', (e) => {
     e.stopPropagation();
+    const usuarioJSON = localStorage.getItem('usuarioLogado');
+
+    if (!usuarioJSON) {
+      painelNotificacoes?.classList.remove('is-hidden');
+      btnNotificacoes.setAttribute('aria-expanded', 'true');
+
+      listaNotificacoes.innerHTML = `
+        <div class="notificacao-login">
+          <p>Entre na sua conta para receber e visualizar notificações.</p>
+          <a href="login.html" class="btn-notificacao-login">
+            Entrar na conta
+          </a>
+        </div>
+      `;
+
+      atualizarContadorNotificacoes();
+      return;
+    }
+
+    // Se o painel estiver mostrando o aviso de login, restaura as notificações.
+    if (listaNotificacoes.querySelector('.notificacao-login')) {
+      listaNotificacoes.innerHTML = notificacoesOriginais;
+    }
+
     const estaAberto = !painelNotificacoes.classList.contains('is-hidden');
+
     painelNotificacoes.classList.toggle('is-hidden');
     btnNotificacoes.setAttribute('aria-expanded', String(!estaAberto));
+
+    atualizarContadorNotificacoes();
   });
 
   painelNotificacoes?.addEventListener('click', (e) => e.stopPropagation());
+
+  
+  // Marcar notificações como lidas
+  const btnMarcarLidas = container.querySelector('#btn-marcar-lidas');
+  const contadorNotificacoes = container.querySelector('#notificacoes-contador');
+
+  
+  function atualizarContadorNotificacoes() {
+    const usuarioJSON = localStorage.getItem('usuarioLogado');
+    const naoLidas = container.querySelectorAll(
+      '#lista-notificacoes .notificacao-item--nova'
+    ).length;
+
+    if (contadorNotificacoes) {
+      contadorNotificacoes.textContent = naoLidas;
+      contadorNotificacoes.classList.toggle(
+        'is-hidden',
+        !usuarioJSON || naoLidas === 0
+      );
+    }
+  }
+
+  btnMarcarLidas?.addEventListener('click', () => {
+    container.querySelectorAll(
+      '#lista-notificacoes .notificacao-item--nova'
+    ).forEach((notificacao) => {
+      notificacao.classList.remove('notificacao-item--nova');
+      notificacao.querySelector('.notificacao-ponto')?.remove();
+    });
+
+    atualizarContadorNotificacoes();
+  });
+
+  atualizarContadorNotificacoes();
+//fim dde não lidas
 
   document.addEventListener('click', (e) => {
     if (!container.querySelector('.notificacoes-wrapper')?.contains(e.target)) {

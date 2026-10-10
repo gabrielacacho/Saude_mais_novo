@@ -2,28 +2,27 @@ import { getEventoById } from '../services/evento-api.js';
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar, iconPin, iconUsers } from '../utils/icons.js';
+import { inscreverUsuario } from '../services/inscricao-api.js';
 
-// Injeta os icones SVG nos elementos de metadados da página do evento
+// Ícones da página
 function injectEventoIcons() {
   const cal = document.querySelector('.evento-meta-icon--cal');
   const pin = document.querySelector('.evento-meta-icon--pin');
   const users = document.querySelector('.evento-meta-icon--users');
+
   if (cal) cal.innerHTML = iconCalendar().replace('hub-icon', 'hub-icon hub-icon--lg');
   if (pin) pin.innerHTML = iconPin().replace('hub-icon', 'hub-icon hub-icon--lg');
   if (users) users.innerHTML = iconUsers().replace('hub-icon', 'hub-icon hub-icon--lg');
 }
 
-// Captura o ID do evento passado via parâmetro de busca na URL
 function getQueryId() {
   return new URLSearchParams(window.location.search).get('id');
 }
 
-// Preenche a página HTML com os dados retornados do evento
+// Exibe os dados do evento
 function renderEvento(ev) {
-  // Atualiza o título da aba no navegador
   document.title = `${ev.titulo} — Saúde Aqui`;
 
-  // Mapeia os elementos do DOM da página de detalhes
   const banner = document.getElementById('evento-banner');
   const tag = document.getElementById('evento-tag');
   const dataInicio = document.getElementById('evento-data-inicio');
@@ -35,121 +34,207 @@ function renderEvento(ev) {
   const barraFill = document.getElementById('barra-fill');
   const descricao = document.getElementById('evento-descricao');
   const tituloDesc = document.getElementById('evento-descricao-titulo');
+  const btnInscrever = document.getElementById('btn-inscrever');
 
-  // Preenche imagem de capa, categoria, títulos e descrições
   if (banner) {
     banner.src = ev.foto_capa;
     banner.alt = ev.titulo;
   }
+
   if (tag) tag.textContent = ev.categoria || 'Evento';
   if (tituloDesc) tituloDesc.textContent = ev.titulo;
   if (descricao) descricao.textContent = ev.descricao;
 
-  // Formata os horários de início e término do evento
-  if (dataInicio) dataInicio.textContent = ev.dataExibicao ? `${ev.dataExibicao} às 09:00` : 'A definir';
-  if (dataFim) dataFim.textContent = ev.dataExibicao ? `${ev.dataExibicao} às 12:00` : 'A definir';
-  
-  // Define o nome da localização e gera o link externo para o Google Maps
+  if (dataInicio) {
+    dataInicio.textContent = ev.dataExibicao
+      ? `${ev.dataExibicao} às 09:00`
+      : 'A definir';
+  }
+
+  if (dataFim) {
+    dataFim.textContent = ev.dataExibicao
+      ? `${ev.dataExibicao} às 12:00`
+      : 'A definir';
+  }
+
   if (local) {
-    // Atualiza o nome do local
-    local.textContent = ev.localizacao;
-    // Força a atualização do link do mapa
-    const buscaMapa = encodeURIComponent(`${ev.localizacao}, Rio de Janeiro`);
-    local.setAttribute('href', `https://maps.google.com/?q=${buscaMapa}`);
+    local.textContent = ev.localizacao || 'Local a definir';
+
+    const buscaMapa = encodeURIComponent(
+      `${ev.localizacao || ''}, Rio de Janeiro`
+    );
+
+    local.setAttribute(
+      'href',
+      `https://maps.google.com/?q=${buscaMapa}`
+    );
   }
 
-  //Preenche as informações da unidade e instituição organizadora
-  if (unidade) unidade.textContent = ev.unidade || 'UBS / Clínica da Família local';
-  if (instituicao) instituicao.textContent = ev.instituicao || 'Secretaria Municipal de Saúde';
+  if (unidade) {
+    unidade.textContent = ev.unidade || 'UBS / Clínica da Família local';
+  }
 
-  //Atualiza os dados da barra de progresso da lotação e número de inscritos
+  if (instituicao) {
+    instituicao.textContent =
+      ev.instituicao || 'Secretaria Municipal de Saúde';
+  }
+
+  // Estado da inscrição: chave separada para cada evento
+  const inscritoKey = `inscrito_evento_${ev.id}`;
+  const jaInscrito =
+    localStorage.getItem(inscritoKey) === 'true' ||
+    ev.usuario_ja_inscrito === true;
+
+  // Quantidade de participantes e capacidade
+  const inscritosAtuais = Number(
+    ev.numero_participantes ?? ev.inscritos_count ?? 0
+  );
+
+  const max = Number(
+    ev.capacidade_maxima ?? ev.vagas_maximas ?? 30
+  );
+
+  const lotado = inscritosAtuais >= max;
+
   if (capacidade) {
-    const inscritos = ev.numero_participantes || 0;
-    const max = ev.capacidade_maxima || 15;
-    
-    capacidade.textContent = `${inscritos} / ${max}`;
-    
-    if (barraFill) {
-      const porcentagem = Math.min((inscritos / max) * 100, 100);
-      barraFill.style.width = `${porcentagem}%`;
-      // Destaca a barra em vermelho caso a capacidade atinja 100%
-      if (porcentagem >= 100) {
-        barraFill.style.backgroundColor = '#E63946';
-      }
-    }
+    capacidade.textContent = `${inscritosAtuais} / ${max}`;
   }
 
-  // Controle do estado do botão de inscrição
-  const btnInscrever = document.getElementById('btn-inscrever');
-  const inscritoKey = `inscrito_${ev.id}`;
-  const jaInscrito = sessionStorage.getItem(inscritoKey) === 'true';
+  if (barraFill) {
+    const porcentagem = max > 0
+      ? Math.min((inscritosAtuais / max) * 100, 100)
+      : 0;
 
-  //interatividade do botão de inscrição
-  const atualizarBotao = (inscrito) => {
+    barraFill.style.width = `${porcentagem}%`;
+    barraFill.style.backgroundColor =
+      porcentagem >= 100 ? '#E63946' : '';
+  }
+
+  // Atualiza o botão
+  function atualizarBotao(inscrito) {
     if (!btnInscrever) return;
-    const lotado = (ev.numero_participantes >= ev.capacidade_maxima);
+
+    btnInscrever.classList.remove('hub-btn--inscrito');
+    btnInscrever.style.opacity = '1';
+    btnInscrever.style.pointerEvents = 'auto';
+    btnInscrever.disabled = false;
 
     if (inscrito) {
-      btnInscrever.textContent = 'Inscrito ✅';
+      btnInscrever.textContent = 'Inscrito ✓';
       btnInscrever.classList.add('hub-btn--inscrito');
-      btnInscrever.disabled = false;
+      btnInscrever.disabled = true;
+      btnInscrever.style.pointerEvents = 'none';
     } else if (lotado) {
       btnInscrever.textContent = 'Vagas Esgotadas';
-      btnInscrever.classList.remove('hub-btn--inscrito');
+      btnInscrever.disabled = true;
       btnInscrever.style.opacity = '0.5';
       btnInscrever.style.pointerEvents = 'none';
     } else {
       btnInscrever.textContent = 'Garantir Minha Vaga';
-      btnInscrever.classList.remove('hub-btn--inscrito');
-      btnInscrever.style.opacity = '1';
-      btnInscrever.style.pointerEvents = 'auto';
     }
-  };
+  }
 
   atualizarBotao(jaInscrito);
 
-// Manipulador de clique no botão de inscrição assíncrono
-  btnInscrever?.addEventListener('click', async () => {
-    // 1. Trava o botão e avisa o usuário que está processando
-    btnInscrever.disabled = true;
-    const textoOriginal = btnInscrever.textContent;
-    btnInscrever.textContent = 'Processando...';
+  // Evita acumular eventos de clique ao renderizar novamente
+  if (btnInscrever) {
+    const novoBtn = btnInscrever.cloneNode(true);
+    btnInscrever.parentNode.replaceChild(novoBtn, btnInscrever);
 
-    try {
-      // 2. Simula o tempo de uma requisição para uma API externa (ex: 1 segundo de espera)
-      // Futuramente, você trocará essa linha por algo como: await api.inscreverUsuario(ev.id);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // 3. Conclui a operação (atualizando o mock local)
-      const agora = sessionStorage.getItem(inscritoKey) === 'true';
-      sessionStorage.setItem(inscritoKey, (!agora).toString());
-      
-      // 4. Atualiza a tela com o resultado
-      atualizarBotao(!agora);
-
-    } catch (error) {
-      // Em caso de erro na rede, volta o botão ao normal
-      console.error("Erro ao processar a inscrição:", error);
-      btnInscrever.textContent = textoOriginal;
-      btnInscrever.disabled = false;
-      alert("Houve uma falha de comunicação com o servidor. Tente novamente.");
+    // Se já está inscrito ou não há vagas, não permite clicar
+    if (jaInscrito || lotado) {
+      atualizarBotao(jaInscrito);
+      return;
     }
-  });
+
+    novoBtn.addEventListener('click', async () => {
+      const usuarioJSON = localStorage.getItem('usuarioLogado');
+
+      if (!usuarioJSON) {
+        alert('Entre na sua conta para se inscrever no evento.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      let usuario;
+
+      try {
+        usuario = JSON.parse(usuarioJSON);
+      } catch (erro) {
+        alert('Sua sessão está inválida. Entre novamente.');
+        return;
+      }
+
+      if (!usuario.id) {
+        alert(
+          'Não foi possível identificar seu usuário. Entre novamente na sua conta.'
+        );
+        return;
+      }
+
+      novoBtn.disabled = true;
+      novoBtn.textContent = 'Processando...';
+
+      try {
+        // Usa o serviço que já se comunicou com o backend
+        await inscreverUsuario(ev.id, usuario.id);
+
+        // Guarda o estado para este evento
+        localStorage.setItem(inscritoKey, 'true');
+
+        novoBtn.textContent = 'Inscrito ✓';
+        novoBtn.classList.add('hub-btn--inscrito');
+
+        alert('Inscrição realizada com sucesso!');
+      } catch (error) {
+        console.error('Erro ao realizar inscrição:', error);
+
+        alert(
+          error.message || 'Não foi possível realizar a inscrição.'
+        );
+
+        novoBtn.textContent = 'Garantir Minha Vaga';
+        novoBtn.disabled = false;
+      }
+    });
+  }
 }
 
-
-// SISTEMA DE AVALIAÇÕES 
+// SISTEMA DE AVALIAÇÕES
 let avaliacoes = [
-  { id: 1, nome: 'Maria Silva', iniciais: 'M', nota: 5, texto: 'Evento maravilhoso! Os professores são super atenciosos com os idosos.', data: '2026-04-10T14:30:00' },
-  { id: 2, nome: 'João Pedro', iniciais: 'J', nota: 4, texto: 'Muito bom, mas achei o espaço um pouco apertado para a quantidade de pessoas.', data: '2026-04-12T09:15:00' },
-  { id: 3, nome: 'Ana Costa', iniciais: 'A', nota: 5, texto: 'Minha mãe adorou. Com certeza voltaremos na próxima edição!', data: '2026-04-15T16:45:00' }
+  {
+    id: 1,
+    nome: 'Maria Silva',
+    iniciais: 'M',
+    nota: 5,
+    texto: 'Evento maravilhoso! Os professores são super atenciosos com os idosos.',
+    data: '2026-04-10T14:30:00'
+  },
+  {
+    id: 2,
+    nome: 'João Pedro',
+    iniciais: 'J',
+    nota: 4,
+    texto: 'Muito bom, mas achei o espaço um pouco apertado para a quantidade de pessoas.',
+    data: '2026-04-12T09:15:00'
+  },
+  {
+    id: 3,
+    nome: 'Ana Costa',
+    iniciais: 'A',
+    nota: 5,
+    texto: 'Minha mãe adorou. Com certeza voltaremos na próxima edição!',
+    data: '2026-04-15T16:45:00'
+  }
 ];
 
 function renderizarEstrelas(nota) {
   let estrelasHtml = '';
+
   for (let i = 1; i <= 5; i++) {
     estrelasHtml += `<span class="estrela ${i <= nota ? 'cheia' : ''}">★</span>`;
   }
+
   return estrelasHtml;
 }
 
@@ -163,7 +248,8 @@ function renderizarComentarios(lista) {
   if (!container) return;
 
   if (lista.length === 0) {
-    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 2rem 0;">Nenhuma avaliação ainda. Seja o primeiro!</p>';
+    container.innerHTML =
+      '<p style="color: #6b7280; text-align: center; padding: 2rem 0;">Nenhuma avaliação ainda. Seja o primeiro!</p>';
     return;
   }
 
@@ -188,18 +274,24 @@ function configurarSistemaAvaliacao() {
   const btnComentar = document.getElementById('btn-comentar');
   const filtroSelect = document.getElementById('filtro-avaliacoes');
 
-  renderizarComentarios(avaliacoes.sort((a, b) => new Date(b.data) - new Date(a.data)));
+  renderizarComentarios(
+    avaliacoes.sort((a, b) => new Date(b.data) - new Date(a.data))
+  );
 
   if (filtroSelect) {
     filtroSelect.addEventListener('change', (e) => {
       let filtrados = [...avaliacoes];
+
       if (e.target.value === 'maior-nota') {
-        filtrados.sort((a, b) => b.nota - a.nota); 
+        filtrados.sort((a, b) => b.nota - a.nota);
       } else if (e.target.value === 'menor-nota') {
-        filtrados.sort((a, b) => a.nota - b.nota); 
+        filtrados.sort((a, b) => a.nota - b.nota);
       } else {
-        filtrados.sort((a, b) => new Date(b.data) - new Date(a.data)); 
+        filtrados.sort(
+          (a, b) => new Date(b.data) - new Date(a.data)
+        );
       }
+
       renderizarComentarios(filtrados);
     });
   }
@@ -210,13 +302,16 @@ function configurarSistemaAvaliacao() {
 
     novoBtn.addEventListener('click', () => {
       const textarea = document.getElementById('comentario-texto');
-      const texto = textarea.value;
-      const notaSelecionada = document.querySelector('input[name="rating"]:checked');
+      const texto = textarea?.value || '';
+      const notaSelecionada = document.querySelector(
+        'input[name="rating"]:checked'
+      );
 
       if (!notaSelecionada) {
         alert('Por favor, selecione uma nota nas estrelas antes de avaliar.');
         return;
       }
+
       if (!texto.trim()) {
         alert('Por favor, escreva um comentário.');
         return;
@@ -226,7 +321,7 @@ function configurarSistemaAvaliacao() {
         id: Date.now(),
         nome: 'Você (Usuário Logado)',
         iniciais: 'V',
-        nota: parseInt(notaSelecionada.value),
+        nota: parseInt(notaSelecionada.value, 10),
         texto: texto,
         data: new Date().toISOString()
       };
@@ -234,8 +329,9 @@ function configurarSistemaAvaliacao() {
       avaliacoes.unshift(novaAvaliacao);
       textarea.value = '';
       notaSelecionada.checked = false;
-      
-      if(filtroSelect) filtroSelect.value = 'recentes';
+
+      if (filtroSelect) filtroSelect.value = 'recentes';
+
       renderizarComentarios(avaliacoes);
     });
   }
@@ -243,35 +339,44 @@ function configurarSistemaAvaliacao() {
 
 async function init() {
   const conteudo = document.getElementById('evento-conteudo');
-  
-  //Esconde a página imediatamente para não piscar o evento errado
+
   if (conteudo) {
     conteudo.style.opacity = '0';
-    conteudo.style.pointerEvents = 'none'; //Evita clicar em links antigos antes de carregar
+    conteudo.style.pointerEvents = 'none';
   }
 
-  renderHeader(document.getElementById('header-root'), { showSearch: true, activePage: 'evento' });
+  renderHeader(
+    document.getElementById('header-root'),
+    { showSearch: true, activePage: 'evento' }
+  );
+
   renderFooter(document.getElementById('footer-root'));
   injectEventoIcons();
 
   const id = getQueryId() || 'evt-1';
-  const ev = await getEventoById(id);
 
-  if (!ev) {
+  try {
+    const ev = await getEventoById(id);
+
+    if (!ev) {
+      if (conteudo) conteudo.classList.add('is-hidden');
+      document.getElementById('evento-erro')?.classList.remove('is-hidden');
+      return;
+    }
+
+    renderEvento(ev);
+    configurarSistemaAvaliacao();
+
+    if (conteudo) {
+      conteudo.style.transition = 'opacity 0.3s ease-in';
+      conteudo.style.opacity = '1';
+      conteudo.style.pointerEvents = 'auto';
+    }
+  } catch (error) {
+    console.error('Erro ao carregar evento:', error);
+
     if (conteudo) conteudo.classList.add('is-hidden');
     document.getElementById('evento-erro')?.classList.remove('is-hidden');
-    return;
-  }
-
-  //Preenche os dados corretos invisivelmente
-  renderEvento(ev);
-  configurarSistemaAvaliacao();
-
-  //Revela a página já arrumada e com o mapa certinho
-  if (conteudo) {
-    conteudo.style.transition = 'opacity 0.3s ease-in';
-    conteudo.style.opacity = '1';
-    conteudo.style.pointerEvents = 'auto'; // Libera o clique nos links novamente
   }
 }
 
