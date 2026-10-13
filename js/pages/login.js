@@ -24,17 +24,24 @@ function init() {
       // Chama a API real do Python através do serviço
       const respostaDados = await validarLogin(email, senha);
 
-      // Cria a sessão oficial utilizando o tipo que veio do banco
+      // Normaliza o tipo de usuário que veio da API para o padrão do frontend ('comum', 'institucional', 'administrador')
+      const tipoBruto = (respostaDados.tipo || respostaDados.perfil || '').toLowerCase();
+      let perfilNormalizado = 'comum';
+
+      if (tipoBruto.includes('institucional')) {
+        perfilNormalizado = 'institucional';
+      } else if (tipoBruto.includes('administrador') || tipoBruto.includes('admin')) {
+        perfilNormalizado = 'administrador';
+      }
+
+      // Cria a sessão oficial guardando tudo e padronizando o perfil
       const sessaoOficial = {
-        id: respostaDados.id || 1,
+        ...respostaDados,
         email: email,
-        nome: respostaDados.nome || 'Usuário',
-        perfil: respostaDados.tipo?.toLowerCase() === 'usuario_administrador'
-        ? 'administrador'
-        : respostaDados.tipo?.toLowerCase() || 'comum'
+        perfil: perfilNormalizado
       };
 
-      //tentando reconhecer tipo de usuariao
+      // Tentando reconhecer tipo de usuário administrador via URL se necessário
       const acessoAdmin = new URLSearchParams(window.location.search)
         .get('perfil') === 'administrador';
 
@@ -42,9 +49,9 @@ function init() {
         throw new Error('Esta conta não é de administrador.');
       }
 
-      // Salva no localStorage que o Header e a Home estão esperando
+      // Salva no localStorage o objeto completo com os dados de sessão
       localStorage.setItem('usuarioLogado', JSON.stringify(sessaoOficial));
-      window.location.href = acessoAdmin ? 'perfil.html' : 'index.html';
+      window.location.href = 'perfil.html'; // Vai direto para o perfil para ver os dados renderizados!
 
     } catch (erro) {
       console.error('Erro ao realizar login:', erro);

@@ -50,3 +50,16 @@ export async function getEventoPesquisaRegiao(regiao){
 
   return await reposta.json();
 }
+
+async function carregarDetalhesEvento(id) {
+  try {
+    const resposta = await fetch(`http://127.0.0.1:8000/eventos/${id}`); // ajuste para a sua rota de eventos
+    const evento = await resposta.json();
+
+    // IMPRIME O OBJETO INTEIRO NO CONSOLE PARA VOCÊ VER OS CAMPOS
+    console.log("Dados do evento:", evento);
+
+  } catch (erro) {
+    console.error("Erro ao carregar evento:", erro);
+  }
+}

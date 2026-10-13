@@ -3,7 +3,8 @@ import { renderFooter } from '../components/footer.js';
 import { iconCalendar } from '../utils/icons.js';
 import { getEventoById } from '../services/evento-api.js';
 
-// Retorna a estrutura HTML do card simplificado de um evento
+const BASE_URL = "http://127.0.0.1:8000";
+
 function renderMiniEvento(ev) {
   return `
     <a href="evento.html?id=${ev.id}" class="perfil-mini-card">
@@ -14,49 +15,111 @@ function renderMiniEvento(ev) {
   `;
 }
 
-// Inicializa o perfil do usuário com base na sessão real do localStorage
 async function init() {
   const authStorage = localStorage.getItem('usuarioLogado');
 
   if (!authStorage) {
-    // Se não estiver logado, redireciona para a tela de login
     window.location.href = 'login.html';
     return;
   }
 
-  const usuario = JSON.parse(authStorage);
-  const perfilAtual = usuario.perfil || 'comum';
+  let usuario = JSON.parse(authStorage);
+  let perfilAtual = (usuario.perfil || usuario.tipo || 'comum').toLowerCase();
+
+  // Normaliza o tipo de perfil
+  if (perfilAtual.includes('institucional')) perfilAtual = 'institucional';
+  else if (perfilAtual.includes('administrador') || perfilAtual.includes('admin')) perfilAtual = 'administrador';
+  else perfilAtual = 'comum';
+
+  // BUSCA OS DADOS REAIS NA API PELO E-MAIL LOGADO PARA EVITAR O BUG DO ID 1
+  if (usuario.email) {
+    try {
+      let endpointListagem = `${BASE_URL}/usuarios/comum/`;
+      if (perfilAtual === 'institucional') {
+        endpointListagem = `${BASE_URL}/usuarios/institucional/`;
+      } else if (perfilAtual === 'administrador') {
+        endpointListagem = `${BASE_URL}/usuarios/administrador/`;
+      }
+
+      const res = await fetch(endpointListagem);
+      if (res.ok) {
+        const listaUsuarios = await res.json();
+        // Encontra o usuário na lista que corresponde exatamente ao e-mail logado
+        const usuarioReal = listaUsuarios.find(u => u.email === usuario.email);
+        
+        if (usuarioReal) {
+          usuario = { ...usuario, ...usuarioReal, perfil: perfilAtual };
+          localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+        }
+      }
+    } catch (err) {
+      console.warn("Não foi possível buscar a lista completa, usando dados em cache.", err);
+    }
+  }
 
   renderHeader(document.getElementById('header-root'), { showSearch: false, activePage: 'perfil' });
   renderFooter(document.getElementById('footer-root'));
 
-  const nomeExibicao = usuario.nome || 'Thaís Leandro';
+  // Define o nome de exibição correto priorizando os dados reais
+  const nomeExibicao = usuario.nome_responsavel || usuario.nome || usuario.razao_social || 'Usuário Hub Saúde';
   document.title = `${nomeExibicao} — Hub Saúde`;
   
   const avatarEl = document.getElementById('perfil-avatar');
   if (avatarEl) avatarEl.textContent = nomeExibicao.charAt(0).toUpperCase();
   
   const tipoEl = document.getElementById('perfil-tipo');
-  if (tipoEl) tipoEl.textContent = perfilAtual.toUpperCase();
+  if (tipoEl) {
+    const rotulosTipo = {
+      comum: 'Usuário Comum',
+      institucional: 'Usuário Institucional',
+      administrador: 'Administrador'
+    };
+    tipoEl.textContent = rotulosTipo[perfilAtual] || perfilAtual.toUpperCase();
+  }
   
   const nomeEl = document.getElementById('perfil-nome');
   if (nomeEl) nomeEl.textContent = nomeExibicao;
 
-  const dados = document.getElementById('perfil-dados-lista');
-  const linhas = [
-    ['E-mail', usuario.email || 'Não informado'],
-    ['Telefone', usuario.telefone || 'Não informado'],
-  ];
+  // Montagem dinâmica das linhas baseada nos dados reais resgatados
+  const dadosContainer = document.getElementById('perfil-dados-lista');
+  let linhas = [];
 
-  if (usuario.cnpj) linhas.push(['CNPJ', usuario.cnpj]);
-  if (usuario.regiaoPreferida) linhas.push(['Região preferida', usuario.regiaoPreferida]);
+  if (perfilAtual === 'institucional') {
+    linhas = [
+      ['E-mail', usuario.email],
+      ['Razão Social', usuario.razao_social],
+      ['Nome Fantasia / Instituição', usuario.nome],
+      ['CNPJ', usuario.cnpj],
+      ['Responsável', usuario.nome_responsavel],
+      ['Cargo do Responsável', usuario.cargo_responsavel],
+      ['Telefone', usuario.telefone || usuario.telefoneResponsavel],
+      ['Endereço', usuario.endereco],
+      ['Site', usuario.site],
+      ['Atuação / Descrição', usuario.descricao || usuario.vinculo_instituicao],
+      ['Status', usuario.status || 'Pendente']
+    ];
+  } else if (perfilAtual === 'administrador') {
+    linhas = [
+      ['E-mail', usuario.email],
+      ['Nível de Acesso', 'Administrador Master'],
+      ['Permissões', 'Gerenciamento global e moderação de instituições']
+    ];
+  } else {
+    linhas = [
+      ['E-mail', usuario.email],
+      ['Telefone', usuario.telefone || 'Não informado'],
+      ['Região Preferida', usuario.regiaoPreferida || 'Não informada']
+    ];
+  }
 
-  if (dados) {
-    dados.innerHTML = linhas
+  if (dadosContainer) {
+    dadosContainer.innerHTML = linhas
+      .filter(([_, valor]) => valor !== null && valor !== undefined && valor !== '' && valor !== 'Não informado')
       .map(([dt, dd]) => `<div><dt>${dt}</dt><dd>${dd}</dd></div>`)
       .join('');
   }
 
+  // Controle de visibilidade das seções específicas
   const secaoInscricoes = document.getElementById('perfil-secao-inscricoes');
   const secaoGerenciados = document.getElementById('perfil-secao-gerenciados');
   const secaoAdmin = document.getElementById('perfil-secao-admin');
@@ -70,11 +133,8 @@ async function init() {
   if (perfilAtual === 'comum' && usuario.inscricoes?.length) {
     secaoInscricoes?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-inscricoes');
-
     if (el) {
-      const eventos = await Promise.all(
-        usuario.inscricoes.map((id) => getEventoById(id))
-      );
+      const eventos = await Promise.all(usuario.inscricoes.map((id) => getEventoById(id)));
       el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
     }
   }
@@ -82,11 +142,8 @@ async function init() {
   if (perfilAtual === 'institucional' && usuario.eventosGerenciados?.length) {
     secaoGerenciados?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-gerenciados');
-
     if (el) {
-      const eventos = await Promise.all(
-        usuario.eventosGerenciados.map((id) => getEventoById(id))
-      );
+      const eventos = await Promise.all(usuario.eventosGerenciados.map((id) => getEventoById(id)));
       el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
     }
   }
@@ -99,14 +156,12 @@ async function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 
-
-// FILTROS COM MENSAGEM VAZIA E MODAL
+// Filtros e Modais do Administrador
 document.addEventListener('DOMContentLoaded', () => {
   const modalFicha = document.getElementById('modal-ficha-instituicao');
   const fecharModalFicha = document.querySelector('.modal-ficha__fechar');
   const nomeInstituicao = document.getElementById('modal-nome-instituicao');
 
-  // Função para aplicar filtro e controlar mensagem de tabela vazia
   function aplicarFiltroAvaliador(filtroTipo, botaoClicado) {
     const avaliador = document.getElementById('avaliador-instituicao');
     if (!avaliador) return;
@@ -129,11 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Atualiza botões
     botoesFiltro.forEach((b) => b.classList.remove('avaliador-filtro--ativo'));
     botaoClicado?.classList.add('avaliador-filtro--ativo');
 
-    // Gerencia a mensagem vazia
     tbody.querySelector('.avaliador-mensagem-vazia')?.remove();
 
     if (totalVisiveis === 0) {
@@ -150,16 +203,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Escuta os cliques no documento
   document.addEventListener('click', (evento) => {
-    // Clique nos botões de filtro
     const botaoFiltro = evento.target.closest('.avaliador-filtro');
     if (botaoFiltro) {
-      const filtro = botaoFiltro.dataset.filtro;
-      aplicarFiltroAvaliador(filtro, botaoFiltro);
+      aplicarFiltroAvaliador(botaoFiltro.dataset.filtro, botaoFiltro);
     }
 
-    // Clique no botão "Ver Ficha"
     const botaoVerFicha = evento.target.closest('.avaliador-ver-ficha');
     if (botaoVerFicha) {
       const linha = botaoVerFicha.closest('tr');
@@ -171,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Fechar Modal
   fecharModalFicha?.addEventListener('click', () => modalFicha?.classList.add('is-hidden'));
   modalFicha?.addEventListener('click', (evento) => {
     if (evento.target === modalFicha) modalFicha.classList.add('is-hidden');

@@ -46,8 +46,6 @@ export async function cadastrarUsuario(formData) {
 
     try {
       const textoErro = await response.text();
-      console.log("RESPOSTA BRUTA DO PYTHON:", textoErro); // <--- ISSO VAI MOSTRAR O ERRO REAL NO CONSOLE DO NAVEGADOR
-      
       const erro = JSON.parse(textoErro);
 
       if (Array.isArray(erro.detail)) {
@@ -66,4 +64,30 @@ export async function cadastrarUsuario(formData) {
     sucesso: true,
     dados: await response.json()
   };
+}
+
+export async function validarLogin(email, senha) {
+  const response = await fetch(`${BASE_URL}/usuarios/validar`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, senha })
+  });
+
+  let dados = {};
+
+  try {
+    dados = await response.json();
+  } catch (erro) {
+    dados = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      dados.detail || dados.mensagem || 'E-mail ou senha incorretos.'
+    );
+  }
+
+  return dados.dados || dados;
 }
