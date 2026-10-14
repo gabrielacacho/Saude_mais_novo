@@ -10,7 +10,6 @@ function renderMiniEvento(ev) {
     <a href="evento.html?id=${ev.id}" class="perfil-mini-card">
       <strong>${ev.titulo}</strong>
       <span>${iconCalendar()} ${ev.dataExibicao}</span>
-      <span>${ev.categoria}</span>
     </a>
   `;
 }
@@ -119,7 +118,7 @@ async function init() {
       .join('');
   }
 
-  // Controle de visibilidade das seções específicas
+// Controle de visibilidade das seções específicas
   const secaoInscricoes = document.getElementById('perfil-secao-inscricoes');
   const secaoGerenciados = document.getElementById('perfil-secao-gerenciados');
   const secaoAdmin = document.getElementById('perfil-secao-admin');
@@ -130,12 +129,45 @@ async function init() {
   secaoAdmin?.classList.add('is-hidden');
   secaoAvaliador?.classList.add('is-hidden');
 
-  if (perfilAtual === 'comum' && usuario.inscricoes?.length) {
+if (perfilAtual === 'comum') {
     secaoInscricoes?.classList.remove('is-hidden');
     const el = document.getElementById('perfil-inscricoes');
     if (el) {
-      const eventos = await Promise.all(usuario.inscricoes.map((id) => getEventoById(id)));
-      el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
+      try {
+        // Utiliza o endpoint correto fornecido pela API para listar inscrições do usuário
+        const resInscricoes = await fetch(`${BASE_URL}/inscricao/${usuario.id}/`);
+        if (resInscricoes.ok) {
+          const listaInscricoes = await resInscricoes.json();
+          
+          if (listaInscricoes && listaInscricoes.length > 0) {
+            // Cada item retornado pode trazer o evento associado (ou o ID do evento)
+            // Vamos buscar os detalhes de cada evento inscrito para preencher o mini-card
+            const eventosPromises = listaInscricoes.map(async (insc) => {
+              const eventoId = insc.evento_id || insc.evento || insc.id_evento;
+              if (eventoId) {
+                return await getEventoById(eventoId);
+              }
+              return null;
+            });
+
+            const eventos = await Promise.all(eventosPromises);
+            const eventosValidos = eventos.filter(Boolean);
+
+            if (eventosValidos.length > 0) {
+              el.innerHTML = eventosValidos.map(renderMiniEvento).join('');
+            } else {
+              el.innerHTML = '<p class="perfil-vazio">Você ainda não se inscreveu em nenhum evento.</p>';
+            }
+          } else {
+            el.innerHTML = '<p class="perfil-vazio">Você ainda não se inscreveu em nenhum evento.</p>';
+          }
+        } else {
+          el.innerHTML = '<p class="perfil-vazio">Você ainda não se inscreveu em nenhum evento.</p>';
+        }
+      } catch (err) {
+        console.error("Erro ao carregar inscrições:", err);
+        el.innerHTML = '<p class="perfil-vazio">Não foi possível carregar as inscrições.</p>';
+      }
     }
   }
 
