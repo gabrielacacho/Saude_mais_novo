@@ -56,7 +56,7 @@ export function renderHeader(container, options = {}) {
           <a href="sobre.html" class="nav-item">Sobre Nós</a>
           
           <!-- BOTÕES DINÂMICOS (Controlados pelo JS) -->
-          <a href="como-cadastrar.html" id="nav-btn-cadastrar-evento" class="nav-item is-hidden" style="color: var(--cor-destaque, #003B8E); font-weight: 800;">
+          <a href="como-cadastrar.html" id="nav-btn-cadastrar-evento" class="nav-item" style="color: var(--cor-destaque, #003B8E); font-weight: 800;">
             Como cadastrar evento
           </a>
           
@@ -98,19 +98,14 @@ function bindHeaderEvents(container, showSearch) {
       btnSair?.classList.remove('is-hidden');
       //notificacoesWrapper?.classList.remove('is-hidden');
 
-      // Checa se é Institucional para liberar o cadastro de eventos
-      if (usuario.perfil === 'institucional') {
-        btnCadastrarEvento?.classList.remove('is-hidden');
-      } else {
-        btnCadastrarEvento?.classList.add('is-hidden');
-      }
+
     } else {
       // USUÁRIO NÃO ESTÁ LOGADO
       btnEntrar?.classList.remove('is-hidden');
       btnCadastrar?.classList.remove('is-hidden');
       btnMeuPerfil?.classList.add('is-hidden');
       btnSair?.classList.add('is-hidden');
-      btnCadastrarEvento?.classList.add('is-hidden');
+      //btnCadastrarEvento?.classList.add('is-hidden');
       //notificacoesWrapper?.classList.add('is-hidden');
     }
   };

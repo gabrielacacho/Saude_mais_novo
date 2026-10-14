@@ -171,18 +171,86 @@ if (perfilAtual === 'comum') {
     }
   }
 
-  if (perfilAtual === 'institucional' && usuario.eventosGerenciados?.length) {
+  // No bloco onde o perfil institucional é tratado em init() ou na função que carrega os gerenciados:
+  if (perfilAtual === 'institucional') {
     secaoGerenciados?.classList.remove('is-hidden');
-    const el = document.getElementById('perfil-gerenciados');
-    if (el) {
-      const eventos = await Promise.all(usuario.eventosGerenciados.map((id) => getEventoById(id)));
-      el.innerHTML = eventos.filter(Boolean).map(renderMiniEvento).join('');
+    const containerGerenciados = document.getElementById('perfil-gerenciados');
+    
+    if (containerGerenciados) {
+      try {
+        // Busca todos os eventos cadastrados na API
+        const respostaEventos = await fetch(`${BASE_URL}/eventos/`);
+        if (respostaEventos.ok) {
+          const todosEventos = await respostaEventos.json();
+          
+          // Pega o ID do usuário institucional logado
+          const authStorage = localStorage.getItem('usuarioLogado');
+          let usuarioId = null;
+          if (authStorage) {
+            const usuario = JSON.parse(authStorage);
+            usuarioId = usuario.id || usuario.id_usuario;
+          }
+
+          // Filtra apenas os eventos criados por esta instituição 
+          // (Verifique se a propriedade na API se chama criador_institucional, criado_por_id ou similar)
+          const meusEventos = todosEventos.filter(ev => 
+            ev.criador_institucional === Number(usuarioId) || ev.criado_por_id === Number(usuarioId)
+          );
+
+          if (meusEventos.length > 0) {
+            containerGerenciados.innerHTML = meusEventos.map(ev => {
+              return `
+                <div class="perfil-card-gerenciado" style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div>
+                    <h4 style="margin: 0 0 0.25rem 0; color: #1e293b;">${ev.titulo}</h4>
+                    <span style="font-size: 0.85rem; color: #64748b;">Início: ${ev.data_hora_evento || ev.dataInicio || 'Data não informada'}</span>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <a href="evento.html?id=${ev.id}" class="hub-btn hub-btn--secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; text-decoration: none;">Ver</a>
+                    <button type="button" class="hub-btn btn-excluir-evento" data-id="${ev.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Excluir</button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            // Adiciona o evento de clique para excluir o evento usando a API DELETE /eventos/remover_evento/{id}
+            containerGerenciados.querySelectorAll('.btn-excluir-evento').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                const eventoId = e.target.dataset.id;
+                if (confirm('Tem certeza que deseja remover este evento?')) {
+                  try {
+                    const resDel = await fetch(`${BASE_URL}/eventos/remover_evento/${eventoId}`, {
+                      method: 'DELETE'
+                    });
+                    if (resDel.ok) {
+                      alert('Evento removido com sucesso!');
+                      window.location.reload();
+                    } else {
+                      alert('Erro ao remover o evento.');
+                    }
+                  } catch (err) {
+                    console.error("Erro ao excluir:", err);
+                    alert('Erro de conexão ao excluir o evento.');
+                  }
+                }
+              });
+            });
+
+          } else {
+            containerGerenciados.innerHTML = '<p class="perfil-vazio">Você ainda não criou nenhum evento. Clique abaixo em "Criar Evento" para publicar o primeiro!</p>';
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao carregar eventos gerenciados:", err);
+        containerGerenciados.innerHTML = '<p class="perfil-vazio">Erro ao carregar seus eventos.</p>';
+      }
     }
   }
 
   if (perfilAtual === 'administrador') {
     secaoAdmin?.classList.remove('is-hidden');
     secaoAvaliador?.classList.remove('is-hidden');
+    await carregarInstituicoesAvaliador();
   }
 }
 
@@ -235,19 +303,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  document.addEventListener('click', (evento) => {
+  document.addEventListener('click', async (evento) => {
     const botaoFiltro = evento.target.closest('.avaliador-filtro');
     if (botaoFiltro) {
-      aplicarFiltroAvaliador(botaoFiltro.dataset.filtro, botaoFiltro);
+      aplicarFiltroAvaliadorLocal(botaoFiltro.dataset.filtro, botaoFiltro);
     }
 
     const botaoVerFicha = evento.target.closest('.avaliador-ver-ficha');
     if (botaoVerFicha) {
       const linha = botaoVerFicha.closest('tr');
-      if (linha && modalFicha && nomeInstituicao) {
-        const nome = linha.querySelector('td')?.textContent.trim();
-        if (nome) nomeInstituicao.textContent = nome;
-        modalFicha.classList.remove('is-hidden');
+      const instituicaoId = linha?.dataset.id;
+      
+      if (instituicaoId && modalFicha) {
+        try {
+          // Busca os dados detalhados da instituição na API
+          const res = await fetch(`${BASE_URL}/usuarios/institucional/${instituicaoId}`);
+          if (res.ok) {
+            const inst = await res.json();
+
+            // Preenche os campos do modal com os dados reais
+            document.getElementById('ficha-razao-social').textContent = inst.razao_social || '-';
+            document.getElementById('ficha-nome-social').textContent = inst.nome || '-';
+            document.getElementById('ficha-cnpj').textContent = inst.cnpj || '-';
+            document.getElementById('ficha-endereco').textContent = inst.endereco || '-';
+            document.getElementById('ficha-tipo').textContent = inst.tipo_instituicao || inst.vinculo_instituicao || '-';
+            document.getElementById('ficha-site').textContent = inst.site || '-';
+
+            document.getElementById('ficha-resp-nome').textContent = inst.nome_responsavel || '-';
+            document.getElementById('ficha-resp-cargo').textContent = inst.cargo_responsavel || '-';
+            document.getElementById('ficha-resp-email').textContent = inst.email || '-';
+            document.getElementById('ficha-resp-telefone').textContent = inst.telefone || inst.telefoneResponsavel || '-';
+
+            document.getElementById('ficha-descricao').textContent = inst.descricao || '-';
+
+            // Guarda o ID atual no modal para uso nos botões de aprovar/negar
+            modalFicha.dataset.instituicaoId = instituicaoId;
+
+            if (nomeInstituicao) {
+              nomeInstituicao.textContent = inst.nome || inst.razao_social || 'Ficha da Instituição';
+            }
+
+            modalFicha.classList.remove('is-hidden');
+          }
+        } catch (err) {
+          console.error("Erro ao carregar detalhes da instituição:", err);
+        }
       }
     }
   });
@@ -257,3 +357,128 @@ document.addEventListener('DOMContentLoaded', () => {
     if (evento.target === modalFicha) modalFicha.classList.add('is-hidden');
   });
 });
+
+async function carregarInstituicoesAvaliador() {
+  const tbody = document.getElementById('avaliador-instituicoes-lista');
+  if (!tbody) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/usuarios/institucional/`);
+    if (res.ok) {
+      const instituicoes = await res.json();
+      
+      if (instituicoes && instituicoes.length > 0) {
+        tbody.innerHTML = instituicoes.map(inst => {
+          const statusInst = (inst.status || 'pendente').toLowerCase();
+          const dataReq = inst.data_criacao || inst.data || 'Recente';
+          const nomeSocial = inst.nome || inst.razao_social || 'Instituição';
+          const cnpjInst = inst.cnpj || 'Não informado';
+
+          return `
+            <tr data-status="${statusInst}" data-id="${inst.id}">
+              <td>${nomeSocial}</td>
+              <td>${cnpjInst}</td>
+              <td>${dataReq}</td>
+              <td><button type="button" class="avaliador-ver-ficha" data-id="${inst.id}">Ver ficha</button></td>
+            </tr>
+          `;
+        }).join('');
+
+        // Aplica o filtro padrão para mostrar apenas as "pendentes" inicialmente
+        const botaoPendente = document.querySelector('.avaliador-filtro[data-filtro="pendentes"]');
+        if (botaoPendente) {
+          aplicarFiltroAvaliadorLocal('pendentes', botaoPendente);
+        }
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 1.5rem;">Nenhuma instituição cadastrada.</td></tr>';
+      }
+    }
+  } catch (err) {
+    console.error("Erro ao carregar instituições no painel de admin:", err);
+  }
+}
+
+// Função auxiliar de filtro local para o avaliador
+function aplicarFiltroAvaliadorLocal(filtroTipo, botaoClicado) {
+  const avaliador = document.getElementById('avaliador-instituicao');
+  if (!avaliador) return;
+  const tbody = avaliador.querySelector('#avaliador-instituicoes-lista');
+  if (!tbody) return;
+
+  const statusAlvo = filtroTipo === 'pendentes' ? 'pendente' : filtroTipo === 'ativas' ? 'ativa' : 'bloqueada';
+  const linhas = tbody.querySelectorAll('tr[data-status]');
+  const botoesFiltro = avaliador.querySelectorAll('.avaliador-filtro');
+  let totalVisiveis = 0;
+
+  linhas.forEach((linha) => {
+    if (linha.dataset.status === statusAlvo) {
+      linha.style.display = '';
+      totalVisiveis++;
+    } else {
+      linha.style.display = 'none';
+    }
+  });
+
+  botoesFiltro.forEach((b) => b.classList.remove('avaliador-filtro--ativo'));
+  botaoClicado?.classList.add('avaliador-filtro--ativo');
+}
+
+// Ação de Aprovar Instituição
+  const btnAprovar = document.querySelector('.ficha-btn--aprovar');
+  btnAprovar?.addEventListener('click', async () => {
+    const checkboxConfirmar = document.getElementById('confirmar-avaliacao');
+    if (!checkboxConfirmar?.checked) {
+      alert('Você precisa marcar a caixa de confirmação antes de aprovar.');
+      return;
+    }
+
+    const instituicaoId = modalFicha?.dataset.instituicaoId;
+    if (!instituicaoId) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/usuarios/institucional/${instituicaoId}/status?status=ativa`, {
+        method: 'PATCH' // ou PUT, dependendo de como a rota de status foi estruturada no backend
+      });
+
+      if (res.ok || res.status === 200) {
+        alert('Instituição aprovada com sucesso!');
+        modalFicha.classList.add('is-hidden');
+        window.location.reload(); // Recarrega para atualizar a tabela
+      } else {
+        alert('Erro ao aprovar a instituição.');
+      }
+    } catch (err) {
+      console.error("Erro na requisição de aprovação:", err);
+      alert('Erro de conexão ao tentar aprovar.');
+    }
+  });
+
+  // Ação de Negar / Indeferir Instituição
+  const btnNegar = document.querySelector('.ficha-btn--negar');
+  btnNegar?.addEventListener('click', async () => {
+    const motivo = document.getElementById('motivo-indeferimento')?.value;
+    if (!motivo || motivo.trim() === '') {
+      alert('Por favor, informe o motivo do indeferimento.');
+      return;
+    }
+
+    const instituicaoId = modalFicha?.dataset.instituicaoId;
+    if (!instituicaoId) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/usuarios/institucional/${instituicaoId}/status?status=bloqueada`, {
+        method: 'PATCH'
+      });
+
+      if (res.ok || res.status === 200) {
+        alert('Instituição negada/bloqueada com sucesso.');
+        modalFicha.classList.add('is-hidden');
+        window.location.reload(); // Recarrega para atualizar a tabela
+      } else {
+        alert('Erro ao negar a instituição.');
+      }
+    } catch (err) {
+      console.error("Erro na requisição de negação:", err);
+      alert('Erro de conexão ao tentar negar.');
+    }
+  });
