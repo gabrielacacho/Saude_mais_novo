@@ -76,21 +76,41 @@ async function eventosFiltradosPorLocal(textoLocal = "") {
   return eventos.filter((e) => passaFiltroEvento(e.categoria));
 }
 
+
 function aplicarFiltrosEvento(lista) {
   let result = [...lista];
+
   const { termo, categoria, data } = filtroEvento;
+
+  // Busca pelo nome do evento
   if (termo) {
     const t = termo.toLowerCase();
-    result = result.filter((e) => e.titulo.toLowerCase().includes(t));
+
+    result = result.filter((e) =>
+      (e.titulo || "").toLowerCase().includes(t)
+    );
   }
+
+  // Categoria escolhida no filtro de evento
   if (categoria) {
     result = result.filter((e) => e.categoria === categoria);
   }
+
+  // Categoria escolhida no filtro de local
+  if (filtroLocalCategoria) {
+    result = result.filter((e) =>
+      e.categoria === filtroLocalCategoria
+    );
+  }
+
+  // Data escolhida
   if (data) {
     result = result.filter((e) => e.data === data);
   }
+
   return result;
 }
+
 
 function atualizarLabelMapa(texto) {
   const label = document.getElementById("mapa-local-label");

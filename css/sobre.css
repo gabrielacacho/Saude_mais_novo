@@ -73,13 +73,28 @@
    GRID DA EQUIPE (QUEM FAZ ACONTECER)
 ========================================= */
 
+
 .equipe-grid {
   display: grid;
-  /* Cards menores para não ficarem gigantes na tela */
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-top: 24px;
 }
+
+/* Tablets */
+@media (max-width: 900px) {
+  .equipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Celulares */
+@media (max-width: 500px) {
+  .equipe-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 .equipe-card {
   display: flex;
