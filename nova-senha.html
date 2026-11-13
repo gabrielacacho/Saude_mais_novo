@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastrar nova senha — Saúde Aqui</title>
+
+  <link rel="icon" type="image/png" href="./imagem/favicon.png" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/redefinir-senha.css" />
+</head>
+
+<body class="page-redefinir-senha page-layout--centered">
+
+  <!-- Header injetado dinamicamente pelo JavaScript -->
+  <div id="header-root"></div>
+
+  <main>
+    <div class="auth-wrapper">
+      <div class="hub-card-auth">
+
+        <div class="hub-card-auth-header">
+          <h1>Nova senha</h1>
+          <p>Escolha uma nova senha segura para sua conta</p>
+        </div>
+
+        <form id="form-nova-senha" class="hub-card-auth-body hub-form">
+          <p class="redefinir-instrucoes">
+            Sua senha deve ter no mínimo 6 caracteres. Digite e confirme a nova senha abaixo.
+          </p>
+
+          <div style="margin-bottom: 1rem;">
+            <label for="nova-senha" class="hub-label">Nova senha *</label>
+            <input
+              id="nova-senha"
+              name="novaSenha"
+              type="password"
+              required
+              minlength="6"
+              autocomplete="new-password"
+              class="hub-input"
+              placeholder="Mínimo 6 caracteres"
+            />
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label for="confirma-senha" class="hub-label">Confirmar nova senha *</label>
+            <input
+              id="confirma-senha"
+              name="confirmaSenha"
+              type="password"
+              required
+              minlength="6"
+              autocomplete="new-password"
+              class="hub-input"
+              placeholder="Digite a senha novamente"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="hub-btn hub-btn--primary hub-btn--block"
+          >
+            Atualizar senha
+          </button>
+        </form>
+
+        <div class="hub-card-auth-footer">
+          <a href="login.html" class="hub-link">
+            ← Voltar para o login
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer injetado dinamicamente pelo JavaScript -->
+  <footer id="footer-root"></footer>
+
+  <!-- Chamada correta do script em módulo -->
+  <script type="module" src="js/pages/nova-senha.js"></script>
+</body>
+</html>

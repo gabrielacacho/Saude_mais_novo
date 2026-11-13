@@ -91,3 +91,60 @@ export async function validarLogin(email, senha) {
 
   return dados.dados || dados;
 }
+
+// ==========================================
+// RECUPERAÇÃO E REDEFINIÇÃO DE SENHA
+// ==========================================
+
+export async function solicitarRecuperacaoSenha(email) {
+  const response = await fetch(`${BASE_URL}/usuarios/esqueci-senha`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email })
+  });
+
+  let dados = {};
+  try {
+    dados = await response.json();
+  } catch (e) {
+    dados = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      dados.detail || dados.mensagem || 'Não foi possível solicitar a recuperação de senha.'
+    );
+  }
+
+  return dados;
+}
+
+export async function redefinirSenhaApi(token, novaSenha) {
+  const response = await fetch(`${BASE_URL}/usuarios/redefinir-senha`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      token: token,
+      nova_senha: novaSenha
+    })
+  });
+
+  let dados = {};
+  try {
+    dados = await response.json();
+  } catch (e) {
+    dados = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      dados.detail || dados.mensagem || 'Não foi possível redefinir a senha. O link pode ter expirado.'
+    );
+  }
+
+  return dados;
+}
