@@ -62,9 +62,12 @@ async function init() {
   // Define o nome de exibição correto priorizando os dados reais
   const nomeExibicao = usuario.nome_responsavel || usuario.nome || usuario.razao_social || 'Usuário Hub Saúde';
   document.title = `${nomeExibicao} — Hub Saúde`;
-  
+
   const avatarEl = document.getElementById('perfil-avatar');
   if (avatarEl) avatarEl.textContent = nomeExibicao.charAt(0).toUpperCase();
+
+  // Ativa a edição do perfil DEPOIS da inicial para não ser sobrescrito
+  configurarEdicaoPerfil(usuario, perfilAtual, nomeExibicao);
   
   const tipoEl = document.getElementById('perfil-tipo');
   if (tipoEl) {
@@ -482,3 +485,85 @@ function aplicarFiltroAvaliadorLocal(filtroTipo, botaoClicado) {
       alert('Erro de conexão ao tentar negar.');
     }
   });
+
+  // ==========================================
+// EDIÇÃO DO PERFIL (ISOLADA)
+// ==========================================
+function configurarEdicaoPerfil(usuario, perfilAtual, nomeExibicao) {
+  const modal = document.getElementById('modal-editar-perfil');
+  const btnAbrir = document.getElementById('btn-editar-perfil');
+  const btnFechar = document.getElementById('fechar-modal-perfil');
+  const btnCancelar = document.getElementById('cancelar-edicao-perfil');
+  const form = document.getElementById('form-editar-perfil');
+  const inputFoto = document.getElementById('input-foto-perfil');
+  const inputTelefone = document.getElementById('editar-telefone');
+  const inputEmail = document.getElementById('editar-email');
+  const avatarPrincipal = document.getElementById('perfil-avatar');
+  const avatarPreview = document.getElementById('preview-avatar');
+
+  if (!modal || !btnAbrir || !form) return;
+
+  const identificador = usuario.id || usuario.id_usuario || 'sem-id';
+  const chaveFoto = `fotoPerfil_${perfilAtual}_${identificador}`;
+  const chaveTelefone = `telefonePerfil_${perfilAtual}_${identificador}`;
+  let fotoSelecionada = localStorage.getItem(chaveFoto) || '';
+
+  function atualizarAvatar(elemento, foto) {
+    if (!elemento) return;
+    if (foto) {
+      elemento.innerHTML = `<img src="${foto}" alt="Foto do perfil" style="width:100%; height:100%; object-fit:cover; border-radius:50%; display:block;">`;
+    } else {
+      elemento.textContent = nomeExibicao.charAt(0).toUpperCase();
+    }
+  }
+
+  const telefoneSalvo = localStorage.getItem(chaveTelefone);
+  inputTelefone.value = telefoneSalvo || usuario.telefone || usuario.telefoneResponsavel || '';
+  inputEmail.value = usuario.email || '';
+
+  atualizarAvatar(avatarPrincipal, fotoSelecionada);
+  atualizarAvatar(avatarPreview, fotoSelecionada);
+
+  btnAbrir.addEventListener('click', () => modal.classList.remove('is-hidden'));
+  
+  function fecharModal() {
+    modal.classList.add('is-hidden');
+    atualizarAvatar(avatarPreview, fotoSelecionada);
+  }
+
+  btnFechar?.addEventListener('click', fecharModal);
+  btnCancelar?.addEventListener('click', fecharModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) fecharModal(); });
+
+  inputFoto?.addEventListener('change', () => {
+    const arquivo = inputFoto.files[0];
+    if (!arquivo) return;
+    if (arquivo.size > 1024 * 1024) {
+      alert('A imagem deve ter no máximo 1 MB.');
+      inputFoto.value = '';
+      return;
+    }
+    const leitor = new FileReader();
+    leitor.onload = (e) => {
+      fotoSelecionada = e.target.result;
+      atualizarAvatar(avatarPreview, fotoSelecionada);
+    };
+    leitor.readAsDataURL(arquivo);
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const telefone = inputTelefone.value.trim();
+    try {
+      if (fotoSelecionada) localStorage.setItem(chaveFoto, fotoSelecionada);
+      localStorage.setItem(chaveTelefone, telefone);
+      usuario.telefone = telefone;
+      localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+      atualizarAvatar(avatarPrincipal, fotoSelecionada);
+      fecharModal();
+      window.location.reload();
+    } catch (err) {
+      alert('Não foi possível salvar a imagem.');
+    }
+  });
+}

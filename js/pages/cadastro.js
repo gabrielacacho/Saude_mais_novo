@@ -2,6 +2,7 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { cadastrarUsuario } from '../services/usuarios-api.js';
 
+
 let tipoUsuario = null;
 
 //CONTROLE DAS ETAPAS
