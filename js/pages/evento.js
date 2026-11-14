@@ -71,7 +71,18 @@ function renderEvento(ev) {
     instituicao.textContent = ev.instituicao || 'Secretaria Municipal de Saúde';
   }
 
-  const inscritoKey = `inscrito_evento_${ev.id}`;
+  // Descobre o ID do usuário logado atualmente para separar a inscrição por conta
+  const usuarioLogadoJSON = localStorage.getItem('usuarioLogado');
+  let currentUserId = 'desconhecido';
+  if (usuarioLogadoJSON) {
+    try {
+      const u = JSON.parse(usuarioLogadoJSON);
+      currentUserId = u.id || u.usuario_id || 'desconhecido';
+    } catch (e) {}
+  }
+
+  // Chave única por usuário e por evento
+  const inscritoKey = `inscrito_evento_${ev.id}_usuario_${currentUserId}`;
   const jaInscrito =
     localStorage.getItem(inscritoKey) === 'true' ||
     ev.usuario_ja_inscrito === true;
@@ -108,7 +119,7 @@ function renderEvento(ev) {
     btnInscrever.disabled = false;
 
     if (inscrito) {
-      btnInscrever.textContent = 'Inscrito ✓';
+      btnInscrever.textContent = 'Inscrito';
       btnInscrever.classList.add('hub-btn--inscrito');
       btnInscrever.disabled = true;
       btnInscrever.style.pointerEvents = 'none';
@@ -169,10 +180,12 @@ function renderEvento(ev) {
         await inscreverUsuario(eventoId, userId);
         localStorage.setItem(inscritoKey, 'true');
 
-        novoBtn.textContent = 'Inscrito ✓';
+        novoBtn.textContent = 'Inscrito';
         novoBtn.classList.add('hub-btn--inscrito');
+        novoBtn.disabled = true;
+        novoBtn.style.pointerEvents = 'none';
 
-        alert('Inscrição realizada com sucesso!');
+        // O alerta foi removido para a inscrição acontecer direto na tela com fluidez!
       } catch (error) {
         console.error('Erro ao realizar inscrição:', error);
         alert(error.message || 'Não foi possível realizar a inscrição.');
