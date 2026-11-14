@@ -1,4 +1,4 @@
-import { getEventoById } from '../services/evento-api.js';
+import { getEventoById, listarComentarios, criarComentario } from '../services/evento-api.js';
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconCalendar, iconPin, iconUsers } from '../utils/icons.js';
@@ -21,7 +21,7 @@ function getQueryId() {
 
 // Exibe os dados do evento
 function renderEvento(ev) {
-  document.title = `${ev.titulo} — Saúde Aqui`;
+  document.title = `${ev.titulo || 'Evento'} — Saúde Aqui`;
 
   const banner = document.getElementById('evento-banner');
   const tag = document.getElementById('evento-tag');
@@ -37,13 +37,13 @@ function renderEvento(ev) {
   const btnInscrever = document.getElementById('btn-inscrever');
 
   if (banner) {
-    banner.src = ev.foto_capa;
-    banner.alt = ev.titulo;
+    banner.src = ev.foto_capa || '';
+    banner.alt = ev.titulo || 'Evento';
   }
 
   if (tag) tag.textContent = ev.categoria || 'Evento';
-  if (tituloDesc) tituloDesc.textContent = ev.titulo;
-  if (descricao) descricao.textContent = ev.descricao;
+  if (tituloDesc) tituloDesc.textContent = ev.titulo || '';
+  if (descricao) descricao.textContent = ev.descricao || '';
 
   if (dataInicio) {
     dataInicio.textContent = ev.dataExibicao
@@ -59,15 +59,8 @@ function renderEvento(ev) {
 
   if (local) {
     local.textContent = ev.localizacao || 'Local a definir';
-
-    const buscaMapa = encodeURIComponent(
-      `${ev.localizacao || ''}, Rio de Janeiro`
-    );
-
-    local.setAttribute(
-      'href',
-      `https://maps.google.com/?q=${buscaMapa}`
-    );
+    const buscaMapa = encodeURIComponent(`${ev.localizacao || ''}, Rio de Janeiro`);
+    local.setAttribute('href', `https://maps.google.com/?q=${buscaMapa}`);
   }
 
   if (unidade) {
@@ -75,17 +68,14 @@ function renderEvento(ev) {
   }
 
   if (instituicao) {
-    instituicao.textContent =
-      ev.instituicao || 'Secretaria Municipal de Saúde';
+    instituicao.textContent = ev.instituicao || 'Secretaria Municipal de Saúde';
   }
 
-  // Estado da inscrição: chave separada para cada evento
   const inscritoKey = `inscrito_evento_${ev.id}`;
   const jaInscrito =
     localStorage.getItem(inscritoKey) === 'true' ||
     ev.usuario_ja_inscrito === true;
 
-  // Quantidade de participantes e capacidade
   const inscritosAtuais = Number(
     ev.numero_participantes ?? ev.inscritos_count ?? 0
   );
@@ -106,11 +96,9 @@ function renderEvento(ev) {
       : 0;
 
     barraFill.style.width = `${porcentagem}%`;
-    barraFill.style.backgroundColor =
-      porcentagem >= 100 ? '#E63946' : '';
+    barraFill.style.backgroundColor = porcentagem >= 100 ? '#E63946' : '';
   }
 
-  // Atualiza o botão
   function atualizarBotao(inscrito) {
     if (!btnInscrever) return;
 
@@ -136,12 +124,10 @@ function renderEvento(ev) {
 
   atualizarBotao(jaInscrito);
 
-  // Evita acumular eventos de clique ao renderizar novamente
   if (btnInscrever) {
     const novoBtn = btnInscrever.cloneNode(true);
     btnInscrever.parentNode.replaceChild(novoBtn, btnInscrever);
 
-    // Se já está inscrito ou não há vagas, não permite clicar
     if (jaInscrito || lotado) {
       atualizarBotao(jaInscrito);
       return;
@@ -157,7 +143,6 @@ function renderEvento(ev) {
       }
 
       let usuario;
-
       try {
         usuario = JSON.parse(usuarioJSON);
       } catch (erro) {
@@ -165,10 +150,15 @@ function renderEvento(ev) {
         return;
       }
 
-      if (!usuario.id) {
-        alert(
-          'Não foi possível identificar seu usuário. Entre novamente na sua conta.'
-        );
+      const userId = usuario.id || usuario.usuario_id;
+      if (!userId) {
+        alert('Não foi possível identificar seu usuário. Entre novamente na sua conta.');
+        return;
+      }
+
+      const eventoId = Number(ev.id);
+      if (!eventoId || isNaN(eventoId)) {
+        alert('ID do evento inválido para inscrição.');
         return;
       }
 
@@ -176,10 +166,7 @@ function renderEvento(ev) {
       novoBtn.textContent = 'Processando...';
 
       try {
-        // Usa o serviço que já se comunicou com o backend
-        await inscreverUsuario(ev.id, usuario.id);
-
-        // Guarda o estado para este evento
+        await inscreverUsuario(eventoId, userId);
         localStorage.setItem(inscritoKey, 'true');
 
         novoBtn.textContent = 'Inscrito ✓';
@@ -188,57 +175,29 @@ function renderEvento(ev) {
         alert('Inscrição realizada com sucesso!');
       } catch (error) {
         console.error('Erro ao realizar inscrição:', error);
-
-        alert(
-          error.message || 'Não foi possível realizar a inscrição.'
-        );
+        alert(error.message || 'Não foi possível realizar a inscrição.');
 
         novoBtn.textContent = 'Garantir Minha Vaga';
         novoBtn.disabled = false;
+        novoBtn.style.pointerEvents = 'auto';
       }
     });
   }
 }
 
-// SISTEMA DE AVALIAÇÕES
-let avaliacoes = [
-  {
-    id: 1,
-    nome: 'Maria Silva',
-    iniciais: 'M',
-    nota: 5,
-    texto: 'Evento maravilhoso! Os professores são super atenciosos com os idosos.',
-    data: '2026-04-10T14:30:00'
-  },
-  {
-    id: 2,
-    nome: 'João Pedro',
-    iniciais: 'J',
-    nota: 4,
-    texto: 'Muito bom, mas achei o espaço um pouco apertado para a quantidade de pessoas.',
-    data: '2026-04-12T09:15:00'
-  },
-  {
-    id: 3,
-    nome: 'Ana Costa',
-    iniciais: 'A',
-    nota: 5,
-    texto: 'Minha mãe adorou. Com certeza voltaremos na próxima edição!',
-    data: '2026-04-15T16:45:00'
-  }
-];
+// SISTEMA DE AVALIAÇÕES REAIS
+let avaliacoes = [];
 
 function renderizarEstrelas(nota) {
   let estrelasHtml = '';
-
   for (let i = 1; i <= 5; i++) {
     estrelasHtml += `<span class="estrela ${i <= nota ? 'cheia' : ''}">★</span>`;
   }
-
   return estrelasHtml;
 }
 
 function formatarData(dataString) {
+  if (!dataString) return '';
   const data = new Date(dataString);
   return data.toLocaleDateString('pt-BR');
 }
@@ -247,35 +206,49 @@ function renderizarComentarios(lista) {
   const container = document.getElementById('lista-comentarios');
   if (!container) return;
 
-  if (lista.length === 0) {
+  if (!lista || lista.length === 0) {
     container.innerHTML =
       '<p style="color: #6b7280; text-align: center; padding: 2rem 0;">Nenhuma avaliação ainda. Seja o primeiro!</p>';
     return;
   }
 
-  container.innerHTML = lista.map(av => `
-    <div class="comentario-item">
-      <div class="comentario-item__header">
-        <div class="comentario-item__usuario">
-          <div class="comentario-avatar">${av.iniciais}</div>
-          <div class="comentario-nome-data">
-            <span class="comentario-nome">${av.nome}</span>
-            <span class="comentario-data">${formatarData(av.data)}</span>
+  container.innerHTML = lista.map(av => {
+    const nomeUsuario = av.nome_usuario || av.nome || 'Usuário';
+    const iniciais = nomeUsuario.charAt(0).toUpperCase();
+    const dataComentario = av.data_hora_feito || av.data;
+    const textoComentario = av.conteudo || av.texto || '';
+
+    return `
+      <div class="comentario-item">
+        <div class="comentario-item__header">
+          <div class="comentario-item__usuario">
+            <div class="comentario-avatar">${iniciais}</div>
+            <div class="comentario-nome-data">
+              <span class="comentario-nome">${nomeUsuario}</span>
+              <span class="comentario-data">${formatarData(dataComentario)}</span>
+            </div>
           </div>
+          <div class="comentario-nota">${renderizarEstrelas(av.nota)}</div>
         </div>
-        <div class="comentario-nota">${renderizarEstrelas(av.nota)}</div>
+        <p class="comentario-texto">${textoComentario}</p>
       </div>
-      <p class="comentario-texto">${av.texto}</p>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
-function configurarSistemaAvaliacao() {
+async function configurarSistemaAvaliacao(eventoId) {
   const btnComentar = document.getElementById('btn-comentar');
   const filtroSelect = document.getElementById('filtro-avaliacoes');
 
+  try {
+    avaliacoes = await listarComentarios(eventoId);
+  } catch (e) {
+    console.error('Erro ao buscar comentários:', e);
+    avaliacoes = [];
+  }
+
   renderizarComentarios(
-    avaliacoes.sort((a, b) => new Date(b.data) - new Date(a.data))
+    [...avaliacoes].sort((a, b) => new Date(b.data_hora_feito || b.data) - new Date(a.data_hora_feito || a.data))
   );
 
   if (filtroSelect) {
@@ -288,7 +261,7 @@ function configurarSistemaAvaliacao() {
         filtrados.sort((a, b) => a.nota - b.nota);
       } else {
         filtrados.sort(
-          (a, b) => new Date(b.data) - new Date(a.data)
+          (a, b) => new Date(b.data_hora_feito || b.data) - new Date(a.data_hora_feito || a.data)
         );
       }
 
@@ -300,12 +273,17 @@ function configurarSistemaAvaliacao() {
     const novoBtn = btnComentar.cloneNode(true);
     btnComentar.parentNode.replaceChild(novoBtn, btnComentar);
 
-    novoBtn.addEventListener('click', () => {
+    novoBtn.addEventListener('click', async () => {
       const textarea = document.getElementById('comentario-texto');
       const texto = textarea?.value || '';
-      const notaSelecionada = document.querySelector(
-        'input[name="rating"]:checked'
-      );
+      const notaSelecionada = document.querySelector('input[name="rating"]:checked');
+      const usuarioJSON = localStorage.getItem('usuarioLogado');
+
+      if (!usuarioJSON) {
+        alert('Entre na sua conta para avaliar o evento.');
+        window.location.href = 'login.html';
+        return;
+      }
 
       if (!notaSelecionada) {
         alert('Por favor, selecione uma nota nas estrelas antes de avaliar.');
@@ -317,22 +295,51 @@ function configurarSistemaAvaliacao() {
         return;
       }
 
-      const novaAvaliacao = {
-        id: Date.now(),
-        nome: 'Você (Usuário Logado)',
-        iniciais: 'V',
-        nota: parseInt(notaSelecionada.value, 10),
-        texto: texto,
-        data: new Date().toISOString()
-      };
+      let usuario;
+      try {
+        usuario = JSON.parse(usuarioJSON);
+      } catch (err) {
+        alert('Sua sessão está inválida. Entre novamente.');
+        return;
+      }
 
-      avaliacoes.unshift(novaAvaliacao);
-      textarea.value = '';
-      notaSelecionada.checked = false;
+      const userId = usuario.id || usuario.usuario_id;
+      if (!userId) {
+        alert('Não foi possível identificar seu usuário. Entre novamente.');
+        return;
+      }
 
-      if (filtroSelect) filtroSelect.value = 'recentes';
+      novoBtn.disabled = true;
+      novoBtn.textContent = 'Enviando...';
 
-      renderizarComentarios(avaliacoes);
+      try {
+        await criarComentario({
+          usuario: userId,
+          evento: Number(eventoId),
+          nota: parseInt(notaSelecionada.value, 10),
+          titulo: 'Avaliação',
+          conteudo: texto
+        });
+
+        // Limpa os campos após o envio bem-sucedido
+        textarea.value = '';
+        notaSelecionada.checked = false;
+
+        // Atualiza a lista de comentários direto na tela sem alertas
+        avaliacoes = await listarComentarios(eventoId);
+        if (filtroSelect) filtroSelect.value = 'recentes';
+
+        renderizarComentarios(
+          [...avaliacoes].sort((a, b) => new Date(b.data_hora_feito || b.data) - new Date(a.data_hora_feito || a.data))
+        );
+
+      } catch (error) {
+        console.error('Erro ao enviar comentário:', error);
+        alert(error.message || 'Não foi possível enviar o comentário.');
+      } finally {
+        novoBtn.disabled = false;
+        novoBtn.textContent = 'Enviar Avaliação';
+      }
     });
   }
 }
@@ -353,7 +360,8 @@ async function init() {
   renderFooter(document.getElementById('footer-root'));
   injectEventoIcons();
 
-  const id = getQueryId() || 'evt-1';
+  const rawId = getQueryId();
+  const id = rawId && !isNaN(rawId) ? rawId : '1';
 
   try {
     const ev = await getEventoById(id);
@@ -365,7 +373,7 @@ async function init() {
     }
 
     renderEvento(ev);
-    configurarSistemaAvaliacao();
+    await configurarSistemaAvaliacao(ev.id);
 
     if (conteudo) {
       conteudo.style.transition = 'opacity 0.3s ease-in';
