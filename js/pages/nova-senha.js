@@ -1,10 +1,14 @@
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { iconPin, iconCalendar, iconBuilding } from "../utils/icons.js";
+import { configurarOlhosSenha } from '../utils/olho-senha.js';
 
 const BASE_URL = "http://127.0.0.1:8000";
 
 function init() {
+  // Ativa o comportamento do olhinho de senha nos campos
+  configurarOlhosSenha();
+
   // Renderiza o cabeçalho e rodapé nas divs do HTML
   const headerRoot = document.getElementById('header-root');
   const footerRoot = document.getElementById('footer-root');
@@ -21,10 +25,10 @@ function init() {
   const token = urlParams.get('token');
 
   if (token) {
-  alert('Token de segurança inválido ou expirado.');
-  window.location.href = 'login.html';
-  return;
-}
+    alert('Token de segurança inválido ou expirado.');
+    window.location.href = 'login.html';
+    return;
+  }
 
   const form = document.getElementById('form-nova-senha');
 

@@ -1,6 +1,9 @@
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { validarLogin } from '../services/usuarios-api.js';
+import { configurarOlhosSenha } from '../utils/olho-senha.js';
+//visualizar senha
+configurarOlhosSenha();
 
 function init() {
   renderHeader(document.getElementById('header-root'), { showSearch: false, activePage: 'login' });

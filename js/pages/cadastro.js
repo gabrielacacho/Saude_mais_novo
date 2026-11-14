@@ -1,7 +1,10 @@
 import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { cadastrarUsuario } from '../services/usuarios-api.js';
+import { configurarOlhosSenha } from '../utils/olho-senha.js';
 
+//visualizador de senha
+configurarOlhosSenha();
 
 let tipoUsuario = null;
 
@@ -22,7 +25,7 @@ function showStep(step) {
 
 
 
-   //GERADOR DE CAMPOS HTML
+//GERADOR DE CAMPOS HTML
 function campoHtml(
   label,
   name,
@@ -30,20 +33,44 @@ function campoHtml(
   placeholder = '',
   extra = ''
 ) {
+  const isPassword = type === 'password';
+
   return `
     <div>
       <label for="${name}" class="hub-label">
         ${label}
       </label>
 
-      <input
-        id="${name}"
-        name="${name}"
-        type="${type}"
-        class="hub-input"
-        placeholder="${placeholder}"
-        ${extra}
-      />
+      ${isPassword ? `
+        <div class="campo-senha">
+          <input
+            id="${name}"
+            name="${name}"
+            type="password"
+            class="hub-input"
+            placeholder="${placeholder}"
+            ${extra}
+          />
+          <button
+            type="button"
+            class="btn-olho-senha"
+            data-toggle-password="${name}"
+            aria-label="Mostrar senha"
+            aria-pressed="false"
+          >
+            <img src="https://img.icons8.com/?size=100&id=gVADjB59brID&format=png&color=000000" alt="Ícone de olho" />
+          </button>
+        </div>
+      ` : `
+        <input
+          id="${name}"
+          name="${name}"
+          type="${type}"
+          class="hub-input"
+          placeholder="${placeholder}"
+          ${extra}
+        />
+      `}
 
       <small
         class="campo-erro"
