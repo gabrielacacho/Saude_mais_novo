@@ -2,6 +2,8 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { validarLogin } from '../services/usuarios-api.js';
 import { configurarOlhosSenha } from '../utils/olho-senha.js';
+import { criptografarSenha } from '../utils/crypto.js';
+
 //visualizar senha
 configurarOlhosSenha();
 
@@ -15,7 +17,7 @@ function init() {
     e.preventDefault();
 
     const email = document.getElementById('email').value;
-    const senha = document.getElementById('senha').value;
+    const senhaPura = document.getElementById('senha').value; // <--- Alterado para senhaPura
     const btnSubmit = formLogin.querySelector('button[type="submit"]');
 
     if (btnSubmit) {
@@ -24,8 +26,12 @@ function init() {
     }
 
     try {
-      // Chama a API real do Python através do serviço
-      const respostaDados = await validarLogin(email, senha);
+      // --- CRIPTOGRAFA A SENHA ANTES DE ENVIAR PARA A API ---
+      const senhaHash = await criptografarSenha(senhaPura);
+      // -----------------------------------------------------
+
+      // Chama a API real do Python passando o hash em vez da senha pura
+      const respostaDados = await validarLogin(email, senhaHash);
 
       // Normaliza o tipo de usuário que veio da API para o padrão do frontend ('comum', 'institucional', 'administrador')
       const tipoBruto = (respostaDados.tipo || respostaDados.perfil || '').toLowerCase();
