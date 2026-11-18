@@ -1,116 +1,142 @@
-//import { getUsuarioByPerfil } from "../services/usuarios-api.js";
-import { listarRegioes } from "../services/regiao-api.js";
-import { listarEventos, getEventosPorRegiao,} from "../services/evento-api.js";
+import { listarEventos, getEventosPorRegiao } from "../services/evento-api.js";
 import { renderHeader } from "../components/header.js";
-import { renderFooter } from "../components/footer.js";                                 
+import { renderFooter } from "../components/footer.js";
 import {
   bindLocalInputs,
   getLocal,
   onLocalChange,
   setLocal,
 } from "../utils/sync-local.js";
-import { iconPin, iconCalendar, iconBuilding } from "../utils/icons.js";
+import { iconPin, iconCalendar } from "../utils/icons.js";
 
 const MESES = [
   "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
   "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO",
 ];
 const DIAS_SEMANA = ["DOM.", "SEG.", "TER.", "QUA.", "QUI.", "SEX.", "SÁB."];
+
 let mesAtual = new Date().getMonth();
 let anoAtual = new Date().getFullYear();
 let filtroEvento = { termo: "", categoria: "", data: "" };
 let filtroLocalCategoria = "";
 
+let mapaLeaflet = null;
+let camadaMarcadores = null;
 
-// FUNÇÃO CENTRAL PARA LER A SESSÃO REAL
+// Mapa de fallback caso a API mande só o número da categoria
+const MAPA_CATEGORIAS = {
+  1: "Mutirão",
+  2: "Exames",
+  3: "Palestra",
+  4: "Atividade Física",
+  5: "Consulta",
+  6: "Outro",
+};
+
+// Mapeamento inteligente de bairros do Rio por Região para filtrar com precisão
+const MAPA_REGIOES_BAIRROS = {
+  "centro": ["centro", "apa", "lapa", "santa teresa", "catumbi", "rio comprido", "saude", "gamboa", "portuaria"],
+  "zona sul": ["copacabana", "ipanema", "leblon", "botafogo", "flamengo", "urca", "laranjeiras", "cosme velho", "humaita", "sao conrado", "gavea", "leme", "jardin botanico"],
+  "zona norte": ["tijuca", "maracana", "vila isabel", "meier", "cachambi", "del castilho", "madureira", "penha", "bonsucesso", "engenho novo", "grajau", "jacare", "rocha", "sao cristovao"],
+  "zona oeste": ["barra da tijuca", "recreio", "jacarepagua", "taquara", "freguesia", "campo grande", "bangu", "realengo", "guaratiba"]
+};
+
 function obterPerfilAtual() {
   const auth = localStorage.getItem("usuarioLogado");
   return auth ? JSON.parse(auth).perfil : "comum";
 }
 
-// Busca as inscrições em eventos do perfil do usuário atual
-//async function getInscricoes() {
-  //const perfil = obterPerfilAtual();
-  //const usuario = await getUsuarioByPerfil(perfil);
-  //return usuario?.inscricoes || [];
-//}
-/* não preciso mais, id regiao codigo zumbi
-function resolveRegiaoId(texto, regioes) {
-  const t = texto.trim().toLowerCase();
-  if (!t) return "urca";
-  const porId = regioes.find((r) => r.id === t.replace(/\s+/g, "-"));
-  if (porId) return porId.id;
-  const porNome = regioes.find((r) => r.nome.toLowerCase() === t);
-  if (porNome) return porNome.id;
-  const parcial = regioes.find(
-    (r) => r.nome.toLowerCase().includes(t) || t.includes(r.nome.toLowerCase()),
-  );
-  return parcial?.id || null;
-}
-*/
-function passaFiltroEvento(categoriaItem) {
-  if (!filtroEvento.categoria) return true;
-  return categoriaItem === filtroEvento.categoria;
+function normalizar(texto) {
+  return (texto || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
-function passaFiltroLocalPosto(servicos) {
-  if (!filtroLocalCategoria) return true;
-  return servicos.some((s) => s === filtroLocalCategoria);
+function obterNomeCategoria(ev) {
+  return ev.categoria_nome || MAPA_CATEGORIAS[ev.categoria] || ev.categoria || "Evento de Saúde";
 }
 
-//filtro sem id agora
+function formatarDataExibicao(ev) {
+  if (ev.dataExibicao) return ev.dataExibicao;
+  if (ev.data_exibicao) return ev.data_exibicao;
+  const raw = (ev.data_hora_evento || ev.data || "").split("T")[0];
+  if (raw.includes("-")) {
+    const [ano, mes, dia] = raw.split("-");
+    return `${dia}/${mes}/${ano}`;
+  }
+  return "Data a definir";
+}
+
+function passaFiltroEvento(ev) {
+  const categoriaAtiva = filtroEvento.categoria || filtroLocalCategoria;
+  if (!categoriaAtiva || categoriaAtiva === "") return true;
+  
+  const catEv = normalizar(obterNomeCategoria(ev));
+  const catFiltro = normalizar(categoriaAtiva);
+  return catEv.includes(catFiltro) || catFiltro.includes(catEv);
+}
+
+// Filtro inteligente de localização baseado no texto digitado ou região selecionada
 async function eventosFiltradosPorLocal(textoLocal = "") {
   const t = textoLocal.trim();
-  if (!t) {
-    const eventos = await listarEventos();
-    console.log("EVENTOS DA API:", eventos);
-    console.table(eventos.map(e => ({
-      titulo: e.titulo,
-      data: e.data
-    })));
+  const todos = await listarEventos();
+  if (!t) return todos;
 
-    return eventos.filter((e) => passaFiltroEvento(e.categoria));
+  const termoNorm = normalizar(t);
+
+  // Verifica se o texto corresponde a uma das grandes regiões do Rio
+  const bairrosRegiao = MAPA_REGIOES_BAIRROS[termoNorm];
+  if (bairrosRegiao) {
+    return todos.filter((e) => {
+      const enderecoNorm = normalizar(e.endereco || e.localizacao || "");
+      return bairrosRegiao.some((bairro) => enderecoNorm.includes(bairro));
+    });
   }
-  const eventos = await getEventosPorRegiao(t);
 
-  return eventos.filter((e) => passaFiltroEvento(e.categoria));
+  // Caso contrário, filtra pelo texto digitado (bairro, rua, etc.)
+  return todos.filter((e) =>
+    normalizar(e.endereco || e.localizacao || e.titulo || "").includes(termoNorm)
+  );
 }
-
 
 function aplicarFiltrosEvento(lista) {
   let result = [...lista];
-
   const { termo, categoria, data } = filtroEvento;
 
-  // Busca pelo nome do evento
-  if (termo) {
-    const t = termo.toLowerCase();
-
-    result = result.filter((e) =>
-      (e.titulo || "").toLowerCase().includes(t)
+  // 1. Termo de busca livre
+  if (termo && termo.trim() !== "") {
+    const t = normalizar(termo);
+    result = result.filter(
+      (e) =>
+        normalizar(e.titulo).includes(t) ||
+        normalizar(e.descricao).includes(t) ||
+        normalizar(e.endereco || e.localizacao).includes(t)
     );
   }
 
-  // Categoria escolhida no filtro de evento
-  if (categoria) {
-    result = result.filter((e) => e.categoria === categoria);
+  // 2. Categoria (unificada entre header e modal)
+  const categoriaAtiva = categoria || filtroLocalCategoria;
+  if (categoriaAtiva && categoriaAtiva !== "") {
+    const catAlvo = normalizar(categoriaAtiva);
+    result = result.filter((e) => {
+      const catEv = normalizar(obterNomeCategoria(e));
+      return catEv.includes(catAlvo) || catAlvo.includes(catEv);
+    });
   }
 
-  // Categoria escolhida no filtro de local
-  if (filtroLocalCategoria) {
-    result = result.filter((e) =>
-      e.categoria === filtroLocalCategoria
-    );
-  }
-
-  // Data escolhida
-  if (data) {
-    result = result.filter((e) => e.data === data);
+  // 3. Data
+  if (data && data !== "") {
+    result = result.filter((e) => {
+      const dataEv = (e.data_hora_evento || e.data || "").split("T")[0];
+      return dataEv === data;
+    });
   }
 
   return result;
 }
-
 
 function atualizarLabelMapa(texto) {
   const label = document.getElementById("mapa-local-label");
@@ -119,30 +145,81 @@ function atualizarLabelMapa(texto) {
   }
 }
 
-function htmlPopoverPosto(posto) {
-  return `
-    <div class="hub-popover hub-popover--posto">
-      <p class="hub-popover__tipo">${iconBuilding()} Posto de saúde</p>
-      <p class="hub-popover__titulo">${posto.nome}</p>
-      <p class="hub-popover__meta">${posto.endereco}</p>
-      <a href="posto.html?id=${posto.id}" class="hub-popover__link">Ver posto</a>
-    </div>
-  `;
+// ==========================================
+// MAPA REAL COM ZOOM CONTROLADO E PINS SEGUROS
+// ==========================================
+function inicializarMapaReal() {
+  const mapContainer = document.getElementById("mapa-container");
+  if (!mapContainer || typeof L === "undefined") return;
+
+  mapaLeaflet = L.map("mapa-container").setView([-22.9519, -43.1658], 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap",
+  }).addTo(mapaLeaflet);
+
+  camadaMarcadores = L.layerGroup().addTo(mapaLeaflet);
 }
 
-function renderMapaPins() {
-  const container = document.getElementById("mapa-pins");
-  if (!container) return;
-  container.innerHTML = "";
+function atualizarMarcadoresNoMapa(eventos) {
+  if (!camadaMarcadores) return;
+
+  camadaMarcadores.clearLayers();
+  const bounds = [];
+
+  if (!eventos || eventos.length === 0) return;
+
+  eventos.forEach((ev) => {
+    if (ev.latitude !== null && ev.longitude !== null && !isNaN(ev.latitude) && !isNaN(ev.longitude)) {
+      const lat = Number(ev.latitude);
+      const lng = Number(ev.longitude);
+      const categoriaNome = obterNomeCategoria(ev);
+      const dataFormatada = formatarDataExibicao(ev);
+      const localTexto = ev.endereco || ev.localizacao || "Local a confirmar";
+
+      const popupHtml = `
+        <div style="font-family: inherit; padding: 4px; min-width: 210px;">
+          <span style="display: inline-block; background: #e0f2fe; color: #044272; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 6px;">
+            ${categoriaNome}
+          </span>
+          <h4 style="margin: 0 0 6px 0; color: #1e293b; font-size: 0.95rem; font-weight: bold;">
+            ${ev.titulo}
+          </h4>
+          <p style="margin: 0 0 4px 0; color: #475569; font-size: 0.85rem;">
+            📅 ${dataFormatada}
+          </p>
+          <p style="margin: 0 0 10px 0; color: #475569; font-size: 0.85rem;">
+            📍 ${localTexto}
+          </p>
+          <a href="evento.html?id=${ev.id}" style="display: block; background: #044272; color: #ffffff; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-decoration: none; text-align: center;">
+            Ver detalhes
+          </a>
+        </div>
+      `;
+
+      const marker = L.marker([lat, lng]).bindPopup(popupHtml);
+      marker.addTo(camadaMarcadores);
+      bounds.push([lat, lng]);
+    }
+  });
+
+  if (bounds.length > 0 && mapaLeaflet) {
+    if (bounds.length === 1) {
+      mapaLeaflet.setView(bounds[0], 14);
+    } else {
+      mapaLeaflet.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+    }
+  } else if (mapaLeaflet) {
+    mapaLeaflet.setView([-22.9519, -43.1658], 12);
+  }
 }
 
+// ==========================================
+// CALENDÁRIO E LISTAGEM DE CARDS
+// ==========================================
 function htmlCalEvento(ev) {
-  const categoriaTexto =
-    typeof ev.categoria === "string"
-      ? ev.categoria
-      : ev.categoria?.nome || ev.categoria?.descricao || "Evento";
-
-  const categoriaClasse = categoriaTexto.toLowerCase();
+  const categoriaTexto = obterNomeCategoria(ev);
+  const categoriaClasse = normalizar(categoriaTexto).replace(/\s+/g, "-");
 
   return `
     <div class="cal-evento-mini-wrap">
@@ -150,7 +227,7 @@ function htmlCalEvento(ev) {
       <div class="hub-popover hub-popover--${categoriaClasse}">
         <p class="hub-popover__tipo">${iconCalendar()} Evento · ${categoriaTexto}</p>
         <p class="hub-popover__titulo">${ev.titulo}</p>
-        <p class="hub-popover__meta">${ev.dataExibicao || ""} · ${ev.localizacao || ""}</p>
+        <p class="hub-popover__meta">${formatarDataExibicao(ev)} · ${ev.endereco || ev.localizacao || ""}</p>
         <a href="evento.html?id=${ev.id}" class="hub-popover__link">Ver evento</a>
       </div>
     </div>
@@ -169,22 +246,13 @@ async function renderCalendario() {
   const diasNoMes = new Date(ano, mes + 1, 0).getDate();
   const diasMesAnterior = new Date(ano, mes, 0).getDate();
 
-  
   const eventosNoMes = eventos.filter((e) => {
     const dataEvento = e.data_hora_evento || e.data;
-
     if (!dataEvento) return false;
-
     const [data] = dataEvento.split("T");
     const [y, m] = data.split("-").map(Number);
-
-    return (
-      y === ano &&
-      m === mes + 1 &&
-      passaFiltroEvento(e.categoria)
-    );
+    return y === ano && m === mes + 1 && passaFiltroEvento(e);
   });
-
 
   let html = DIAS_SEMANA.map((d) => `<div class="cal-header-dia">${d}</div>`).join("");
 
@@ -203,13 +271,7 @@ async function renderCalendario() {
       return dataEvento && dataEvento.split("T")[0] === dataStr;
     });
     const selecionado = diaHoje !== null && dia === diaHoje;
-
-    let eventosHtml = "";
-    try {
-      eventosHtml = todosNoDia.slice(0, 2).map((ev) => htmlCalEvento(ev)).join("");
-    } catch (err) {
-      console.error("Erro ao renderizar evento do dia " + dia, err);
-    }
+    const eventosHtml = todosNoDia.slice(0, 2).map((ev) => htmlCalEvento(ev)).join("");
 
     html += `
       <div class="cal-dia ${selecionado ? "cal-dia--selecionado" : ""}">
@@ -247,8 +309,8 @@ function bindCalendarioPopovers(grid) {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       wrap.classList.toggle("is-popover-open");
-      const mudouParaAberto = wrap.classList.contains("is-popover-open");
-      btn.setAttribute("aria-expanded", mudouParaAberto ? "true" : "false");
+      const aberto = wrap.classList.contains("is-popover-open");
+      btn.setAttribute("aria-expanded", aberto ? "true" : "false");
     });
   });
 }
@@ -256,18 +318,23 @@ function bindCalendarioPopovers(grid) {
 async function renderEventos() {
   const grid = document.getElementById("eventos-grid");
   const inputRegiao = document.getElementById("regiao-nome");
-
-  if (!inputRegiao || !grid) return;
+  if (!grid) return;
 
   const textoLocal = getLocal();
-
-  if (document.activeElement !== inputRegiao) {
+  if (inputRegiao && document.activeElement !== inputRegiao) {
     inputRegiao.value = textoLocal;
   }
 
   try {
-    const lista = await eventosFiltradosPorLocal(textoLocal);
-    const eventos = aplicarFiltrosEvento(lista);
+    const listaLocal = await eventosFiltradosPorLocal(textoLocal);
+    const eventos = aplicarFiltrosEvento(listaLocal);
+
+    atualizarMarcadoresNoMapa(eventos);
+
+    if (eventos.length === 0) {
+      grid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 2rem;">Nenhum evento encontrado para os filtros selecionados.</p>`;
+      return;
+    }
 
     grid.innerHTML = eventos
       .map(
@@ -278,8 +345,8 @@ async function renderEventos() {
         </div>
         <div class="hub-event-card__body">
           <h3 class="hub-event-card__title">${ev.titulo}</h3>
-          <p class="hub-event-card__meta">${iconCalendar()} ${ev.dataExibicao}</p>
-          <p class="hub-event-card__meta">${iconPin()} ${ev.localizacao}</p>
+          <p class="hub-event-card__meta">${iconCalendar()} ${formatarDataExibicao(ev)}</p>
+          <p class="hub-event-card__meta">${iconPin()} ${ev.endereco || ev.localizacao || ""}</p>
         </div>
       </a>
     `
@@ -290,49 +357,35 @@ async function renderEventos() {
   }
 }
 
-
-
 function initSeletorCalendario() {
   const selectMes = document.getElementById("cal-mes");
   const selectAno = document.getElementById("cal-ano");
-
   if (!selectMes || !selectAno) return;
 
-  // Preenche os meses
   selectMes.innerHTML = MESES.map(
     (nome, i) => `<option value="${i}">${nome}</option>`
   ).join("");
 
-  // Preenche os anos: de 2025 até 2031
   const anoInicial = new Date().getFullYear();
   const anos = [];
-
   for (let ano = anoInicial - 1; ano <= anoInicial + 5; ano++) {
     anos.push(ano);
   }
 
-  selectAno.innerHTML = anos.map(
-    ano => `<option value="${ano}">${ano}</option>`
-  ).join("");
-
-  // Seleciona o mês e o ano atuais do calendário
+  selectAno.innerHTML = anos.map((ano) => `<option value="${ano}">${ano}</option>`).join("");
   selectMes.value = String(mesAtual);
   selectAno.value = String(anoAtual);
 
-  // Ao escolher outro mês
   selectMes.addEventListener("change", () => {
     mesAtual = Number(selectMes.value);
     renderCalendario();
   });
 
-  // Ao escolher outro ano
   selectAno.addEventListener("change", () => {
     anoAtual = Number(selectAno.value);
     renderCalendario();
   });
 }
-
-
 
 function initCamposLocal() {
   const mapaInput = document.getElementById("mapa-busca-local");
@@ -343,7 +396,6 @@ function initCamposLocal() {
   onLocalChange((texto) => {
     atualizarLabelMapa(texto);
     renderEventos();
-    renderMapaPins();
     [mapaInput, regiaoInput].forEach((el) => {
       if (el && document.activeElement !== el) {
         el.dataset.syncing = "1";
@@ -370,159 +422,152 @@ function initPanelIcons() {
 }
 
 // ==========================================
-// INICIALIZAÇÃO DA PÁGINA
+// RENDERIZAÇÃO DA BARRA DE BUSCA E FILTROS DO TOPO
+// ==========================================
+function renderizarBuscador() {
+  const container = document.getElementById("container-busca");
+  if (!container) return;
+
+  const regiaoOptions = `<option value="">Todas as regiões</option><option value="Centro">Centro</option><option value="Zona Sul">Zona Sul</option><option value="Zona Norte">Zona Norte</option><option value="Zona Oeste">Zona Oeste</option>`;
+  const categoriaOptions = `<option value="">Todas as ações</option><option value="Campanha">Campanha de Vacinação</option><option value="Mutirao">Mutirão de Saúde</option><option value="Feira">Feira de Saúde</option><option value="Palestra">Palestra / Roda de Conversa</option><option value="Oficina">Oficina Educativa</option><option value="Acao">Ação Comunitária</option><option value="Atividade">Atividade Física / Caminhada</option><option value="Grupo">Grupo de Apoio</option>`;
+
+  const pinoSvg = iconPin();
+  const calendarioSvg = iconCalendar();
+  const filtroSvg = `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>`;
+
+  container.innerHTML = `
+    <div class="hub-search-wrap">
+      <div class="hub-search">
+        <label class="hub-search-field hub-search-field--divider">
+          <span class="sr-only">Buscar por local</span>
+          ${pinoSvg}
+          <input type="text" id="search-local" class="hub-search-input" placeholder="Ex: Tijuca, Copacabana..." autocomplete="off" value="${getLocal()}" />
+          <button type="button" class="hub-search-filtros-btn" id="btn-filtros-local" aria-expanded="false" aria-controls="painel-filtros-local" title="Filtros de local">${filtroSvg}</button>
+        </label>
+        <label class="hub-search-field">
+          <span class="sr-only">Buscar por evento</span>
+          ${calendarioSvg}
+          <input type="text" id="search-evento" class="hub-search-input" placeholder="Ex: Mutirão, Palestra, Campanha..." autocomplete="off" />
+          <button type="button" class="hub-search-filtros-btn" id="btn-filtros-evento" aria-expanded="false" aria-controls="painel-filtros-evento" title="Filtros de evento">${filtroSvg}</button>
+        </label>
+      </div>
+
+      <div id="painel-filtros-local" class="hub-search-filtros is-hidden">
+        <p class="hub-search-filtros__titulo">Filtros de local (opcional)</p>
+        <div class="hub-search-filtros__grid">
+          <div>
+            <label class="hub-label" for="filtro-regiao-header">Região sugerida</label>
+            <select id="filtro-regiao-header" class="hub-select hub-select--modal">${regiaoOptions}</select>
+          </div>
+          <div>
+            <label class="hub-label" for="filtro-categoria-local">Tipo de ação</label>
+            <select id="filtro-categoria-local" class="hub-select hub-select--modal">${categoriaOptions}</select>
+          </div>
+          <div>
+            <label class="hub-label" for="filtro-raio">Distância (mock)</label>
+            <select id="filtro-raio" class="hub-select hub-select--modal">
+              <option>Até 2 km (Bairro)</option>
+              <option>Até 5 km (Bairros vizinhos)</option>
+              <option>Até 15 km (Região)</option>
+              <option>Cidade toda</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="painel-filtros-evento" class="hub-search-filtros is-hidden">
+        <p class="hub-search-filtros__titulo">Filtros de evento (opcional)</p>
+        <div class="hub-search-filtros__grid">
+          <div>
+            <label class="hub-label" for="filtro-categoria-header">Tipo de ação</label>
+            <select id="filtro-categoria-header" class="hub-select hub-select--modal">${categoriaOptions}</select>
+          </div>
+          <div>
+            <label class="hub-label" for="filtro-data-header">Data</label>
+            <input type="date" id="filtro-data-header" class="hub-input hub-select--modal" />
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==========================================
+// CONEXÃO DOS FILTROS DO CABEÇALHO
+// ==========================================
+function conectarFiltrosCabecalho() {
+  const inputLocal = document.getElementById("search-local");
+  const inputEvento = document.getElementById("search-evento");
+  const selectRegiao = document.getElementById("filtro-regiao-header");
+  const selectCatLocal = document.getElementById("filtro-categoria-local");
+  const selectCatEvento = document.getElementById("filtro-categoria-header");
+  const inputData = document.getElementById("filtro-data-header");
+  const selectRaio = document.getElementById("filtro-raio");
+
+  const atualizarCategoriasSincronizadas = (valorNovo) => {
+    if (selectCatLocal && selectCatLocal.value !== valorNovo) selectCatLocal.value = valorNovo;
+    if (selectCatEvento && selectCatEvento.value !== valorNovo) selectCatEvento.value = valorNovo;
+    filtroEvento.categoria = valorNovo;
+    filtroLocalCategoria = valorNovo;
+  };
+
+  const dispararAtualizacao = async () => {
+    filtroEvento = {
+      termo: inputEvento?.value || "",
+      categoria: filtroEvento.categoria || "",
+      data: inputData?.value || "",
+    };
+
+    await Promise.all([renderCalendario(), renderEventos()]);
+  };
+
+  selectCatEvento?.addEventListener("change", async (e) => {
+    atualizarCategoriasSincronizadas(e.target.value);
+    await dispararAtualizacao();
+  });
+
+  selectCatLocal?.addEventListener("change", async (e) => {
+    atualizarCategoriasSincronizadas(e.target.value);
+    await dispararAtualizacao();
+  });
+
+  inputEvento?.addEventListener("input", dispararAtualizacao);
+  inputData?.addEventListener("change", dispararAtualizacao);
+  selectRaio?.addEventListener("change", dispararAtualizacao);
+
+  selectRegiao?.addEventListener("change", async () => {
+    const regiao = selectRegiao.value;
+    if (inputLocal) inputLocal.value = regiao;
+    setLocal(regiao, "header-select");
+    await dispararAtualizacao();
+  });
+
+  inputLocal?.addEventListener("input", async () => {
+    setLocal(inputLocal.value, "header-input");
+    await dispararAtualizacao();
+  });
+}
+
+// ==========================================
+// INICIALIZAÇÃO ÚNICA DA PÁGINA
 // ==========================================
 async function init() {
   setLocal("", "init");
 
-  // Renderiza o cabeçalho (agora ele vai ler a sessão corretamente!)
   renderHeader(document.getElementById("header-root"), {
     showSearch: true,
     activePage: "home",
   });
-
   renderFooter(document.getElementById("footer-root"));
 
   initPanelIcons();
   initSeletorCalendario();
   initCamposLocal();
-  renderMapaPins();
-
-  await Promise.all([
-    renderCalendario(),
-    renderEventos(),
-  ]);
-
-  document.addEventListener("click", (e) => {
-    if (e.target.closest(".cal-evento-mini-wrap")) return;
-    document.querySelectorAll(".cal-evento-mini-wrap.is-popover-open").forEach((w) => {
-      w.classList.remove("is-popover-open");
-      w.querySelector(".cal-evento-mini")?.setAttribute("aria-expanded", "false");
-    });
-  });
-
-  window.addEventListener("filtro-eventos", async (e) => {
-    filtroEvento = e.detail;
-    await Promise.all([renderEventos(), renderCalendario()]);
-    renderMapaPins();
-  });
-
-  window.addEventListener("filtro-local", async (e) => {
-    filtroLocalCategoria = e.detail.categoria || "";
-    await Promise.all([renderEventos(), renderCalendario()]);
-    renderMapaPins();
-  });
-
-  const adminBadge = document.getElementById("admin-badge");
-  const updateAdmin = () => {
-    const perfil = obterPerfilAtual();
-    if (adminBadge) adminBadge.classList.toggle("is-hidden", perfil !== "administrador");
-  };
-  updateAdmin();
-
-  const institucionalBadge = document.getElementById("institucional-badge");
-  const updateInstitucional = () => {
-    const perfil = obterPerfilAtual();
-    if (institucionalBadge) {
-      institucionalBadge.classList.toggle("is-hidden", perfil !== "institucional");
-    }
-  };
-  updateInstitucional();
-}
-
-document.addEventListener("DOMContentLoaded", init);
-
-document.addEventListener("DOMContentLoaded", () => {
-  const mapContainer = document.getElementById("mapa-container");
-  if (mapContainer) {
-    const mapa = L.map("mapa-container").setView([-22.9519, -43.1658], 14);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap" }).addTo(mapa);
-    L.marker([-22.9548, -43.1672]).addTo(mapa).bindPopup(`<b>Vem Zumbar 60+</b><br><small>Categoria: Campanha · Local: Pérola Negra (Urca)</small><br><a href="evento.html?id=evt-1">Ver detalhes</a>`);
-    L.marker([-22.9328, -43.1952]).addTo(mapa).bindPopup(`<b>Palestra: Hipertensão e Você</b><br><small>Categoria: Palestra · Local: UBS Santa Teresa</small><br><a href="evento.html?id=evt-2">Ver detalhes</a>`);
-    L.marker([-22.9754, -43.1918]).addTo(mapa).bindPopup(`<b>Dia D da Vacinação Influenza</b><br><small>Categoria: Vacinação · Local: Posto Saúde Copacabana</small><br><a href="evento.html?id=evt-3">Ver detalhes</a>`);
-    L.marker([-22.9345, -43.2355]).addTo(mapa).bindPopup(`<b>Consulta Odontológica Gratuita</b><br><small>Categoria: Consulta · Local: Clínica da Família Tijuca</small><br><a href="evento.html?id=evt-4">Ver detalhes</a>`);
-    L.marker([-22.9555, -43.1662]).addTo(mapa).bindPopup(`<b>Mutirão de Prevenção ao Câncer</b><br><small>Categoria: Mutirão · Local: Centro de Saúde Urca</small><br><a href="evento.html?id=evt-5">Ver detalhes</a>`);
-    L.marker([-22.9558, -43.1648]).addTo(mapa).bindPopup(`<b>Exame de Glicemia e Pressão</b><br><small>Categoria: Exame · Local: UBS Praia Vermelha (Urca)</small><br><a href="evento.html?id=evt-6">Ver detalhes</a>`).openPopup();
-  }
-});
-
-function renderizarBuscador() {
-  const container = document.getElementById("container-busca");
-  if (!container) return;
-
-  const deveMostrarBusca = typeof showSearch !== "undefined" ? showSearch : true;
-  const valorLocal = typeof getLocal === "function" ? getLocal() : "";
   
-  const regiaoOptions = typeof opcoesRegiao !== "undefined" ? opcoesRegiao : `<option value="">Todas as regiões</option><option>Centro</option><option>Zona Sul</option><option>Zona Norte</option><option>Zona Oeste</option>`;
-  const categoriaOptions = typeof opcoesCategoria !== "undefined" ? opcoesCategoria : `<option value="">Todas as ações</option><option>Campanha de Vacinação</option><option>Mutirão de Saúde</option><option>Feira de Saúde</option><option>Palestra / Roda de Conversa</option><option>Oficina Educativa</option><option>Ação Comunitária</option><option>Atividade Física / Caminhada</option><option>Grupo de Apoio</option>`;
-
-  const pinoSvg = typeof iconPin === "function" ? iconPin() : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
-  const calendarioSvg = typeof iconCalendar === "function" ? iconCalendar() : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
-  const filtroSvg = typeof iconFilter === "function" ? iconFilter() : `<svg class="hub-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>`;
-
-  if (deveMostrarBusca) {
-    container.innerHTML = `
-        <div class="hub-search-wrap">
-          <div class="hub-search">
-            <label class="hub-search-field hub-search-field--divider">
-              <span class="sr-only">Buscar por local</span>
-              ${pinoSvg}
-              <input type="text" id="search-local" class="hub-search-input" placeholder="Ex: Tijuca, Copacabana..." autocomplete="off" value="${valorLocal}" />
-              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-local" aria-expanded="false" aria-controls="painel-filtros-local" title="Filtros de local">${filtroSvg}</button>
-            </label>
-            <label class="hub-search-field">
-              <span class="sr-only">Buscar por evento</span>
-              ${calendarioSvg}
-              <input type="text" id="search-evento" class="hub-search-input" placeholder="Ex: Mutirão, Palestra, Campanha..." autocomplete="off" />
-              <button type="button" class="hub-search-filtros-btn" id="btn-filtros-evento" aria-expanded="false" aria-controls="painel-filtros-evento" title="Filtros de evento">${filtroSvg}</button>
-            </label>
-          </div>
-
-          <div id="painel-filtros-local" class="hub-search-filtros is-hidden">
-            <p class="hub-search-filtros__titulo">Filtros de local (opcional)</p>
-            <div class="hub-search-filtros__grid">
-              <div>
-                <label class="hub-label" for="filtro-regiao-header">Região sugerida</label>
-                <select id="filtro-regiao-header" class="hub-select hub-select--modal">${regiaoOptions}</select>
-              </div>
-              <div>
-                <label class="hub-label" for="filtro-categoria-local">Tipo de ação</label>
-                <select id="filtro-categoria-local" class="hub-select hub-select--modal">${categoriaOptions}</select>
-              </div>
-              <div>
-                <label class="hub-label" for="filtro-raio">Distância (mock)</label>
-                <select id="filtro-raio" class="hub-select hub-select--modal">
-                  <option>Até 2 km (Bairro)</option>
-                  <option>Até 5 km (Bairros vizinhos)</option>
-                  <option>Até 15 km (Região)</option>
-                  <option>Cidade toda</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div id="painel-filtros-evento" class="hub-search-filtros is-hidden">
-            <p class="hub-search-filtros__titulo">Filtros de evento (opcional)</p>
-            <div class="hub-search-filtros__grid">
-              <div>
-                <label class="hub-label" for="filtro-categoria-header">Tipo de ação</label>
-                <select id="filtro-categoria-header" class="hub-select hub-select--modal">${categoriaOptions}</select>
-              </div>
-              <div>
-                <label class="hub-label" for="filtro-data-header">Data</label>
-                <input type="date" id="filtro-data-header" class="hub-input hub-select--modal" />
-              </div>
-            </div>
-          </div>
-        </div>
-        `;
-  } else {
-    container.innerHTML = '<div class="hub-search-wrap"></div>';
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
   renderizarBuscador();
+  inicializarMapaReal();
+  conectarFiltrosCabecalho();
+
   const btnFiltroLocal = document.getElementById("btn-filtros-local");
   const painelFiltroLocal = document.getElementById("painel-filtros-local");
   const btnFiltroEvento = document.getElementById("btn-filtros-evento");
@@ -541,4 +586,30 @@ document.addEventListener("DOMContentLoaded", () => {
       if (painelFiltroLocal) painelFiltroLocal.classList.add("is-hidden");
     });
   }
-});
+
+  await Promise.all([renderCalendario(), renderEventos()]);
+
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(".cal-evento-mini-wrap")) return;
+    document.querySelectorAll(".cal-evento-mini-wrap.is-popover-open").forEach((w) => {
+      w.classList.remove("is-popover-open");
+      w.querySelector(".cal-evento-mini")?.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  window.addEventListener("filtro-eventos", async (e) => {
+    filtroEvento = e.detail;
+    await Promise.all([renderEventos(), renderCalendario()]);
+  });
+
+  window.addEventListener("filtro-local", async (e) => {
+    filtroLocalCategoria = e.detail.categoria || "";
+    await Promise.all([renderEventos(), renderCalendario()]);
+  });
+
+  const perfil = obterPerfilAtual();
+  document.getElementById("admin-badge")?.classList.toggle("is-hidden", perfil !== "administrador");
+  document.getElementById("institucional-badge")?.classList.toggle("is-hidden", perfil !== "institucional");
+}
+
+document.addEventListener("DOMContentLoaded", init);
