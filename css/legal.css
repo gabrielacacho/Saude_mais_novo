@@ -1,0 +1,149 @@
+/* =========================================
+   PÁGINAS INSTITUCIONAIS / LEGAIS (TERMOS, PRIVACIDADE)
+   Padrão visual alinhado com sobre.css
+========================================= */
+
+.legal-main {
+  padding: 2rem 1rem 4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 80vh;
+}
+
+.bloco-legal {
+  width: 100%;
+  max-width: 900px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* Cabeçalho azul idêntico ao .header-passos da página Sobre */
+.header-legal {
+  background-color: #003B8E;
+  color: #ffffff;
+  padding: 1.5rem 2rem;
+}
+
+.legal-breadcrumb {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 0.5rem;
+}
+
+.legal-breadcrumb a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.legal-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.header-legal h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.legal-updated {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Corpo do texto seguindo a escala tipográfica da Sobre Nós */
+.conteudo-legal {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.legal-intro {
+  background-color: #f8fafc;
+  border-left: 4px solid #003B8E;
+  padding: 1rem 1.25rem;
+  border-radius: 4px;
+}
+
+.legal-intro p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #334155;
+}
+
+/* Cada cláusula com círculo numérico idêntico ao .passo-item */
+.clausula-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.clausula-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.clausula-numero {
+  background-color: #003B8E;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: 0 2px 4px rgba(0, 59, 142, 0.1);
+}
+
+.clausula-conteudo h2 {
+  margin: 0 0 0.4rem 0;
+  font-size: 1.05rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.clausula-conteudo p {
+  margin: 0 0 0.65rem 0;
+  font-size: 0.92rem;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.clausula-conteudo p:last-child {
+  margin-bottom: 0;
+}
+
+.clausula-conteudo a {
+  color: #003B8E;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .header-legal {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .conteudo-legal {
+    padding: 1.25rem;
+  }
+
+  .header-legal h1 {
+    font-size: 1.4rem;
+  }
+}
