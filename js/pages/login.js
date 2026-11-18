@@ -2,7 +2,16 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { validarLogin } from '../services/usuarios-api.js';
 import { configurarOlhosSenha } from '../utils/olho-senha.js';
-import { criptografarSenha } from '../utils/crypto.js';
+
+/* CRIPTOGRAFIA DESATIVADA TEMPORARIAMENTE (BACK-END RECEBENDO TEXTO PURO)
+async function criptografarSenha(senha) {
+  const encoder = new TextEncoder();
+  const dados = encoder.encode(senha);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', dados);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+*/
 
 //visualizar senha
 configurarOlhosSenha();
@@ -17,7 +26,7 @@ function init() {
     e.preventDefault();
 
     const email = document.getElementById('email').value;
-    const senhaPura = document.getElementById('senha').value; // <--- Alterado para senhaPura
+    const senha = document.getElementById('senha').value;
     const btnSubmit = formLogin.querySelector('button[type="submit"]');
 
     if (btnSubmit) {
@@ -26,14 +35,12 @@ function init() {
     }
 
     try {
-      // --- CRIPTOGRAFA A SENHA ANTES DE ENVIAR PARA A API ---
-      const senhaHash = await criptografarSenha(senhaPura);
-      // -----------------------------------------------------
+      // const senhaHash = await criptografarSenha(senha);
+      // const respostaDados = await validarLogin(email, senhaHash);
 
-      // Chama a API real do Python passando o hash em vez da senha pura
-      const respostaDados = await validarLogin(email, senhaHash);
+      // Enviando senha normal para o back-end
+      const respostaDados = await validarLogin(email, senha);
 
-      // Normaliza o tipo de usuário que veio da API para o padrão do frontend ('comum', 'institucional', 'administrador')
       const tipoBruto = (respostaDados.tipo || respostaDados.perfil || '').toLowerCase();
       let perfilNormalizado = 'comum';
 
@@ -43,14 +50,12 @@ function init() {
         perfilNormalizado = 'administrador';
       }
 
-      // Cria a sessão oficial guardando tudo e padronizando o perfil
       const sessaoOficial = {
         ...respostaDados,
         email: email,
         perfil: perfilNormalizado
       };
 
-      // Tentando reconhecer tipo de usuário administrador via URL se necessário
       const acessoAdmin = new URLSearchParams(window.location.search)
         .get('perfil') === 'administrador';
 
@@ -58,9 +63,8 @@ function init() {
         throw new Error('Esta conta não é de administrador.');
       }
 
-      // Salva no localStorage o objeto completo com os dados de sessão
       localStorage.setItem('usuarioLogado', JSON.stringify(sessaoOficial));
-      window.location.href = 'perfil.html'; // Vai direto para o perfil para ver os dados renderizados!
+      window.location.href = 'perfil.html';
 
     } catch (erro) {
       console.error('Erro ao realizar login:', erro);

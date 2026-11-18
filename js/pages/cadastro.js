@@ -2,7 +2,7 @@ import { renderHeader } from '../components/header.js';
 import { renderFooter } from '../components/footer.js';
 import { cadastrarUsuario } from '../services/usuarios-api.js';
 import { configurarOlhosSenha } from '../utils/olho-senha.js';
-import { criptografarSenha } from '../utils/crypto.js'; // <--- ADICIONADO AQUI
+//import { criptografarSenha } from '../utils/crypto.js'; // <--- ADICIONADO AQUI
 
 
 //visualizador de senha
@@ -513,7 +513,7 @@ function renderCampos() {
       try {
         const formData = new FormData(form);
         
-        // --- CRIPTOGRAFA A SENHA ANTES DE ENVIAR ---
+/* --- CRIPTOGRAFIA DESATIVADA TEMPORARIAMENTE ---
         const senhaPura = form.querySelector('#senha')?.value;
         const confirmarSenhaPura = form.querySelector('#confirmarSenha')?.value;
 
@@ -526,7 +526,7 @@ function renderCampos() {
           const confirmarSenhaHash = await criptografarSenha(confirmarSenhaPura);
           formData.set('confirmarSenha', confirmarSenhaHash);
         }
-        // -------------------------------------------
+------------------------------------------------ */
 
         formData.append('tipoUsuario', tipoUsuario);
 
@@ -1499,7 +1499,7 @@ function init() {
         try {
           const formData = new FormData(form);
            
-          // --- CRIPTOGRAFA A SENHA ANTES DE ENVIAR ---
+/* --- CRIPTOGRAFIA DESATIVADA TEMPORARIAMENTE ---
           const senhaPura = form.querySelector('#senha')?.value;
           const confirmarSenhaPura = form.querySelector('#confirmarSenha')?.value;
 
@@ -1512,7 +1512,7 @@ function init() {
             const confirmarSenhaHash = await criptografarSenha(confirmarSenhaPura);
             formData.set('confirmarSenha', confirmarSenhaHash);
           }
-          // -------------------------------------------
+          // ------------------------------------------- */
 
           formData.append('tipoUsuario', tipoUsuario);
 
@@ -1584,7 +1584,7 @@ function init() {
     try {
       const formData = new FormData(form);
 
-      // --- CRIPTOGRAFA A SENHA ANTES DE ENVIAR (LISTENER GLOBAL) ---
+/* --- CRIPTOGRAFIA DESATIVADA TEMPORARIAMENTE (LISTENER GLOBAL) ---
       const senhaPura = form.querySelector('#senha')?.value;
       const confirmarSenhaPura = form.querySelector('#confirmarSenha')?.value;
 
@@ -1597,7 +1597,7 @@ function init() {
         const confirmarSenhaHash = await criptografarSenha(confirmarSenhaPura);
         formData.set('confirmarSenha', confirmarSenhaHash);
       }
-      // -------------------------------------------------------------
+      // -------------------------------------------------------------*/
 
       formData.append('tipoUsuario', tipoUsuario);
 
